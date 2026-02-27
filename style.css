@@ -692,12 +692,18 @@
   .marker--intermediate { background: var(--c-medium); }
   .marker--advanced     { background: var(--c-hard); }
   .marker__inner {
-    width: 16px; height: 16px;
+    width: 18px; height: 18px;
     display: flex; align-items: center; justify-content: center;
     background: none;
     transform: rotate(45deg);
+    filter: drop-shadow(0 1px 1px rgba(0,0,0,0.3));
   }
-  .marker__inner svg { display: block; width: 16px; height: 16px; }
+  .marker__inner svg { 
+    display: block; 
+    width: 18px; 
+    height: 18px;
+    overflow: visible;
+  }
 
   /* Map popup */
   .popup { min-width: 180px; }
@@ -1025,7 +1031,15 @@
     padding: var(--sp-1) var(--sp-4);
   }
   #map.map--picking {
-    cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='40' viewBox='0 0 28 40'%3E%3Cpath d='M14 0C6.27 0 0 6.27 0 14c0 10.5 14 26 14 26s14-15.5 14-26C28 6.27 21.73 0 14 0z' fill='%23E74C3C' stroke='%23fff' stroke-width='1.5'/%3E%3Ccircle cx='14' cy='13' r='5' fill='%23fff'/%3E%3C/svg%3E") 14 40, crosshair;
+    cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='40' viewBox='0 0 28 40'%3E%3Cpath d='M14 0C6.27 0 0 6.27 0 14c0 10.5 14 26 14 26s14-15.5 14-26C28 6.27 21.73 0 14 0z' fill='%23E74C3C' stroke='%23fff' stroke-width='1.5'/%3E%3Ccircle cx='14' cy='13' r='5' fill='%23fff'/%3E%3C/svg%3E") 14 40, crosshair !important;
+  }
+  #map.map--picking .leaflet-container,
+  #map.map--picking .leaflet-interactive,
+  #map.map--picking .leaflet-pane,
+  #map.map--picking .leaflet-tile-pane,
+  #map.map--picking .leaflet-overlay-pane,
+  #map.map--picking * {
+    cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='40' viewBox='0 0 28 40'%3E%3Cpath d='M14 0C6.27 0 0 6.27 0 14c0 10.5 14 26 14 26s14-15.5 14-26C28 6.27 21.73 0 14 0z' fill='%23E74C3C' stroke='%23fff' stroke-width='1.5'/%3E%3Ccircle cx='14' cy='13' r='5' fill='%23fff'/%3E%3C/svg%3E") 14 40, crosshair !important;
   }
 
   /* ── Personal Marker ── */
