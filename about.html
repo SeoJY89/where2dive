@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>About — Where2Dive</title>
+  <meta name="description" content="Where2Dive는 전 세계 다이빙 스팟을 탐색하고, 실시간 날씨와 해양 정보를 확인할 수 있는 무료 웹 서비스입니다." />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="About — Where2Dive" />
+  <meta property="og:description" content="Where2Dive 서비스 소개 및 기능 안내" />
+  <meta property="og:url" content="https://where2dive.com/about.html" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <!-- Header -->
+  <header class="page-header">
+    <a href="/" class="page-header__logo">
+      <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M2 12C2 7 7 2 12 2s10 5 10 10"/>
+        <path d="M12 22c-2-3-6-7-6-10a6 6 0 0 1 12 0c0 3-4 7-6 10z"/>
+        <circle cx="12" cy="12" r="2"/>
+      </svg>
+      <span>Where2Dive</span>
+    </a>
+    <nav class="page-header__nav">
+      <a href="/" data-i18n-nav="home">홈</a>
+      <a href="/guide.html" data-i18n-nav="guide">가이드</a>
+      <a href="/contact.html" data-i18n-nav="contact">문의</a>
+    </nav>
+  </header>
+
+  <!-- Content -->
+  <main class="page" id="page-content">
+    <h1 id="page-title">Where2Dive 소개</h1>
+
+    <div id="page-body-ko">
+      <h2>서비스 소개</h2>
+      <p>Where2Dive는 전 세계 다이빙 스팟을 한눈에 탐색할 수 있는 무료 웹 애플리케이션입니다. 스쿠버 다이빙과 스킨(프리) 다이빙을 즐기는 모든 다이버를 위해 만들어졌습니다.</p>
+
+      <h2>주요 기능</h2>
+      <ul>
+        <li><strong>인터랙티브 지도</strong> — OpenStreetMap 기반의 지도에서 전 세계 다이빙 스팟을 시각적으로 탐색합니다.</li>
+        <li><strong>실시간 날씨 정보</strong> — Open-Meteo API를 통해 기온, 수온, 파고, 풍속 등의 실시간 데이터를 제공합니다.</li>
+        <li><strong>상세 스팟 정보</strong> — 수심, 시야, 난이도, 추천 시즌, 해양 생물 등 다이빙에 필요한 모든 정보를 확인할 수 있습니다.</li>
+        <li><strong>다이빙 로그북</strong> — 개인 다이빙 기록을 체계적으로 관리할 수 있습니다. 스킨/스쿠버 구분, 수심, 시간, 장비 등을 기록합니다.</li>
+        <li><strong>즐겨찾기</strong> — 관심 있는 스팟을 저장하여 빠르게 접근할 수 있습니다.</li>
+        <li><strong>내 스팟</strong> — 직접 발견한 다이빙 포인트를 등록하고 관리할 수 있습니다.</li>
+        <li><strong>다국어 지원</strong> — 한국어와 영어를 지원하며, 언제든지 언어를 전환할 수 있습니다.</li>
+      </ul>
+
+      <h2>데이터 소스</h2>
+      <p>Where2Dive는 다음과 같은 신뢰할 수 있는 데이터 소스를 활용합니다:</p>
+      <ul>
+        <li><strong>Open-Meteo</strong> — 실시간 기상 및 해양 데이터 (기온, 수온, 파고, 풍속, 파주기)</li>
+        <li><strong>OpenStreetMap</strong> — 인터랙티브 지도 타일 및 지리 데이터</li>
+      </ul>
+
+      <h2>우리의 미션</h2>
+      <p>안전하고 즐거운 다이빙 경험을 위해 필요한 정보를 누구나 쉽게 접근할 수 있도록 하는 것이 우리의 목표입니다. 초보 다이버부터 경험 많은 다이버까지, 모든 수준의 다이버가 새로운 다이빙 스팟을 발견하고 안전하게 다이빙을 즐길 수 있도록 돕겠습니다.</p>
+    </div>
+
+    <div id="page-body-en" style="display:none;">
+      <h2>About the Service</h2>
+      <p>Where2Dive is a free web application that lets you explore diving spots worldwide at a glance. It is built for all divers who enjoy scuba diving and skin (free) diving.</p>
+
+      <h2>Key Features</h2>
+      <ul>
+        <li><strong>Interactive Map</strong> — Visually explore diving spots around the world on an OpenStreetMap-based map.</li>
+        <li><strong>Real-time Weather</strong> — Get live data including air temperature, water temperature, wave height, and wind speed via the Open-Meteo API.</li>
+        <li><strong>Detailed Spot Info</strong> — Check depth, visibility, difficulty, recommended season, marine life, and everything else you need.</li>
+        <li><strong>Dive Logbook</strong> — Systematically manage your personal dive records. Log skin/scuba type, depth, time, equipment, and more.</li>
+        <li><strong>Favorites</strong> — Save spots you're interested in for quick access.</li>
+        <li><strong>My Spots</strong> — Register and manage your own discovered dive points.</li>
+        <li><strong>Multilingual</strong> — Supports Korean and English with instant language switching.</li>
+      </ul>
+
+      <h2>Data Sources</h2>
+      <p>Where2Dive uses the following reliable data sources:</p>
+      <ul>
+        <li><strong>Open-Meteo</strong> — Real-time weather and marine data (temperature, sea temp, wave height, wind, wave period)</li>
+        <li><strong>OpenStreetMap</strong> — Interactive map tiles and geographic data</li>
+      </ul>
+
+      <h2>Our Mission</h2>
+      <p>Our goal is to make essential diving information easily accessible for everyone. From beginners to experienced divers, we aim to help all levels of divers discover new spots and enjoy diving safely.</p>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer__inner">
+      <div>
+        <div class="footer__section-title">서비스</div>
+        <p class="footer__desc">전 세계 다이빙 스팟을 찾고, 날씨와 해양 정보를 확인하세요.</p>
+      </div>
+      <div>
+        <div class="footer__section-title">법적 고지</div>
+        <div class="footer__links">
+          <a href="/privacy.html">개인정보 처리방침</a>
+          <a href="/terms.html">이용약관</a>
+        </div>
+      </div>
+      <div>
+        <div class="footer__section-title">정보</div>
+        <div class="footer__links">
+          <a href="/about.html">Where2Dive 소개</a>
+          <a href="/guide.html">다이빙 가이드</a>
+          <a href="/contact.html">문의하기</a>
+        </div>
+      </div>
+      <div>
+        <div class="footer__section-title">데이터</div>
+        <div class="footer__links">
+          <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a>
+          <a href="https://www.openstreetmap.org/" target="_blank" rel="noopener">OpenStreetMap</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer__bottom">&copy; 2025 Where2Dive. All rights reserved.</div>
+  </footer>
+
+  <script>
+    const lang = localStorage.getItem('where2dive_lang') || 'ko';
+    if (lang === 'en') {
+      document.documentElement.lang = 'en';
+      document.getElementById('page-title').textContent = 'About Where2Dive';
+      document.getElementById('page-body-ko').style.display = 'none';
+      document.getElementById('page-body-en').style.display = 'block';
+      document.querySelectorAll('[data-i18n-nav]').forEach(a => {
+        const map = { home: 'Home', guide: 'Guide', contact: 'Contact' };
+        a.textContent = map[a.dataset.i18nNav] || a.textContent;
+      });
+    }
+  </script>
+</body>
+</html>

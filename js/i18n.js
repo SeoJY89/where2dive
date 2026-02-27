@@ -223,6 +223,26 @@ const ko = {
 
   // page
   'title': 'Where2Dive — 다이빙 스팟 찾기',
+
+  // footer
+  'footer.about': 'Where2Dive 소개',
+  'footer.guide': '다이빙 가이드',
+  'footer.privacy': '개인정보 처리방침',
+  'footer.terms': '이용약관',
+  'footer.contact': '문의하기',
+  'footer.section.service': '서비스',
+  'footer.section.legal': '법적 고지',
+  'footer.section.info': '정보',
+  'footer.section.data': '데이터',
+  'footer.desc': '전 세계 다이빙 스팟을 찾고, 날씨와 해양 정보를 확인하세요.',
+  'footer.copyright': '© 2025 Where2Dive. All rights reserved.',
+  'footer.openMeteo': 'Open-Meteo',
+  'footer.osm': 'OpenStreetMap',
+
+  // cookie
+  'cookie.text': '이 웹사이트는 사용자 경험 개선을 위해 쿠키를 사용합니다. 계속 사용하면 쿠키 사용에 동의하는 것으로 간주합니다.',
+  'cookie.accept': '동의',
+  'cookie.learnMore': '자세히 보기',
 };
 
 // ── English strings ──
@@ -404,4 +424,24 @@ const en = {
 
   // page
   'title': 'Where2Dive — Find Diving Spots',
+
+  // footer
+  'footer.about': 'About Where2Dive',
+  'footer.guide': 'Diving Guide',
+  'footer.privacy': 'Privacy Policy',
+  'footer.terms': 'Terms of Service',
+  'footer.contact': 'Contact Us',
+  'footer.section.service': 'Service',
+  'footer.section.legal': 'Legal',
+  'footer.section.info': 'Info',
+  'footer.section.data': 'Data',
+  'footer.desc': 'Discover diving spots worldwide with live weather and marine info.',
+  'footer.copyright': '© 2025 Where2Dive. All rights reserved.',
+  'footer.openMeteo': 'Open-Meteo',
+  'footer.osm': 'OpenStreetMap',
+
+  // cookie
+  'cookie.text': 'This website uses cookies to improve your experience. By continuing to use this site, you consent to the use of cookies.',
+  'cookie.accept': 'Accept',
+  'cookie.learnMore': 'Learn More',
 };

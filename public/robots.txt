@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /js/
+
+Sitemap: https://where2dive.com/sitemap.xml

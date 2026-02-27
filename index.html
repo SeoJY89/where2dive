@@ -6,6 +6,41 @@
   <title>Where2Dive — 다이빙 스팟 찾기</title>
   <meta name="description" content="전 세계 스쿠버 다이빙 명소를 찾고, 지도에서 확인하고, 실시간 날씨·수온 정보를 확인하세요." />
 
+  <!-- Favicon -->
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Where2Dive — 다이빙 스팟 찾기" />
+  <meta property="og:description" content="전 세계 스쿠버 다이빙 명소를 찾고, 지도에서 확인하고, 실시간 날씨·수온 정보를 확인하세요." />
+  <meta property="og:url" content="https://where2dive.com/" />
+  <meta property="og:site_name" content="Where2Dive" />
+  <meta property="og:locale" content="ko_KR" />
+  <meta property="og:locale:alternate" content="en_US" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Where2Dive — 다이빙 스팟 찾기" />
+  <meta name="twitter:description" content="전 세계 스쿠버 다이빙 명소를 찾고, 지도에서 확인하고, 실시간 날씨·수온 정보를 확인하세요." />
+
+  <!-- JSON-LD Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Where2Dive",
+    "url": "https://where2dive.com",
+    "description": "전 세계 스쿠버 다이빙 명소를 찾고, 지도에서 확인하고, 실시간 날씨·수온 정보를 확인하세요.",
+    "applicationCategory": "TravelApplication",
+    "operatingSystem": "Web",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    }
+  }
+  </script>
+
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -566,8 +601,45 @@
 
   <!-- ═══ Footer ═══ -->
   <footer class="footer">
-    <p>Powered by <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a> &amp; <a href="https://www.openstreetmap.org/" target="_blank" rel="noopener">OpenStreetMap</a></p>
+    <div class="footer__inner">
+      <div>
+        <div class="footer__section-title" data-i18n="footer.section.service" id="footer-section-service">서비스</div>
+        <p class="footer__desc" data-i18n="footer.desc" id="footer-desc">전 세계 다이빙 스팟을 찾고, 날씨와 해양 정보를 확인하세요.</p>
+      </div>
+      <div>
+        <div class="footer__section-title" data-i18n="footer.section.legal" id="footer-section-legal">법적 고지</div>
+        <div class="footer__links">
+          <a href="/privacy.html" id="footer-privacy">개인정보 처리방침</a>
+          <a href="/terms.html" id="footer-terms">이용약관</a>
+        </div>
+      </div>
+      <div>
+        <div class="footer__section-title" data-i18n="footer.section.info" id="footer-section-info">정보</div>
+        <div class="footer__links">
+          <a href="/about.html" id="footer-about">Where2Dive 소개</a>
+          <a href="/guide.html" id="footer-guide">다이빙 가이드</a>
+          <a href="/contact.html" id="footer-contact">문의하기</a>
+        </div>
+      </div>
+      <div>
+        <div class="footer__section-title" data-i18n="footer.section.data" id="footer-section-data">데이터</div>
+        <div class="footer__links">
+          <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a>
+          <a href="https://www.openstreetmap.org/" target="_blank" rel="noopener">OpenStreetMap</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer__bottom" id="footer-copyright">&copy; 2025 Where2Dive. All rights reserved.</div>
   </footer>
+
+  <!-- ═══ Cookie Consent Banner ═══ -->
+  <div class="cookie-banner hidden" id="cookie-banner">
+    <p class="cookie-banner__text" id="cookie-text">
+      이 웹사이트는 사용자 경험 개선을 위해 쿠키를 사용합니다. 계속 사용하면 쿠키 사용에 동의하는 것으로 간주합니다.
+      <a href="/privacy.html" id="cookie-learn-more">자세히 보기</a>
+    </p>
+    <button class="cookie-banner__btn" id="cookie-accept">동의</button>
+  </div>
 
   <!-- Leaflet JS -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>

@@ -176,6 +176,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  // ── Cookie consent ──
+  initCookieBanner();
+
   setLangChangeListener(() => {
     applyLangToggleState();
     updateStaticLabels();
@@ -241,6 +244,30 @@ function updateStaticLabels() {
   if (logEmptyText) logEmptyText.textContent = t('logbook.empty');
   const logEmptySub = document.getElementById('logbook-empty-sub');
   if (logEmptySub) logEmptySub.textContent = t('logbook.emptySub');
+
+  // footer labels
+  const el = (id) => document.getElementById(id);
+  const setText = (id, key) => { const e = el(id); if (e) e.textContent = t(key); };
+  setText('footer-section-service', 'footer.section.service');
+  setText('footer-section-legal', 'footer.section.legal');
+  setText('footer-section-info', 'footer.section.info');
+  setText('footer-section-data', 'footer.section.data');
+  setText('footer-desc', 'footer.desc');
+  setText('footer-privacy', 'footer.privacy');
+  setText('footer-terms', 'footer.terms');
+  setText('footer-about', 'footer.about');
+  setText('footer-guide', 'footer.guide');
+  setText('footer-contact', 'footer.contact');
+  setText('footer-copyright', 'footer.copyright');
+
+  // cookie banner labels
+  const cookieText = el('cookie-text');
+  if (cookieText) {
+    const learnMore = el('cookie-learn-more');
+    cookieText.childNodes[0].textContent = t('cookie.text') + ' ';
+    if (learnMore) learnMore.textContent = t('cookie.learnMore');
+  }
+  setText('cookie-accept', 'cookie.accept');
 }
 
 function toggleList() {
@@ -792,4 +819,24 @@ function cancelMapPicking() {
   }
 
   mapPickingState = null;
+}
+
+// ═══ Cookie Consent Banner ═══
+
+function initCookieBanner() {
+  const banner = document.getElementById('cookie-banner');
+  const acceptBtn = document.getElementById('cookie-accept');
+  if (!banner || !acceptBtn) return;
+
+  if (localStorage.getItem('where2dive_cookie_consent') === 'accepted') {
+    banner.classList.add('hidden');
+    return;
+  }
+
+  banner.classList.remove('hidden');
+
+  acceptBtn.addEventListener('click', () => {
+    localStorage.setItem('where2dive_cookie_consent', 'accepted');
+    banner.classList.add('hidden');
+  });
 }

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact — Where2Dive</title>
+  <meta name="description" content="Where2Dive 문의하기. 서비스 이용 관련 질문이나 피드백을 보내주세요." />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Contact — Where2Dive" />
+  <meta property="og:description" content="Where2Dive 문의하기" />
+  <meta property="og:url" content="https://where2dive.com/contact.html" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <!-- Header -->
+  <header class="page-header">
+    <a href="/" class="page-header__logo">
+      <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M2 12C2 7 7 2 12 2s10 5 10 10"/>
+        <path d="M12 22c-2-3-6-7-6-10a6 6 0 0 1 12 0c0 3-4 7-6 10z"/>
+        <circle cx="12" cy="12" r="2"/>
+      </svg>
+      <span>Where2Dive</span>
+    </a>
+    <nav class="page-header__nav">
+      <a href="/" data-i18n-nav="home">홈</a>
+      <a href="/about.html" data-i18n-nav="about">소개</a>
+      <a href="/guide.html" data-i18n-nav="guide">가이드</a>
+    </nav>
+  </header>
+
+  <!-- Content -->
+  <main class="page" id="page-content">
+    <h1 id="page-title">문의하기</h1>
+
+    <div id="page-body-ko">
+      <h2>이메일 문의</h2>
+      <p>서비스 이용 관련 질문, 버그 리포트, 제안 사항이 있으시면 아래 이메일로 연락해주세요:</p>
+      <p><strong>contact@where2dive.com</strong></p>
+
+      <h2>문의 양식</h2>
+      <form class="log-form" id="contact-form" onsubmit="return handleContactSubmit(event)">
+        <div class="log-form__field">
+          <label for="contact-name">이름</label>
+          <input type="text" id="contact-name" required />
+        </div>
+        <div class="log-form__field">
+          <label for="contact-email">이메일</label>
+          <input type="email" id="contact-email" required />
+        </div>
+        <div class="log-form__field">
+          <label for="contact-subject">제목</label>
+          <input type="text" id="contact-subject" required />
+        </div>
+        <div class="log-form__field">
+          <label for="contact-message">내용</label>
+          <textarea id="contact-message" rows="6" required></textarea>
+        </div>
+        <div class="log-form__actions">
+          <button type="submit" class="btn btn--primary" id="contact-submit">보내기</button>
+        </div>
+      </form>
+      <p id="contact-success" style="display:none; color: var(--c-easy); margin-top: 1rem; font-weight: 600;">메시지가 전송되었습니다. 감사합니다!</p>
+
+      <h2>응답 시간</h2>
+      <p>문의에 대한 응답은 일반적으로 1-3 영업일 이내에 처리됩니다. 긴급한 사항의 경우 이메일 제목에 [긴급]을 포함해 주세요.</p>
+
+      <h2>피드백</h2>
+      <p>Where2Dive를 개선하기 위한 여러분의 의견을 항상 환영합니다. 새로운 기능 제안, 데이터 오류 신고, UX 개선 아이디어 등 무엇이든 보내주세요.</p>
+    </div>
+
+    <div id="page-body-en" style="display:none;">
+      <h2>Email</h2>
+      <p>For questions, bug reports, or suggestions about the service, please reach out at:</p>
+      <p><strong>contact@where2dive.com</strong></p>
+
+      <h2>Contact Form</h2>
+      <form class="log-form" id="contact-form-en" onsubmit="return handleContactSubmit(event)">
+        <div class="log-form__field">
+          <label for="contact-name-en">Name</label>
+          <input type="text" id="contact-name-en" required />
+        </div>
+        <div class="log-form__field">
+          <label for="contact-email-en">Email</label>
+          <input type="email" id="contact-email-en" required />
+        </div>
+        <div class="log-form__field">
+          <label for="contact-subject-en">Subject</label>
+          <input type="text" id="contact-subject-en" required />
+        </div>
+        <div class="log-form__field">
+          <label for="contact-message-en">Message</label>
+          <textarea id="contact-message-en" rows="6" required></textarea>
+        </div>
+        <div class="log-form__actions">
+          <button type="submit" class="btn btn--primary">Send</button>
+        </div>
+      </form>
+      <p id="contact-success-en" style="display:none; color: var(--c-easy); margin-top: 1rem; font-weight: 600;">Your message has been sent. Thank you!</p>
+
+      <h2>Response Time</h2>
+      <p>We typically respond to inquiries within 1-3 business days. For urgent matters, please include [Urgent] in the email subject.</p>
+
+      <h2>Feedback</h2>
+      <p>We always welcome your ideas to improve Where2Dive. Whether it's feature suggestions, data error reports, or UX improvements — we'd love to hear from you.</p>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer__inner">
+      <div>
+        <div class="footer__section-title">서비스</div>
+        <p class="footer__desc">전 세계 다이빙 스팟을 찾고, 날씨와 해양 정보를 확인하세요.</p>
+      </div>
+      <div>
+        <div class="footer__section-title">법적 고지</div>
+        <div class="footer__links">
+          <a href="/privacy.html">개인정보 처리방침</a>
+          <a href="/terms.html">이용약관</a>
+        </div>
+      </div>
+      <div>
+        <div class="footer__section-title">정보</div>
+        <div class="footer__links">
+          <a href="/about.html">Where2Dive 소개</a>
+          <a href="/guide.html">다이빙 가이드</a>
+          <a href="/contact.html">문의하기</a>
+        </div>
+      </div>
+      <div>
+        <div class="footer__section-title">데이터</div>
+        <div class="footer__links">
+          <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a>
+          <a href="https://www.openstreetmap.org/" target="_blank" rel="noopener">OpenStreetMap</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer__bottom">&copy; 2025 Where2Dive. All rights reserved.</div>
+  </footer>
+
+  <script>
+    const lang = localStorage.getItem('where2dive_lang') || 'ko';
+    if (lang === 'en') {
+      document.documentElement.lang = 'en';
+      document.getElementById('page-title').textContent = 'Contact Us';
+      document.getElementById('page-body-ko').style.display = 'none';
+      document.getElementById('page-body-en').style.display = 'block';
+      document.querySelectorAll('[data-i18n-nav]').forEach(a => {
+        const map = { home: 'Home', about: 'About', guide: 'Guide' };
+        a.textContent = map[a.dataset.i18nNav] || a.textContent;
+      });
+    }
+    function handleContactSubmit(e) {
+      e.preventDefault();
+      const successId = lang === 'en' ? 'contact-success-en' : 'contact-success';
+      document.getElementById(successId).style.display = 'block';
+      e.target.reset();
+      return false;
+    }
+  </script>
+</body>
+</html>
