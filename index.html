@@ -1,14 +1,124 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="ko">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hello World</title>
-  <link href='/style.css' rel='stylesheet'>
+  <title>Where2Dive — 다이빙 스팟 찾기</title>
+  <meta name="description" content="전 세계 스쿠버 다이빙 명소를 찾고, 지도에서 확인하고, 실시간 날씨·수온 정보를 확인하세요." />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet" />
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+  <!-- App CSS -->
+  <link rel="stylesheet" href="/style.css" />
 </head>
 <body>
-  <h1>Hello, world!</h1>
-  <button onclick="console.log('hello');">Press me</button>
-  <script defer type="text/javascript" src="/main.js"></script>
+  <!-- ═══ Header ═══ -->
+  <header class="header">
+    <div class="header__inner">
+      <a href="/" class="header__logo" aria-label="홈으로 이동">
+        <svg class="header__icon" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M2 12C2 7 7 2 12 2s10 5 10 10"/>
+          <path d="M12 22c-2-3-6-7-6-10a6 6 0 0 1 12 0c0 3-4 7-6 10z"/>
+          <circle cx="12" cy="12" r="2"/>
+        </svg>
+        <span class="header__title">Where2Dive</span>
+      </a>
+      <nav class="header__nav" aria-label="메인 내비게이션">
+        <button class="nav-btn active" data-view="map" aria-pressed="true">지도</button>
+        <button class="nav-btn" data-view="list" aria-pressed="false">목록</button>
+        <button class="nav-btn" data-view="favorites" aria-pressed="false">
+          즐겨찾기(<span id="fav-count">0</span>)
+        </button>
+      </nav>
+      <button class="header__mobile-filter-toggle" id="filter-toggle" aria-label="필터 열기/닫기" aria-expanded="false">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg>
+        필터
+      </button>
+    </div>
+  </header>
+
+  <!-- ═══ Filter Bar ═══ -->
+  <section class="filter-bar" id="filter-bar" aria-label="검색 및 필터">
+    <div class="filter-bar__inner">
+      <div class="filter-group">
+        <label for="search-input" class="sr-only">검색</label>
+        <input type="search" id="search-input" class="filter-input" placeholder="스팟 이름, 국가, 해양생물 검색..." autocomplete="off" />
+      </div>
+      <div class="filter-group">
+        <label for="region-select" class="sr-only">지역</label>
+        <select id="region-select" class="filter-select">
+          <option value="">모든 지역</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label for="difficulty-select" class="sr-only">난이도</label>
+        <select id="difficulty-select" class="filter-select">
+          <option value="">모든 난이도</option>
+          <option value="beginner">초급</option>
+          <option value="intermediate">중급</option>
+          <option value="advanced">상급</option>
+        </select>
+      </div>
+      <div class="filter-group filter-group--range">
+        <label for="temp-range">수온: <span id="temp-value">0°C ~ 35°C</span></label>
+        <div class="range-wrapper">
+          <input type="range" id="temp-min" min="0" max="35" value="0" step="1" aria-label="최소 수온" />
+          <input type="range" id="temp-max" min="0" max="35" value="35" step="1" aria-label="최대 수온" />
+        </div>
+      </div>
+      <button class="filter-reset" id="filter-reset">초기화</button>
+    </div>
+  </section>
+
+  <!-- ═══ Main Content ═══ -->
+  <main class="main">
+    <div class="main__inner">
+      <!-- Map Panel -->
+      <div class="map-panel" id="map-panel">
+        <div id="map" class="map"></div>
+      </div>
+      <!-- Cards Panel -->
+      <div class="cards-panel" id="cards-panel">
+        <div class="cards-panel__count" id="spot-count"></div>
+        <div class="cards-grid" id="cards-grid"></div>
+        <div class="empty-state hidden" id="empty-state">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" opacity=".4"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <p>조건에 맞는 다이빙 스팟이 없습니다.</p>
+          <button class="btn btn--secondary" id="empty-reset">필터 초기화</button>
+        </div>
+        <div class="empty-state hidden" id="fav-empty-state">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" opacity=".4"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          <p>아직 즐겨찾기한 스팟이 없습니다.</p>
+          <p class="empty-state__sub">하트를 눌러 관심 있는 스팟을 저장해보세요!</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ═══ Detail Modal ═══ -->
+  <div class="modal-overlay hidden" id="modal-overlay" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <button class="modal__close" id="modal-close" aria-label="닫기">&times;</button>
+      <div class="modal__body" id="modal-body">
+        <!-- Dynamically rendered -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ Footer ═══ -->
+  <footer class="footer">
+    <p>Powered by <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a> &amp; <a href="https://www.openstreetmap.org/" target="_blank" rel="noopener">OpenStreetMap</a></p>
+  </footer>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <!-- App JS -->
+  <script type="module" src="/js/app.js"></script>
 </body>
 </html>
