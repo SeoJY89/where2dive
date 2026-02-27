@@ -518,11 +518,25 @@
             <label id="log-activity-label">활동 유형</label>
             <div class="log-activity-switch" id="log-activity-switch">
               <button type="button" class="log-activity-switch__btn active" data-value="skin" id="log-activity-skin">
-                <span class="log-activity-switch__icon" id="log-skin-icon"></span>
+                <span class="log-activity-switch__icon" id="log-skin-icon">
+                  <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                    <ellipse cx="12" cy="11" rx="9" ry="5" fill="none" stroke="currentColor" stroke-width="2"/>
+                    <circle cx="8" cy="11" r="2.5" fill="currentColor" opacity="0.6"/>
+                    <circle cx="16" cy="11" r="2.5" fill="currentColor" opacity="0.6"/>
+                    <path d="M20 9 L22 6 L22 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/>
+                  </svg>
+                </span>
                 <span id="log-skin-text">스킨</span>
               </button>
               <button type="button" class="log-activity-switch__btn" data-value="scuba" id="log-activity-scuba">
-                <span class="log-activity-switch__icon" id="log-scuba-icon"></span>
+                <span class="log-activity-switch__icon" id="log-scuba-icon">
+                  <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="8" y="6" width="8" height="14" rx="3" fill="none" stroke="currentColor" stroke-width="2"/>
+                    <rect x="10" y="3" width="4" height="4" rx="1" fill="currentColor" opacity="0.6"/>
+                    <circle cx="18" cy="8" r="2" fill="currentColor" opacity="0.5"/>
+                    <circle cx="20" cy="5" r="1.5" fill="currentColor" opacity="0.3"/>
+                  </svg>
+                </span>
                 <span id="log-scuba-text">스쿠버</span>
               </button>
             </div>
