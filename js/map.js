@@ -81,8 +81,8 @@ export function initMap() {
     subdomains: 'abcd',
   }).addTo(map);
 
-  markerLayer = L.layerGroup().addTo(map);
-  personalMarkerLayer = L.layerGroup().addTo(map);
+  markerLayer = L.featureGroup().addTo(map);
+  personalMarkerLayer = L.featureGroup().addTo(map);
 
   // 팝업 버튼 클릭 이벤트 위임
   map.on('popupopen', e => {
