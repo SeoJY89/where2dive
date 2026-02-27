@@ -382,6 +382,8 @@ function refresh(fitToMarkers = false) {
   document.getElementById('count-all').textContent = counts.total;
   document.getElementById('count-skin').textContent = counts.skin;
   document.getElementById('count-scuba').textContent = counts.scuba;
+  const countMyspot = document.getElementById('count-myspot');
+  if (countMyspot) countMyspot.textContent = counts.myspot;
 }
 
 // ═══ Logbook View ═══
@@ -486,14 +488,14 @@ function initLogModal() {
   });
 
   // Activity type toggle — show/hide scuba fields
-  document.querySelectorAll('input[name="log-activity"]').forEach(radio => {
-    radio.addEventListener('change', () => {
+  document.querySelectorAll('#log-activity-switch .log-activity-switch__btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#log-activity-switch .log-activity-switch__btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const val = btn.dataset.value;
+      document.getElementById('log-activity-value').value = val;
       const scubaFields = document.getElementById('log-scuba-fields');
-      if (radio.value === 'scuba' && radio.checked) {
-        scubaFields.classList.remove('hidden');
-      } else if (radio.value === 'skin' && radio.checked) {
-        scubaFields.classList.add('hidden');
-      }
+      scubaFields.classList.toggle('hidden', val !== 'scuba');
     });
   });
 
@@ -504,7 +506,7 @@ function initLogModal() {
     const data = {
       date: document.getElementById('log-date').value,
       spotName: document.getElementById('log-spot-name').value,
-      activityType: document.querySelector('input[name="log-activity"]:checked').value,
+      activityType: document.getElementById('log-activity-value').value,
       maxDepth: parseFloat(document.getElementById('log-depth').value) || null,
       diveTime: parseInt(document.getElementById('log-time').value) || null,
       waterTemp: parseFloat(document.getElementById('log-temp').value) || null,
@@ -581,7 +583,10 @@ function openLogFormModal(editId) {
     document.getElementById('log-edit-id').value = editId;
     document.getElementById('log-date').value = entry.date || '';
     document.getElementById('log-spot-name').value = entry.spotName || '';
-    document.querySelector(`input[name="log-activity"][value="${entry.activityType}"]`).checked = true;
+    document.getElementById('log-activity-value').value = entry.activityType || 'skin';
+    document.querySelectorAll('#log-activity-switch .log-activity-switch__btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.value === (entry.activityType || 'skin'));
+    });
     document.getElementById('log-depth').value = entry.maxDepth ?? '';
     document.getElementById('log-time').value = entry.diveTime ?? '';
     document.getElementById('log-temp').value = entry.waterTemp ?? '';
@@ -599,6 +604,10 @@ function openLogFormModal(editId) {
   } else {
     title.textContent = t('logbook.form.title');
     document.getElementById('log-date').value = new Date().toISOString().slice(0, 10);
+    document.getElementById('log-activity-value').value = 'skin';
+    document.querySelectorAll('#log-activity-switch .log-activity-switch__btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.value === 'skin');
+    });
     scubaFields.classList.add('hidden');
   }
 
