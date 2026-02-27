@@ -84,7 +84,7 @@ function popupHtml(spot) {
 
 export function initMap() {
   map = L.map('map', {
-    center: [20, 120],
+    center: [5, 140],
     zoom: 3,
     minZoom: 2,
     maxZoom: 18,
