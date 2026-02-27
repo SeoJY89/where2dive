@@ -14,58 +14,29 @@ const DIFFICULTY_CLASS = {
 };
 
 const ICON_SVG = {
-  // 스킨다이빙: 마스크 + 스노클 (깔끔하고 굵은 라인)
-  skin: `<svg viewBox="0 0 24 24" width="20" height="20" xmlns="http://www.w3.org/2000/svg">
-    <g fill="white" stroke="white" stroke-width="0.5">
-      <!-- 마스크 프레임 -->
-      <rect x="2" y="8" width="15" height="10" rx="3" fill="white"/>
-      <!-- 왼쪽 렌즈 -->
-      <rect x="3.5" y="9.5" width="5" height="7" rx="1.5" fill="#4FC3F7"/>
-      <!-- 오른쪽 렌즈 -->
-      <rect x="10.5" y="9.5" width="5" height="7" rx="1.5" fill="#4FC3F7"/>
-      <!-- 스노클 튜브 -->
-      <path d="M17 12 L20 8 L20 2" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-      <!-- 스노클 마우스피스 -->
-      <circle cx="20" cy="1.5" r="2" fill="white"/>
-    </g>
+  // 스킨: 마스크 심볼 (매우 단순화)
+  skin: `<svg viewBox="0 0 24 24" width="18" height="18" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="12" cy="12" rx="10" ry="6" fill="white" opacity="0.95"/>
+    <ellipse cx="7" cy="12" rx="4" ry="4" fill="#29B6F6"/>
+    <ellipse cx="17" cy="12" rx="4" ry="4" fill="#29B6F6"/>
+    <rect x="11" y="10" width="2" height="4" fill="white"/>
   </svg>`,
   
-  // 스쿠버: 탱크 + 버블 (깔끔하고 굵은 라인)
-  scuba: `<svg viewBox="0 0 24 24" width="20" height="20" xmlns="http://www.w3.org/2000/svg">
-    <g fill="white">
-      <!-- 탱크 본체 -->
-      <rect x="5" y="6" width="10" height="16" rx="4" fill="white"/>
-      <!-- 탱크 밸브 -->
-      <rect x="8" y="2" width="4" height="5" rx="1.5" fill="white"/>
-      <!-- 밸브 휠 -->
-      <circle cx="10" cy="1.5" r="2" fill="white"/>
-      <!-- 레귤레이터 호스 -->
-      <path d="M15 10 Q18 10 19 14" stroke="white" stroke-width="2.5" stroke-linecap="round" fill="none"/>
-      <!-- 2단계 레귤 -->
-      <circle cx="19.5" cy="15.5" r="2.5" fill="white"/>
-      <!-- 공기방울들 -->
-      <circle cx="21" cy="8" r="2.5" fill="white"/>
-      <circle cx="23" cy="4" r="1.8" fill="white" opacity="0.8"/>
-      <circle cx="20" cy="3" r="1.2" fill="white" opacity="0.6"/>
-    </g>
+  // 스쿠버: 탱크 심볼 (매우 단순화)
+  scuba: `<svg viewBox="0 0 24 24" width="18" height="18" xmlns="http://www.w3.org/2000/svg">
+    <rect x="7" y="4" width="10" height="18" rx="4" fill="white" opacity="0.95"/>
+    <rect x="10" y="1" width="4" height="4" rx="1" fill="white"/>
+    <circle cx="19" cy="6" r="2.5" fill="white"/>
+    <circle cx="21" cy="10" r="1.5" fill="white" opacity="0.7"/>
   </svg>`,
   
-  // 스킨 + 스쿠버 둘 다
-  both: `<svg viewBox="0 0 24 24" width="20" height="20" xmlns="http://www.w3.org/2000/svg">
-    <g fill="white">
-      <!-- 마스크 (좌측) -->
-      <rect x="1" y="8" width="10" height="7" rx="2" fill="white"/>
-      <rect x="2" y="9" width="3.5" height="5" rx="1" fill="#4FC3F7"/>
-      <rect x="6.5" y="9" width="3.5" height="5" rx="1" fill="#4FC3F7"/>
-      <!-- 스노클 -->
-      <path d="M11 10 L12.5 7 L12.5 4" stroke="white" stroke-width="2" stroke-linecap="round" fill="none"/>
-      <!-- 탱크 (우측) -->
-      <rect x="15" y="6" width="6" height="12" rx="2.5" fill="white"/>
-      <rect x="16.5" y="3" width="3" height="3.5" rx="1" fill="white"/>
-      <!-- 버블 -->
-      <circle cx="22.5" cy="5" r="1.8" fill="white"/>
-      <circle cx="21" cy="2" r="1.2" fill="white" opacity="0.7"/>
-    </g>
+  // 둘 다
+  both: `<svg viewBox="0 0 24 24" width="18" height="18" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="8" cy="14" rx="6" ry="4" fill="white" opacity="0.95"/>
+    <ellipse cx="5" cy="14" rx="2.5" ry="2.5" fill="#29B6F6"/>
+    <ellipse cx="11" cy="14" rx="2.5" ry="2.5" fill="#29B6F6"/>
+    <rect x="16" y="6" width="6" height="12" rx="2.5" fill="white" opacity="0.95"/>
+    <rect x="17.5" y="3" width="3" height="3" rx="0.8" fill="white"/>
   </svg>`,
 };
 
@@ -133,7 +104,7 @@ export function setMapSpotClickHandler(fn) {
   onSpotClick = fn;
 }
 
-export function updateMarkers(spots) {
+export function updateMarkers(spots, fitToMarkers = false) {
   markerLayer.clearLayers();
   spots.forEach(spot => {
     const marker = L.marker([spot.lat, spot.lng], {
@@ -142,6 +113,14 @@ export function updateMarkers(spots) {
     marker.bindPopup(popupHtml(spot));
     markerLayer.addLayer(marker);
   });
+  
+  // 첫 로딩 시 모든 마커가 보이도록 지도 범위 조정
+  if (fitToMarkers && spots.length > 0) {
+    const bounds = markerLayer.getBounds();
+    if (bounds.isValid()) {
+      map.fitBounds(bounds, { padding: [50, 50], maxZoom: 5 });
+    }
+  }
 }
 
 export function flyToSpot(lat, lng) {
