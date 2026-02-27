@@ -57,207 +57,295 @@
   <section id="landing" class="landing">
     <div class="landing__scene">
       <svg class="landing__svg" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
-        <!-- Light rays from surface -->
-        <g class="light-rays">
-          <polygon class="light-ray" points="300,0 340,0 500,900 420,900" fill="rgba(255,255,255,0.04)" />
-          <polygon class="light-ray light-ray--2" points="600,0 650,0 780,900 700,900" fill="rgba(255,255,255,0.03)" />
-          <polygon class="light-ray light-ray--3" points="900,0 960,0 1100,900 1020,900" fill="rgba(255,255,255,0.04)" />
-          <polygon class="light-ray light-ray--4" points="1150,0 1200,0 1300,900 1230,900" fill="rgba(255,255,255,0.03)" />
+        <defs>
+          <!-- 그라데이션 정의 -->
+          <linearGradient id="skinGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#FFE4C9;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#FFCBA4;stop-opacity:1" />
+          </linearGradient>
+          <linearGradient id="wetsuit" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#2D3436;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#1A1A2E;stop-opacity:1" />
+          </linearGradient>
+          <linearGradient id="tankGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" style="stop-color:#B8C6D6;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#8FA4B8;stop-opacity:1" />
+          </linearGradient>
+          <linearGradient id="finGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" style="stop-color:#00CED1;stop-opacity:0.9" />
+            <stop offset="100%" style="stop-color:#008B8B;stop-opacity:0.9" />
+          </linearGradient>
+          <linearGradient id="yellowFin" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" style="stop-color:#FFD93D;stop-opacity:0.95" />
+            <stop offset="100%" style="stop-color:#F4A100;stop-opacity:0.95" />
+          </linearGradient>
+          <linearGradient id="maskGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#74C0FC;stop-opacity:0.9" />
+            <stop offset="100%" style="stop-color:#339AF0;stop-opacity:0.9" />
+          </linearGradient>
+          <linearGradient id="sharkGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#6B7B8C;stop-opacity:0.7" />
+            <stop offset="100%" style="stop-color:#4A5568;stop-opacity:0.7" />
+          </linearGradient>
+          <linearGradient id="turtleGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#68D391;stop-opacity:0.7" />
+            <stop offset="100%" style="stop-color:#38A169;stop-opacity:0.7" />
+          </linearGradient>
+          <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+            <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+
+        <!-- 빛줄기 (수면에서 내려오는 빛) -->
+        <g class="light-rays" opacity="0.6">
+          <polygon points="200,0 260,0 380,900 280,900" fill="url(#lightRay1)" opacity="0.08"/>
+          <polygon points="500,0 550,0 650,900 580,900" fill="url(#lightRay1)" opacity="0.06"/>
+          <polygon points="850,0 920,0 1050,900 960,900" fill="url(#lightRay1)" opacity="0.07"/>
+          <polygon points="1200,0 1260,0 1350,900 1270,900" fill="url(#lightRay1)" opacity="0.05"/>
+          <linearGradient id="lightRay1" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" style="stop-color:#fff;stop-opacity:0.3"/>
+            <stop offset="100%" style="stop-color:#fff;stop-opacity:0"/>
+          </linearGradient>
         </g>
 
-        <!-- Diver 1: Snorkeler (수면 스노클링) -->
-        <g class="diver diver--1" transform="translate(720, 200)">
-          <g transform="scale(2.5)">
-            <!-- 몸통 -->
-            <ellipse cx="0" cy="0" rx="18" ry="8" fill="rgba(255,255,255,0.75)" />
+        <!-- ═══ 스노클러 (왼쪽 상단) ═══ -->
+        <g class="diver diver--1" transform="translate(180, 160)">
+          <g transform="scale(1.8) rotate(15)">
+            <!-- 몸통 (래시가드) -->
+            <ellipse cx="0" cy="0" rx="22" ry="10" fill="url(#skinGrad)" opacity="0.95"/>
+            <path d="M-15,-6 Q0,-9 15,-6" stroke="#FF6B6B" stroke-width="2" fill="none" opacity="0.6"/>
+            
             <!-- 머리 -->
-            <circle cx="-22" cy="-2" r="8" fill="rgba(255,220,185,0.8)" />
-            <!-- 마스크 -->
-            <ellipse cx="-26" cy="-3" rx="6" ry="4" fill="rgba(80,180,255,0.7)" stroke="rgba(255,255,255,0.9)" stroke-width="1.5" />
-            <ellipse cx="-28" cy="-4" rx="1.5" ry="1" fill="rgba(255,255,255,0.5)" />
-            <!-- J자 스노클 -->
-            <path d="M-20,-8 Q-18,-16 -16,-22" stroke="rgba(255,200,50,1)" stroke-width="3.5" stroke-linecap="round" fill="none" />
-            <circle cx="-16" cy="-24" r="2.5" fill="rgba(255,200,50,1)" />
+            <circle cx="-28" cy="-3" r="12" fill="url(#skinGrad)"/>
+            
+            <!-- 마스크 (투명 렌즈 + 프레임) -->
+            <ellipse cx="-34" cy="-4" rx="9" ry="6" fill="url(#maskGrad)" stroke="#E0E0E0" stroke-width="2"/>
+            <ellipse cx="-36" cy="-5" rx="2" ry="1.5" fill="rgba(255,255,255,0.6)"/>
+            <path d="M-25,-4 Q-22,-6 -20,-4" stroke="#333" stroke-width="1.5" fill="none"/>
+            
+            <!-- 스노클 (J자형) -->
+            <path d="M-26,-12 Q-24,-22 -20,-30 Q-18,-34 -16,-30" stroke="url(#yellowFin)" stroke-width="5" stroke-linecap="round" fill="none"/>
+            <ellipse cx="-15" cy="-32" rx="4" ry="3" fill="url(#yellowFin)"/>
+            
             <!-- 팔 -->
-            <path d="M-10,2 Q-18,8 -26,12" stroke="rgba(255,220,185,0.7)" stroke-width="4" stroke-linecap="round" fill="none" />
-            <path d="M10,2 Q18,8 26,10" stroke="rgba(255,220,185,0.7)" stroke-width="4" stroke-linecap="round" fill="none" />
+            <path d="M-12,4 Q-22,12 -32,18" stroke="url(#skinGrad)" stroke-width="6" stroke-linecap="round" fill="none"/>
+            <path d="M12,4 Q22,12 32,16" stroke="url(#skinGrad)" stroke-width="6" stroke-linecap="round" fill="none"/>
+            
             <!-- 다리 -->
-            <path d="M14,-2 Q22,2 28,6" stroke="rgba(255,255,255,0.65)" stroke-width="4" stroke-linecap="round" fill="none" />
-            <path d="M16,2 Q24,6 30,10" stroke="rgba(255,255,255,0.65)" stroke-width="4" stroke-linecap="round" fill="none" />
+            <path d="M16,-2 Q28,4 38,10" stroke="url(#skinGrad)" stroke-width="6" stroke-linecap="round" fill="none"/>
+            <path d="M18,4 Q30,10 40,16" stroke="url(#skinGrad)" stroke-width="6" stroke-linecap="round" fill="none"/>
+            
             <!-- 오리발 -->
-            <path d="M28,6 Q38,2 44,6 Q40,12 32,10 Z" fill="rgba(255,200,50,0.8)" />
-            <path d="M30,10 Q40,6 46,10 Q42,16 34,14 Z" fill="rgba(255,200,50,0.8)" />
+            <path d="M38,10 Q52,4 60,10 Q54,18 42,16 Z" fill="url(#yellowFin)"/>
+            <path d="M40,16 Q54,10 62,16 Q56,24 44,22 Z" fill="url(#yellowFin)"/>
           </g>
         </g>
 
-        <!-- Diver 2: Freediver (프리다이빙 하강) -->
-        <g class="diver diver--2" transform="translate(720, 380)">
-          <g transform="scale(2.2) rotate(-25)">
-            <!-- 롱핀 -->
-            <path d="M-4,26 Q-6,50 -5,75 Q-2,82 0,75 Q1,50 0,26 Z" fill="rgba(0,200,200,0.7)" />
-            <path d="M4,26 Q6,50 5,75 Q2,82 0,75 Q-1,50 0,26 Z" fill="rgba(0,200,200,0.7)" />
-            <path d="M-3,35 Q-4,50 -4,65" stroke="rgba(0,180,180,0.4)" stroke-width="0.8" fill="none" />
-            <path d="M3,35 Q4,50 4,65" stroke="rgba(0,180,180,0.4)" stroke-width="0.8" fill="none" />
-            <!-- 웨트슈트 몸통 -->
-            <path d="M-5,-18 Q-7,-8 -6,6 Q-5,18 0,24 Q5,18 6,6 Q7,-8 5,-18 Q2,-22 0,-22 Q-2,-22 -5,-18 Z" fill="rgba(20,20,20,0.8)" />
+        <!-- ═══ 프리다이버 (왼쪽 중앙) ═══ -->
+        <g class="diver diver--2" transform="translate(120, 480)">
+          <g transform="scale(1.6) rotate(-70)">
+            <!-- 롱핀 (매우 긴 바이핀) -->
+            <path d="M-6,30 Q-10,70 -8,110 Q-4,125 0,110 Q2,70 0,30 Z" fill="url(#finGrad)"/>
+            <path d="M6,30 Q10,70 8,110 Q4,125 0,110 Q-2,70 0,30 Z" fill="url(#finGrad)"/>
+            <path d="M-4,45 Q-6,70 -6,95" stroke="rgba(0,180,180,0.5)" stroke-width="1" fill="none"/>
+            <path d="M4,45 Q6,70 6,95" stroke="rgba(0,180,180,0.5)" stroke-width="1" fill="none"/>
+            
+            <!-- 웨트슈트 (유선형 몸통) -->
+            <path d="M-7,-24 Q-10,-12 -9,6 Q-7,22 0,28 Q7,22 9,6 Q10,-12 7,-24 Q3,-30 0,-30 Q-3,-30 -7,-24 Z" fill="url(#wetsuit)"/>
+            
             <!-- 머리 -->
-            <ellipse cx="0" cy="-28" rx="6" ry="7" fill="rgba(255,220,185,0.85)" />
+            <ellipse cx="0" cy="-38" rx="9" ry="10" fill="url(#skinGrad)"/>
+            
             <!-- 로우볼륨 마스크 -->
-            <path d="M-4,-30 Q-6,-30 -6,-28 Q-6,-26 -4,-26 Q-2,-26 -2,-28 Q-2,-30 -4,-30 Z" fill="rgba(80,180,255,0.7)" stroke="rgba(255,255,255,0.8)" stroke-width="1" />
-            <ellipse cx="-5" cy="-29" rx="0.8" ry="0.5" fill="rgba(255,255,255,0.5)" />
-            <!-- 팔 (유선형) -->
-            <path d="M-5,-12 Q-7,-4 -7,8 Q-6,16 -5,22" stroke="rgba(20,20,20,0.7)" stroke-width="3.5" stroke-linecap="round" fill="none" />
-            <path d="M5,-12 Q7,-4 7,8 Q6,16 5,22" stroke="rgba(20,20,20,0.7)" stroke-width="3.5" stroke-linecap="round" fill="none" />
+            <ellipse cx="0" cy="-40" rx="7" ry="4" fill="url(#maskGrad)" stroke="#E0E0E0" stroke-width="1.5"/>
+            <ellipse cx="-2" cy="-41" rx="1.5" ry="1" fill="rgba(255,255,255,0.6)"/>
+            
+            <!-- 팔 (유선형으로 몸에 붙임) -->
+            <path d="M-7,-16 Q-10,-4 -9,12 Q-8,22 -6,28" stroke="url(#wetsuit)" stroke-width="5" stroke-linecap="round" fill="none"/>
+            <path d="M7,-16 Q10,-4 9,12 Q8,22 6,28" stroke="url(#wetsuit)" stroke-width="5" stroke-linecap="round" fill="none"/>
+            
             <!-- 웨이트 벨트 -->
-            <rect x="-6" y="4" width="12" height="3" rx="1" fill="rgba(100,100,100,0.6)" />
-            <rect x="-2" y="4" width="4" height="3" rx="0.5" fill="rgba(160,160,160,0.7)" />
+            <rect x="-9" y="4" width="18" height="5" rx="2" fill="#555"/>
+            <rect x="-3" y="4" width="6" height="5" rx="1" fill="#888"/>
           </g>
         </g>
 
-        <!-- Diver 3: Scuba diver (스쿠버다이빙) -->
-        <g class="diver diver--3" transform="translate(720, 560)">
-          <g transform="scale(2.2)">
+        <!-- ═══ 스쿠버 다이버 (오른쪽 하단) ═══ -->
+        <g class="diver diver--3" transform="translate(1220, 620)">
+          <g transform="scale(1.6) rotate(20)">
             <!-- 탱크 -->
-            <rect x="6" y="-18" width="12" height="28" rx="4" fill="rgba(200,200,200,0.7)" />
-            <rect x="9" y="-22" width="6" height="5" rx="1.5" fill="rgba(180,180,180,0.8)" />
-            <circle cx="12" cy="-24" r="2.5" fill="rgba(160,160,160,0.7)" />
-            <!-- BCD -->
-            <path d="M4,-14 Q-2,-8 -4,0 Q-4,8 0,14 Q4,16 6,14" fill="rgba(40,40,40,0.5)" stroke="rgba(255,180,0,0.7)" stroke-width="2" />
-            <path d="M20,-14 Q26,-8 28,0 Q28,8 24,14 Q20,16 18,14" fill="rgba(40,40,40,0.5)" stroke="rgba(255,180,0,0.7)" stroke-width="2" />
+            <rect x="8" y="-24" width="16" height="38" rx="6" fill="url(#tankGrad)"/>
+            <rect x="12" y="-30" width="8" height="7" rx="2" fill="#9FB3C8"/>
+            <circle cx="16" cy="-33" r="4" fill="#8899AA"/>
+            <ellipse cx="16" cy="-33" rx="2" ry="1" fill="#667788"/>
+            
+            <!-- BCD (부력조절기) -->
+            <path d="M6,-18 Q-2,-10 -4,2 Q-4,14 2,22 Q8,26 10,22" fill="rgba(30,30,30,0.7)" stroke="#FF9F1C" stroke-width="2.5"/>
+            <path d="M26,-18 Q34,-10 36,2 Q36,14 30,22 Q24,26 22,22" fill="rgba(30,30,30,0.7)" stroke="#FF9F1C" stroke-width="2.5"/>
+            
             <!-- 웨트슈트 몸통 -->
-            <path d="M4,-14 Q0,-10 -2,-2 Q-2,8 2,14 Q8,18 16,18 Q22,14 24,6 Q26,-2 24,-10 Q20,-16 12,-16 Q6,-16 4,-14 Z" fill="rgba(20,20,20,0.75)" />
+            <path d="M6,-18 Q0,-12 -2,0 Q-2,14 4,22 Q12,28 22,28 Q30,22 34,10 Q36,0 34,-12 Q28,-22 16,-22 Q8,-22 6,-18 Z" fill="url(#wetsuit)"/>
+            
             <!-- 머리 -->
-            <ellipse cx="12" cy="-24" rx="8" ry="9" fill="rgba(255,220,185,0.85)" />
+            <ellipse cx="16" cy="-32" rx="11" ry="12" fill="url(#skinGrad)"/>
+            
             <!-- 마스크 -->
-            <path d="M6,-26 Q4,-26 4,-24 Q4,-22 8,-21 L8,-23 Q10,-24 14,-24 Q16,-23 16,-21 Q20,-22 20,-24 Q20,-26 18,-26 Z" fill="rgba(80,180,255,0.7)" stroke="rgba(255,255,255,0.8)" stroke-width="1.2" />
-            <ellipse cx="7" cy="-25" rx="1.2" ry="0.8" fill="rgba(255,255,255,0.5)" />
+            <path d="M8,-35 Q5,-35 5,-32 Q5,-29 10,-28 L10,-31 Q13,-32 19,-32 Q22,-31 22,-28 Q27,-29 27,-32 Q27,-35 24,-35 Z" fill="url(#maskGrad)" stroke="#E0E0E0" stroke-width="1.5"/>
+            <ellipse cx="9" cy="-33" rx="2" ry="1" fill="rgba(255,255,255,0.5)"/>
+            
             <!-- 레귤레이터 -->
-            <path d="M16,-24 Q20,-22 22,-20 Q24,-18 22,-16" stroke="rgba(255,255,255,0.7)" stroke-width="2.5" stroke-linecap="round" fill="none" />
-            <circle cx="16" cy="-22" r="2" fill="rgba(200,200,200,0.6)" />
-            <!-- 게이지 호스 -->
-            <path d="M8,-16 Q2,-12 0,-6" stroke="rgba(255,255,255,0.4)" stroke-width="1.5" fill="none" />
-            <circle cx="0" cy="-4" r="3" fill="rgba(0,0,0,0.3)" stroke="rgba(255,255,255,0.5)" stroke-width="1" />
+            <path d="M22,-32 Q28,-30 32,-26 Q36,-22 32,-18" stroke="#DDD" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+            <circle cx="22" cy="-30" r="3" fill="#AAA"/>
+            
+            <!-- 게이지 -->
+            <path d="M10,-20 Q2,-14 0,-6" stroke="#DDD" stroke-width="2" fill="none"/>
+            <circle cx="0" cy="-4" r="5" fill="#222" stroke="#DDD" stroke-width="1.5"/>
+            <text x="0" cy="-4" font-size="4" fill="#0F0" text-anchor="middle" dominant-baseline="middle">200</text>
+            
             <!-- 팔 -->
-            <path d="M4,-6 Q-4,0 -10,4" stroke="rgba(20,20,20,0.6)" stroke-width="4" stroke-linecap="round" fill="none" />
-            <path d="M22,-6 Q30,0 36,4" stroke="rgba(20,20,20,0.6)" stroke-width="4" stroke-linecap="round" fill="none" />
+            <path d="M6,-8 Q-6,2 -14,8" stroke="url(#wetsuit)" stroke-width="6" stroke-linecap="round" fill="none"/>
+            <path d="M28,-8 Q38,2 46,8" stroke="url(#wetsuit)" stroke-width="6" stroke-linecap="round" fill="none"/>
+            
             <!-- 다리 -->
-            <path d="M6,18 Q2,26 -2,34" stroke="rgba(20,20,20,0.6)" stroke-width="4" stroke-linecap="round" fill="none" />
-            <path d="M18,18 Q22,26 26,34" stroke="rgba(20,20,20,0.6)" stroke-width="4" stroke-linecap="round" fill="none" />
+            <path d="M8,28 Q2,40 -4,50" stroke="url(#wetsuit)" stroke-width="6" stroke-linecap="round" fill="none"/>
+            <path d="M24,28 Q30,40 36,50" stroke="url(#wetsuit)" stroke-width="6" stroke-linecap="round" fill="none"/>
+            
             <!-- 오리발 -->
-            <path d="M-2,34 Q-12,32 -16,36 Q-12,42 -4,40 Q0,38 -2,34 Z" fill="rgba(20,20,20,0.5)" />
-            <path d="M26,34 Q36,32 40,36 Q36,42 28,40 Q24,38 26,34 Z" fill="rgba(20,20,20,0.5)" />
+            <path d="M-4,50 Q-18,46 -24,52 Q-18,60 -6,58 Q2,54 -4,50 Z" fill="#222"/>
+            <path d="M36,50 Q50,46 56,52 Q50,60 38,58 Q30,54 36,50 Z" fill="#222"/>
+            
             <!-- 공기방울 -->
-            <circle cx="28" cy="-30" r="3" fill="rgba(255,255,255,0.4)" class="reg-bubble reg-bubble--1" />
-            <circle cx="32" cy="-40" r="2.5" fill="rgba(255,255,255,0.35)" class="reg-bubble reg-bubble--2" />
-            <circle cx="26" cy="-48" r="4" fill="rgba(255,255,255,0.25)" class="reg-bubble reg-bubble--3" />
+            <g filter="url(#glow)">
+              <circle cx="40" cy="-40" r="5" fill="rgba(255,255,255,0.5)" class="bubble"/>
+              <circle cx="48" cy="-55" r="4" fill="rgba(255,255,255,0.4)" class="bubble"/>
+              <circle cx="36" cy="-65" r="6" fill="rgba(255,255,255,0.3)" class="bubble"/>
+              <circle cx="52" cy="-75" r="3" fill="rgba(255,255,255,0.35)" class="bubble"/>
+            </g>
           </g>
         </g>
 
-        <!-- Marine life: Turtle (hexagonal scute pattern, beak head, paddle flippers) -->
-        <g class="marine marine--turtle">
-          <g transform="scale(1.5)">
-            <!-- Shell (carapace) -->
-            <path d="M-18,0 Q-20,-10 -12,-14 Q0,-18 12,-14 Q20,-10 18,0 Q20,10 12,14 Q0,18 -12,14 Q-20,10 -18,0 Z" fill="rgba(80,160,100,0.5)" />
-            <!-- Central scutes (vertebral) -->
-            <path d="M-3,-12 L3,-12 L4,-6 L-4,-6 Z" fill="rgba(100,180,120,0.35)" stroke="rgba(70,140,90,0.3)" stroke-width="0.6" />
-            <path d="M-4,-6 L4,-6 L5,0 L-5,0 Z" fill="rgba(100,180,120,0.35)" stroke="rgba(70,140,90,0.3)" stroke-width="0.6" />
-            <path d="M-5,0 L5,0 L4,6 L-4,6 Z" fill="rgba(100,180,120,0.35)" stroke="rgba(70,140,90,0.3)" stroke-width="0.6" />
-            <path d="M-4,6 L4,6 L3,12 L-3,12 Z" fill="rgba(100,180,120,0.35)" stroke="rgba(70,140,90,0.3)" stroke-width="0.6" />
-            <!-- Costal scutes (sides) -->
-            <path d="M-4,-6 L-12,-10 L-14,-4 L-5,0 Z" fill="rgba(90,170,110,0.3)" stroke="rgba(70,140,90,0.25)" stroke-width="0.5" />
-            <path d="M4,-6 L12,-10 L14,-4 L5,0 Z" fill="rgba(90,170,110,0.3)" stroke="rgba(70,140,90,0.25)" stroke-width="0.5" />
-            <path d="M-5,0 L-14,-4 L-16,4 L-4,6 Z" fill="rgba(90,170,110,0.3)" stroke="rgba(70,140,90,0.25)" stroke-width="0.5" />
-            <path d="M5,0 L14,-4 L16,4 L4,6 Z" fill="rgba(90,170,110,0.3)" stroke="rgba(70,140,90,0.25)" stroke-width="0.5" />
-            <!-- Head with beak -->
-            <path d="M18,-2 Q22,-4 26,-4 Q30,-3 32,-1 Q30,1 26,2 Q22,2 18,1 Z" fill="rgba(100,180,120,0.5)" />
-            <path d="M30,-2 Q33,-1 33,0 Q33,1 30,1 Z" fill="rgba(80,150,100,0.5)" />
-            <circle cx="28" cy="-3" r="1.2" fill="rgba(0,0,0,0.45)" />
-            <!-- Front flippers (paddle-shaped) -->
-            <path d="M12,-12 Q18,-18 24,-22 Q28,-24 30,-20 Q28,-16 22,-12 Q18,-10 12,-10 Z" fill="rgba(80,160,100,0.4)" />
-            <path d="M12,10 Q18,16 24,20 Q28,22 30,18 Q28,14 22,10 Q18,8 12,8 Z" fill="rgba(80,160,100,0.4)" />
-            <!-- Rear flippers (smaller) -->
-            <path d="M-14,-10 Q-18,-14 -22,-14 Q-24,-12 -22,-10 Q-18,-8 -14,-8 Z" fill="rgba(80,160,100,0.35)" />
-            <path d="M-14,8 Q-18,12 -22,12 Q-24,10 -22,8 Q-18,6 -14,6 Z" fill="rgba(80,160,100,0.35)" />
-            <!-- Tail -->
-            <path d="M-18,0 Q-22,0 -24,2 Q-22,2 -20,1 Z" fill="rgba(80,160,100,0.35)" />
+        <!-- ═══ 바다거북 (오른쪽 상단) ═══ -->
+        <g class="marine marine--turtle" transform="translate(1150, 200)">
+          <g transform="scale(2.2) rotate(-15)">
+            <!-- 등껍질 -->
+            <ellipse cx="0" cy="0" rx="24" ry="16" fill="url(#turtleGrad)"/>
+            <!-- 등껍질 패턴 -->
+            <path d="M0,-12 L0,12" stroke="rgba(0,80,50,0.3)" stroke-width="1"/>
+            <path d="M-12,0 L12,0" stroke="rgba(0,80,50,0.3)" stroke-width="1"/>
+            <ellipse cx="0" cy="0" rx="10" ry="7" fill="none" stroke="rgba(0,80,50,0.25)" stroke-width="1"/>
+            
+            <!-- 머리 -->
+            <ellipse cx="28" cy="0" rx="8" ry="6" fill="url(#turtleGrad)"/>
+            <circle cx="32" cy="-2" r="2" fill="#1A1A1A"/>
+            <path d="M34,-1 Q37,0 34,1" stroke="#2D5A3D" stroke-width="1.5" fill="none"/>
+            
+            <!-- 앞 지느러미 -->
+            <path d="M10,-14 Q20,-24 32,-28 Q36,-26 30,-18 Q22,-12 14,-12 Z" fill="url(#turtleGrad)" opacity="0.9"/>
+            <path d="M10,14 Q20,24 32,28 Q36,26 30,18 Q22,12 14,12 Z" fill="url(#turtleGrad)" opacity="0.9"/>
+            
+            <!-- 뒷 지느러미 -->
+            <path d="M-20,-10 Q-28,-14 -32,-12 Q-30,-8 -24,-8 Z" fill="url(#turtleGrad)" opacity="0.8"/>
+            <path d="M-20,10 Q-28,14 -32,12 Q-30,8 -24,8 Z" fill="url(#turtleGrad)" opacity="0.8"/>
+            
+            <!-- 꼬리 -->
+            <path d="M-24,0 Q-30,0 -32,2 Q-30,1 -26,0 Z" fill="url(#turtleGrad)" opacity="0.8"/>
           </g>
         </g>
 
-        <!-- Marine life: Shark (streamlined, pointed snout, asymmetric tail, 5 gills) -->
-        <g class="marine marine--shark">
-          <g transform="scale(1.6)">
-            <!-- Body (fusiform, pointed snout, jaw line) -->
-            <path d="M-28,0 Q-22,-8 -10,-8 Q0,-9 10,-8 Q22,-6 30,-4 Q36,-2 40,0 Q36,2 30,3 Q22,5 10,6 Q0,7 -10,6 Q-22,5 -28,0 Z" fill="rgba(120,140,160,0.5)" />
-            <!-- Snout (pointed) -->
-            <path d="M36,-2 Q42,-1 44,0 Q42,1 36,1 Z" fill="rgba(120,140,160,0.48)" />
-            <!-- Jaw line -->
-            <path d="M30,2 Q34,3 38,2" stroke="rgba(100,120,140,0.3)" stroke-width="0.5" fill="none" />
-            <!-- Underbelly (lighter) -->
-            <path d="M-24,2 Q-10,7 10,7 Q28,5 36,2 Q28,6 10,8 Q-10,8 -24,4 Z" fill="rgba(160,175,190,0.25)" />
-            <!-- Dorsal fin (tall, triangular) -->
-            <path d="M-2,-8 Q0,-20 4,-24 Q6,-22 10,-8 Z" fill="rgba(120,140,160,0.5)" />
-            <!-- Second dorsal (small) -->
-            <path d="M-20,-4 Q-19,-8 -17,-4 Z" fill="rgba(120,140,160,0.4)" />
-            <!-- Asymmetric tail (upper lobe larger) -->
-            <path d="M-28,0 Q-32,-2 -38,-14 Q-36,-12 -32,-6 Q-30,-2 -28,0 Z" fill="rgba(120,140,160,0.45)" />
-            <path d="M-28,0 Q-32,2 -36,8 Q-34,6 -30,2 Z" fill="rgba(120,140,160,0.4)" />
-            <!-- Pectoral fins (wide, triangular) -->
-            <path d="M14,5 Q18,12 24,18 Q26,16 22,10 Q18,6 16,4 Z" fill="rgba(120,140,160,0.4)" />
-            <path d="M12,-6 Q16,-12 20,-16 Q22,-14 18,-8 Q14,-4 12,-4 Z" fill="rgba(120,140,160,0.35)" />
-            <!-- Pelvic fin -->
-            <path d="M-8,5 Q-6,10 -4,8 Q-6,6 -8,5 Z" fill="rgba(120,140,160,0.35)" />
-            <!-- Anal fin -->
-            <path d="M-16,4 Q-14,8 -12,6 Q-14,4 -16,4 Z" fill="rgba(120,140,160,0.35)" />
-            <!-- 5 gill slits -->
-            <path d="M24,-4 L24,3" stroke="rgba(100,120,140,0.3)" stroke-width="0.7" />
-            <path d="M22,-4 L22,4" stroke="rgba(100,120,140,0.3)" stroke-width="0.7" />
-            <path d="M20,-3 L20,4" stroke="rgba(100,120,140,0.3)" stroke-width="0.7" />
-            <path d="M18,-3 L18,4" stroke="rgba(100,120,140,0.3)" stroke-width="0.7" />
-            <path d="M16,-2 L16,4" stroke="rgba(100,120,140,0.3)" stroke-width="0.7" />
-            <!-- Eye -->
-            <circle cx="34" cy="-2" r="1.8" fill="rgba(0,0,0,0.45)" />
+        <!-- ═══ 상어 (왼쪽 하단) ═══ -->
+        <g class="marine marine--shark" transform="translate(200, 720)">
+          <g transform="scale(2.5) rotate(10)">
+            <!-- 몸통 -->
+            <path d="M-35,0 Q-25,-10 -10,-10 Q5,-11 15,-9 Q28,-6 38,-3 Q46,-1 50,0 Q46,1 38,2 Q28,4 15,6 Q5,8 -10,7 Q-25,6 -35,0 Z" fill="url(#sharkGrad)"/>
+            
+            <!-- 배 (밝은 색) -->
+            <path d="M-30,2 Q-10,8 15,8 Q35,5 46,1 Q35,6 15,9 Q-10,9 -30,4 Z" fill="rgba(180,195,210,0.4)"/>
+            
+            <!-- 등지느러미 -->
+            <path d="M0,-10 Q3,-28 8,-32 Q12,-28 16,-10 Z" fill="url(#sharkGrad)"/>
+            
+            <!-- 꼬리지느러미 -->
+            <path d="M-35,0 Q-42,-3 -50,-18 Q-46,-14 -40,-6 Q-38,-2 -35,0 Z" fill="url(#sharkGrad)"/>
+            <path d="M-35,0 Q-42,3 -48,12 Q-44,8 -38,3 Z" fill="url(#sharkGrad)" opacity="0.9"/>
+            
+            <!-- 가슴지느러미 -->
+            <path d="M18,5 Q24,14 32,22 Q36,18 28,10 Q22,5 18,4 Z" fill="url(#sharkGrad)" opacity="0.9"/>
+            
+            <!-- 아가미 -->
+            <g stroke="rgba(60,80,100,0.4)" stroke-width="1">
+              <line x1="30" y1="-4" x2="30" y2="3"/>
+              <line x1="27" y1="-4" x2="27" y2="4"/>
+              <line x1="24" y1="-3" x2="24" y2="4"/>
+              <line x1="21" y1="-2" x2="21" y2="4"/>
+              <line x1="18" y1="-1" x2="18" y2="4"/>
+            </g>
+            
+            <!-- 눈 -->
+            <circle cx="42" cy="-2" r="2.5" fill="#1A1A1A"/>
+            <circle cx="41" cy="-2.5" r="0.8" fill="rgba(255,255,255,0.3)"/>
           </g>
         </g>
 
-        <!-- Marine life: Hammerhead (T-shaped cephalofoil, S-curve body, falcate dorsal) -->
-        <g class="marine marine--hammerhead">
-          <g transform="scale(1.4)">
-            <!-- S-curve body -->
-            <path d="M-25,2 Q-18,-4 -8,-6 Q2,-7 12,-5 Q20,-2 26,0 Q22,3 12,5 Q2,6 -8,5 Q-18,4 -25,2 Z" fill="rgba(100,130,150,0.45)" />
-            <!-- Underbelly -->
-            <path d="M-20,3 Q-8,6 8,6 Q20,4 26,1 Q20,5 8,7 Q-8,7 -20,4 Z" fill="rgba(130,155,175,0.2)" />
-            <!-- Cephalofoil (T-shaped hammer) -->
-            <path d="M26,0 L28,-2 Q30,-4 32,-6 Q36,-8 40,-8 Q44,-7 44,-5 Q44,-3 40,-2 Q36,-1 32,0 Z" fill="rgba(100,130,150,0.45)" />
-            <path d="M26,0 L28,2 Q30,4 32,6 Q36,8 40,8 Q44,7 44,5 Q44,3 40,2 Q36,1 32,0 Z" fill="rgba(100,130,150,0.45)" />
-            <!-- Eyes at hammer tips -->
-            <circle cx="43" cy="-6" r="1.5" fill="rgba(0,0,0,0.45)" />
-            <circle cx="43" cy="6" r="1.5" fill="rgba(0,0,0,0.45)" />
-            <!-- Tall dorsal fin (falcate/curved) -->
-            <path d="M2,-6 Q0,-14 2,-22 Q4,-24 6,-20 Q8,-14 10,-5 Z" fill="rgba(100,130,150,0.45)" />
-            <!-- Second dorsal (small) -->
-            <path d="M-16,-2 Q-15,-6 -13,-2 Z" fill="rgba(100,130,150,0.35)" />
-            <!-- Asymmetric tail -->
-            <path d="M-25,2 Q-30,0 -36,-10 Q-34,-8 -30,-2 Q-28,0 -25,2 Z" fill="rgba(100,130,150,0.4)" />
-            <path d="M-25,2 Q-30,4 -34,10 Q-32,8 -28,4 Z" fill="rgba(100,130,150,0.35)" />
-            <!-- Pectoral fins -->
-            <path d="M10,4 Q14,10 18,16 Q20,14 16,8 Q12,4 10,3 Z" fill="rgba(100,130,150,0.35)" />
-            <!-- Pelvic fin -->
-            <path d="M-6,4 Q-4,8 -2,6 Q-4,4 -6,4 Z" fill="rgba(100,130,150,0.3)" />
-            <!-- 5 gill slits -->
-            <path d="M20,-2 L20,3" stroke="rgba(80,110,130,0.3)" stroke-width="0.6" />
-            <path d="M18,-2 L18,3" stroke="rgba(80,110,130,0.3)" stroke-width="0.6" />
-            <path d="M16,-1 L16,3" stroke="rgba(80,110,130,0.3)" stroke-width="0.6" />
-            <path d="M14,-1 L14,3" stroke="rgba(80,110,130,0.3)" stroke-width="0.6" />
-            <path d="M12,0 L12,3" stroke="rgba(80,110,130,0.3)" stroke-width="0.6" />
+        <!-- ═══ 만타레이 (오른쪽 중앙) ═══ -->
+        <g class="marine marine--manta" transform="translate(1280, 400)">
+          <g transform="scale(1.8) rotate(-25)">
+            <!-- 몸통 + 날개 -->
+            <path d="M0,-8 Q-40,-20 -70,-10 Q-80,0 -70,10 Q-40,20 0,8 Q40,20 70,10 Q80,0 70,-10 Q40,-20 0,-8 Z" fill="rgba(50,60,80,0.6)"/>
+            
+            <!-- 배 (밝은 색) -->
+            <ellipse cx="0" cy="2" rx="20" ry="8" fill="rgba(200,210,220,0.4)"/>
+            
+            <!-- 머리 뿔 -->
+            <path d="M-8,-10 Q-12,-20 -8,-28 Q-4,-24 -4,-14 Z" fill="rgba(50,60,80,0.6)"/>
+            <path d="M8,-10 Q12,-20 8,-28 Q4,-24 4,-14 Z" fill="rgba(50,60,80,0.6)"/>
+            
+            <!-- 꼬리 -->
+            <path d="M0,8 Q0,20 2,35 Q0,38 -2,35 Q0,20 0,8 Z" fill="rgba(50,60,80,0.5)"/>
+            
+            <!-- 눈 -->
+            <circle cx="-10" cy="-4" r="2" fill="#1A1A1A"/>
+            <circle cx="10" cy="-4" r="2" fill="#1A1A1A"/>
+            
+            <!-- 아가미 슬릿 -->
+            <path d="M-8,4 Q-4,6 -8,8" stroke="rgba(30,40,60,0.4)" stroke-width="1" fill="none"/>
+            <path d="M8,4 Q4,6 8,8" stroke="rgba(30,40,60,0.4)" stroke-width="1" fill="none"/>
           </g>
         </g>
 
-        <!-- Bubbles -->
-        <circle class="bubble bubble--1" cx="300" cy="900" r="4" fill="rgba(255,255,255,0.15)" />
-        <circle class="bubble bubble--2" cx="520" cy="900" r="3" fill="rgba(255,255,255,0.12)" />
-        <circle class="bubble bubble--3" cx="780" cy="900" r="5" fill="rgba(255,255,255,0.18)" />
-        <circle class="bubble bubble--4" cx="1000" cy="900" r="3.5" fill="rgba(255,255,255,0.14)" />
-        <circle class="bubble bubble--5" cx="1150" cy="900" r="4.5" fill="rgba(255,255,255,0.16)" />
+        <!-- ═══ 작은 물고기 떼 (배경) ═══ -->
+        <g class="fish-school" opacity="0.4">
+          <g transform="translate(100, 300)">
+            <ellipse rx="6" ry="3" fill="#6BA3D6"/><path d="M6,0 L10,-2 L10,2 Z" fill="#6BA3D6"/>
+          </g>
+          <g transform="translate(120, 315)">
+            <ellipse rx="5" ry="2.5" fill="#6BA3D6"/><path d="M5,0 L8,-1.5 L8,1.5 Z" fill="#6BA3D6"/>
+          </g>
+          <g transform="translate(90, 330)">
+            <ellipse rx="5" ry="2.5" fill="#6BA3D6"/><path d="M5,0 L8,-1.5 L8,1.5 Z" fill="#6BA3D6"/>
+          </g>
+          <g transform="translate(140, 340)">
+            <ellipse rx="6" ry="3" fill="#6BA3D6"/><path d="M6,0 L10,-2 L10,2 Z" fill="#6BA3D6"/>
+          </g>
+          <g transform="translate(1300, 550)">
+            <ellipse rx="5" ry="2.5" fill="#7BC8A4"/><path d="M5,0 L8,-1.5 L8,1.5 Z" fill="#7BC8A4"/>
+          </g>
+          <g transform="translate(1320, 570)">
+            <ellipse rx="6" ry="3" fill="#7BC8A4"/><path d="M6,0 L10,-2 L10,2 Z" fill="#7BC8A4"/>
+          </g>
+          <g transform="translate(1280, 590)">
+            <ellipse rx="5" ry="2.5" fill="#7BC8A4"/><path d="M5,0 L8,-1.5 L8,1.5 Z" fill="#7BC8A4"/>
+          </g>
+        </g>
+
+        <!-- ═══ 공기방울들 (배경 애니메이션) ═══ -->
+        <g class="bubbles-bg">
+          <circle class="bubble bubble--1" cx="350" cy="800" r="6" fill="rgba(255,255,255,0.2)"/>
+          <circle class="bubble bubble--2" cx="600" cy="850" r="4" fill="rgba(255,255,255,0.15)"/>
+          <circle class="bubble bubble--3" cx="900" cy="780" r="7" fill="rgba(255,255,255,0.18)"/>
+          <circle class="bubble bubble--4" cx="1100" cy="820" r="5" fill="rgba(255,255,255,0.16)"/>
+          <circle class="bubble bubble--5" cx="1250" cy="860" r="6" fill="rgba(255,255,255,0.2)"/>
+        </g>
         <circle class="bubble bubble--6" cx="400" cy="900" r="2.5" fill="rgba(255,255,255,0.10)" />
         <circle class="bubble bubble--7" cx="650" cy="900" r="3" fill="rgba(255,255,255,0.13)" />
         <circle class="bubble bubble--8" cx="900" cy="900" r="4" fill="rgba(255,255,255,0.15)" />
