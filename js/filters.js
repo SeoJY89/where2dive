@@ -5,8 +5,6 @@ import { getLang, t, td } from './i18n.js';
 const state = {
   search: '',
   region: '',
-  tempMin: 0,
-  tempMax: 35,
   activityType: '',  // '' | 'skin' | 'scuba'
   country: '',       // Korean country name (e.g. '한국')
 };
@@ -24,8 +22,6 @@ export function setFilterListener(fn) {
 export function resetFilters() {
   state.search = '';
   state.region = '';
-  state.tempMin = 0;
-  state.tempMax = 35;
   state.activityType = '';
   state.country = '';
   syncDOM();
@@ -35,9 +31,6 @@ export function resetFilters() {
 function syncDOM() {
   document.getElementById('search-input').value = state.search;
   document.getElementById('region-select').value = state.region;
-  document.getElementById('temp-min').value = state.tempMin;
-  document.getElementById('temp-max').value = state.tempMax;
-  updateTempLabel();
 
   // Activity toggle
   document.querySelectorAll('.activity-toggle__btn').forEach(btn => {
@@ -60,10 +53,6 @@ function syncDOM() {
   closeCountryList();
 }
 
-function updateTempLabel() {
-  document.getElementById('temp-value').textContent = `${state.tempMin}°C ~ ${state.tempMax}°C`;
-}
-
 export function filterSpots(favOnly = false, favSet = null) {
   return spots.filter(s => {
     if (favOnly && favSet && !favSet.has(s.id)) return false;
@@ -78,10 +67,6 @@ export function filterSpots(favOnly = false, favSet = null) {
     }
     if (state.region && s.region !== state.region) return false;
 
-    const spotMin = s.waterTemp.min;
-    const spotMax = s.waterTemp.max;
-    if (spotMax < state.tempMin || spotMin > state.tempMax) return false;
-
     // Activity type filter
     if (state.activityType && !s.activityTypes.includes(state.activityType)) return false;
 
@@ -90,6 +75,28 @@ export function filterSpots(favOnly = false, favSet = null) {
 
     return true;
   });
+}
+
+/** Count spots per activity type using all filters EXCEPT activityType */
+export function getActivityCounts(favOnly = false, favSet = null) {
+  let total = 0, skin = 0, scuba = 0;
+  for (const s of spots) {
+    if (favOnly && favSet && !favSet.has(s.id)) continue;
+    if (state.search) {
+      const q = state.search.toLowerCase();
+      const haystack = [
+        td(s, 'name'), td(s, 'country'), td(s, 'description'),
+        ...(getLang() === 'en' && s.marineLifeEn ? s.marineLifeEn : s.marineLife),
+      ].join(' ').toLowerCase();
+      if (!haystack.includes(q)) continue;
+    }
+    if (state.region && s.region !== state.region) continue;
+    if (state.country && s.country !== state.country) continue;
+    total++;
+    if (s.activityTypes.includes('skin')) skin++;
+    if (s.activityTypes.includes('scuba')) scuba++;
+  }
+  return { total, skin, scuba };
 }
 
 // ── Country autocomplete helpers ──
@@ -159,22 +166,18 @@ export function refreshFilterLabels() {
     }
   });
 
-  // Activity toggle labels
+  // Activity toggle labels (preserve count spans)
   const actBtns = document.querySelectorAll('.activity-toggle__btn');
   actBtns.forEach(btn => {
     const act = btn.dataset.activity;
-    if (act === '') btn.textContent = t('filter.activity.all');
-    else if (act === 'skin') btn.textContent = t('filter.activity.skin');
-    else if (act === 'scuba') btn.textContent = t('filter.activity.scuba');
+    const countSpan = btn.querySelector('.activity-toggle__count');
+    const countHTML = countSpan ? countSpan.outerHTML : '';
+    let label = '';
+    if (act === '') label = t('filter.activity.all');
+    else if (act === 'skin') label = t('filter.activity.skin');
+    else if (act === 'scuba') label = t('filter.activity.scuba');
+    btn.innerHTML = label + countHTML;
   });
-
-  // Temp label
-  const tempLabel = document.querySelector('.filter-group--range label[for="temp-range"]');
-  if (tempLabel) {
-    const span = tempLabel.querySelector('#temp-value');
-    const txt = span ? span.outerHTML : '';
-    tempLabel.innerHTML = `${t('filter.temp.label')}: ${txt}`;
-  }
 
   // Reset button
   document.getElementById('filter-reset').textContent = t('filter.reset');
@@ -206,21 +209,6 @@ export function initFilters() {
     onChange();
   });
 
-  const tempMin = document.getElementById('temp-min');
-  const tempMax = document.getElementById('temp-max');
-
-  function handleTemp() {
-    let lo = +tempMin.value;
-    let hi = +tempMax.value;
-    if (lo > hi) { [lo, hi] = [hi, lo]; tempMin.value = lo; tempMax.value = hi; }
-    state.tempMin = lo;
-    state.tempMax = hi;
-    updateTempLabel();
-    onChange();
-  }
-  tempMin.addEventListener('input', handleTemp);
-  tempMax.addEventListener('input', handleTemp);
-
   document.getElementById('filter-reset').addEventListener('click', resetFilters);
   const emptyReset = document.getElementById('empty-reset');
   if (emptyReset) emptyReset.addEventListener('click', resetFilters);
@@ -244,19 +232,23 @@ export function initFilters() {
 
   countryInput.addEventListener('input', () => {
     const q = countryInput.value.trim();
-    if (!q) {
-      // Clear country filter when input is emptied
-      if (state.country) {
-        state.country = '';
-        countryClear.classList.add('hidden');
-        onChange();
-      }
-      closeCountryList();
-      return;
+    const hadCountry = !!state.country;
+
+    // Any text edit clears the current country selection
+    if (state.country) {
+      state.country = '';
+      countryClear.classList.add('hidden');
     }
-    acHighlight = -1;
-    const matches = getFilteredCountries(q);
-    renderCountryList(matches);
+
+    if (!q) {
+      closeCountryList();
+    } else {
+      acHighlight = -1;
+      const matches = getFilteredCountries(q);
+      renderCountryList(matches);
+    }
+
+    if (hadCountry) onChange();
   });
 
   countryInput.addEventListener('focus', () => {
@@ -319,4 +311,17 @@ export function initFilters() {
 
   // Apply initial i18n labels
   refreshFilterLabels();
+}
+
+/** Filter personal spots by search and activity type */
+export function filterMySpots(mySpots) {
+  return mySpots.filter(s => {
+    if (state.search) {
+      const q = state.search.toLowerCase();
+      const haystack = [s.name, s.memo || ''].join(' ').toLowerCase();
+      if (!haystack.includes(q)) return false;
+    }
+    if (state.activityType && !s.activityTypes.includes(state.activityType)) return false;
+    return true;
+  });
 }

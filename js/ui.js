@@ -7,7 +7,15 @@ let onDetailClick = () => {};
 
 // ── 카드 렌더링 ──
 
-export function renderCards(spots) {
+let onPersonalSpotEdit = () => {};
+let onPersonalSpotDelete = () => {};
+
+export function setPersonalSpotCardHandlers(editFn, deleteFn) {
+  onPersonalSpotEdit = editFn;
+  onPersonalSpotDelete = deleteFn;
+}
+
+export function renderCards(spots, mySpots = []) {
   const grid = document.getElementById('cards-grid');
   const countEl = document.getElementById('spot-count');
   const emptyState = document.getElementById('empty-state');
@@ -16,14 +24,21 @@ export function renderCards(spots) {
   grid.innerHTML = '';
   favEmpty.classList.add('hidden');
 
-  if (spots.length === 0) {
+  const totalCount = spots.length + mySpots.length;
+
+  if (totalCount === 0) {
     emptyState.classList.remove('hidden');
     countEl.textContent = '';
     return;
   }
 
   emptyState.classList.add('hidden');
-  countEl.textContent = t('card.count').replace('{n}', spots.length);
+  countEl.textContent = t('card.count').replace('{n}', totalCount);
+
+  // Personal spots first
+  mySpots.forEach(spot => {
+    grid.appendChild(createPersonalCard(spot));
+  });
 
   spots.forEach(spot => {
     grid.appendChild(createCard(spot));
@@ -105,6 +120,55 @@ function createCard(spot) {
   // 상세보기
   card.querySelector('.card__detail-btn').addEventListener('click', () => {
     onDetailClick(spot.id);
+  });
+
+  return card;
+}
+
+function createPersonalCard(spot) {
+  const card = document.createElement('article');
+  card.className = 'card card--personal';
+  card.dataset.myspotId = spot.id;
+
+  const diffLabel = t('difficulty.' + spot.difficulty);
+  const activityBadges = (spot.activityTypes || []).map(a =>
+    `<span class="badge badge--activity badge--activity-${a}">${t('activity.' + a)}</span>`
+  ).join('');
+
+  const tempStr = (spot.waterTemp?.min != null && spot.waterTemp?.max != null)
+    ? `${spot.waterTemp.min}~${spot.waterTemp.max}°C` : '-';
+
+  card.innerHTML = `
+    <div class="card__header">
+      <span class="card__tag card__tag--personal">${t('myspot.badge')}</span>
+    </div>
+    <div class="card__name">${spot.name}</div>
+    <div class="card__stats">
+      ${spot.depth ? `<div class="card__stat"><span class="card__stat-label">${t('card.depth')}</span><span class="card__stat-value">${spot.depth}</span></div>` : ''}
+      <div class="card__stat">
+        <span class="card__stat-label">${t('card.waterTemp')}</span>
+        <span class="card__stat-value">${tempStr}</span>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+      <span class="card__difficulty card__difficulty--${spot.difficulty}">
+        <span class="card__difficulty-dot"></span>
+        ${diffLabel}
+      </span>
+      ${activityBadges}
+    </div>
+    ${spot.memo ? `<div class="log-card__memo">${spot.memo}</div>` : ''}
+    <div class="log-card__actions">
+      <button class="myspot-edit-btn" data-id="${spot.id}">${t('myspot.card.edit')}</button>
+      <button class="myspot-delete-btn log-delete-btn" data-id="${spot.id}">${t('myspot.card.delete')}</button>
+    </div>
+  `;
+
+  card.querySelector('.myspot-edit-btn').addEventListener('click', () => {
+    onPersonalSpotEdit(spot.id);
+  });
+  card.querySelector('.myspot-delete-btn').addEventListener('click', () => {
+    onPersonalSpotDelete(spot.id);
   });
 
   return card;

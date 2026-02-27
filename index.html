@@ -18,6 +18,255 @@
   <link rel="stylesheet" href="/style.css" />
 </head>
 <body>
+  <!-- ═══ Landing Page ═══ -->
+  <section id="landing" class="landing">
+    <div class="landing__scene">
+      <svg class="landing__svg" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+        <!-- Light rays from surface -->
+        <g class="light-rays">
+          <polygon class="light-ray" points="300,0 340,0 500,900 420,900" fill="rgba(255,255,255,0.04)" />
+          <polygon class="light-ray light-ray--2" points="600,0 650,0 780,900 700,900" fill="rgba(255,255,255,0.03)" />
+          <polygon class="light-ray light-ray--3" points="900,0 960,0 1100,900 1020,900" fill="rgba(255,255,255,0.04)" />
+          <polygon class="light-ray light-ray--4" points="1150,0 1200,0 1300,900 1230,900" fill="rgba(255,255,255,0.03)" />
+        </g>
+
+        <!-- Diver 1: Snorkeler (prone, surface position) -->
+        <g class="diver diver--1" transform="translate(720, 220)">
+          <g transform="scale(1.2)">
+            <!-- Torso with rashguard detail -->
+            <path d="M-12,-2 Q-14,-8 -4,-9 Q8,-10 16,-6 Q20,-3 18,2 Q16,7 6,8 Q-4,9 -12,6 Q-16,3 -12,-2 Z" fill="rgba(255,255,255,0.65)" />
+            <path d="M-2,-8 Q4,-9 10,-7" stroke="rgba(200,220,255,0.3)" stroke-width="0.8" fill="none" />
+            <path d="M-4,-5 Q2,-6 8,-4" stroke="rgba(200,220,255,0.3)" stroke-width="0.8" fill="none" />
+            <!-- Head -->
+            <path d="M-20,-6 Q-24,-10 -22,-14 Q-18,-18 -14,-14 Q-12,-10 -14,-4 Q-16,-2 -20,-4 Z" fill="rgba(255,255,255,0.7)" />
+            <!-- Mask with strap -->
+            <path d="M-26,-10 Q-26,-14 -22,-15 Q-18,-14 -17,-10 Q-18,-8 -22,-8 Q-26,-8 -26,-10 Z" fill="rgba(100,200,255,0.5)" stroke="rgba(255,255,255,0.6)" stroke-width="1" />
+            <path d="M-17,-11 Q-14,-12 -14,-10" stroke="rgba(200,200,200,0.4)" stroke-width="0.8" fill="none" />
+            <!-- J-snorkel -->
+            <path d="M-18,-15 Q-16,-22 -14,-28 Q-13,-30 -12,-28" stroke="rgba(255,200,50,0.8)" stroke-width="2.5" stroke-linecap="round" fill="none" />
+            <circle cx="-12" cy="-29" r="1.5" fill="rgba(255,200,50,0.8)" />
+            <!-- Left arm (extended forward) -->
+            <path d="M-12,0 Q-18,4 -24,8 Q-26,9 -28,8" stroke="rgba(255,255,255,0.6)" stroke-width="2.5" stroke-linecap="round" fill="none" />
+            <!-- Right arm (extended back) -->
+            <path d="M10,2 Q16,6 22,10 Q24,11 26,10" stroke="rgba(255,255,255,0.6)" stroke-width="2.5" stroke-linecap="round" fill="none" />
+            <!-- Legs -->
+            <path d="M14,-2 Q20,0 24,4 Q26,6 24,8" stroke="rgba(255,255,255,0.55)" stroke-width="2.5" stroke-linecap="round" fill="none" />
+            <path d="M16,2 Q22,4 26,8 Q28,10 26,12" stroke="rgba(255,255,255,0.55)" stroke-width="2.5" stroke-linecap="round" fill="none" />
+            <!-- Short fins -->
+            <path d="M24,8 Q32,4 38,6 Q36,10 28,10 Q24,10 24,8 Z" fill="rgba(255,200,50,0.55)" />
+            <path d="M26,12 Q34,8 40,10 Q38,14 30,14 Q26,14 26,12 Z" fill="rgba(255,200,50,0.55)" />
+          </g>
+        </g>
+
+        <!-- Diver 2: Freediver (vertical descent, streamlined) -->
+        <g class="diver diver--2" transform="translate(720, 350)">
+          <g transform="scale(1.2) rotate(-30)">
+            <!-- Streamlined body (wetsuit) -->
+            <path d="M-6,-16 Q-8,-6 -7,4 Q-6,14 -5,18 Q0,20 5,18 Q6,14 7,4 Q8,-6 6,-16 Q3,-20 0,-20 Q-3,-20 -6,-16 Z" fill="rgba(255,255,255,0.65)" />
+            <!-- Wetsuit seam lines -->
+            <path d="M0,-18 Q0,-8 0,16" stroke="rgba(200,220,255,0.2)" stroke-width="0.6" fill="none" />
+            <!-- Head (streamlined) -->
+            <path d="M-5,-20 Q-6,-26 -4,-30 Q0,-34 4,-30 Q6,-26 5,-20 Q3,-18 0,-18 Q-3,-18 -5,-20 Z" fill="rgba(255,255,255,0.7)" />
+            <!-- Low-volume mask -->
+            <path d="M3,-28 Q6,-28 7,-26 Q6,-24 3,-24 Q1,-24 1,-26 Q1,-28 3,-28 Z" fill="rgba(100,200,255,0.5)" stroke="rgba(255,255,255,0.55)" stroke-width="0.8" />
+            <!-- Weight belt -->
+            <path d="M-7,2 Q0,3 7,2" stroke="rgba(160,160,160,0.5)" stroke-width="1.5" fill="none" />
+            <rect x="-2" y="1" width="4" height="3" rx="0.5" fill="rgba(180,180,180,0.4)" />
+            <!-- Arms along body -->
+            <path d="M-6,-14 Q-8,-6 -8,4 Q-8,10 -7,14" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round" fill="none" />
+            <path d="M6,-14 Q8,-6 8,4 Q8,10 7,14" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round" fill="none" />
+            <!-- Long bi-fins (2x body length) -->
+            <path d="M-5,18 Q-7,30 -8,42 Q-9,54 -7,62 Q-4,66 -2,60 Q-1,48 -1,36 Q0,26 0,20 Z" fill="rgba(0,200,200,0.45)" />
+            <path d="M5,18 Q7,30 8,42 Q9,54 7,62 Q4,66 2,60 Q1,48 1,36 Q0,26 0,20 Z" fill="rgba(0,200,200,0.45)" />
+            <!-- Fin blade detail lines -->
+            <path d="M-4,24 Q-6,36 -7,48" stroke="rgba(0,180,180,0.25)" stroke-width="0.6" fill="none" />
+            <path d="M4,24 Q6,36 7,48" stroke="rgba(0,180,180,0.25)" stroke-width="0.6" fill="none" />
+          </g>
+        </g>
+
+        <!-- Diver 3: Scuba diver (neutral buoyancy, horizontal) -->
+        <g class="diver diver--3" transform="translate(720, 480)">
+          <g transform="scale(1.2)">
+            <!-- Tank with valve -->
+            <path d="M8,-18 Q6,-20 6,-16 Q6,-18 8,-20 Q12,-22 16,-20 Q18,-18 18,-16 Q18,-20 16,-18 L16,10 Q16,14 12,14 Q8,14 8,10 Z" fill="rgba(180,180,180,0.5)" />
+            <rect x="9" y="-22" width="6" height="3" rx="1" fill="rgba(200,200,200,0.5)" />
+            <!-- Valve (1st stage) -->
+            <path d="M10,-22 Q12,-25 14,-22" stroke="rgba(200,200,200,0.5)" stroke-width="1.5" fill="none" />
+            <circle cx="12" cy="-25" r="2" fill="rgba(180,180,180,0.4)" />
+            <!-- BCD wing -->
+            <path d="M6,-14 Q0,-10 -2,-4 Q-4,2 -2,8 Q0,12 4,14 Q6,14 6,10" fill="rgba(60,60,60,0.25)" stroke="rgba(255,200,0,0.4)" stroke-width="1.5" />
+            <path d="M18,-14 Q22,-10 24,-4 Q26,2 24,8 Q22,12 18,14 Q16,14 16,10" fill="rgba(60,60,60,0.25)" stroke="rgba(255,200,0,0.4)" stroke-width="1.5" />
+            <!-- Body (wetsuit) -->
+            <path d="M4,-14 Q0,-12 -2,-6 Q-4,0 -2,8 Q0,14 4,16 Q8,18 14,18 Q18,16 20,10 Q22,4 22,-4 Q20,-12 18,-14 Q14,-16 10,-16 Q6,-16 4,-14 Z" fill="rgba(0,0,0,0.3)" />
+            <!-- Head -->
+            <path d="M4,-16 Q2,-22 4,-28 Q6,-32 12,-32 Q18,-32 20,-28 Q22,-22 20,-16" fill="rgba(255,255,255,0.6)" />
+            <!-- Mask (with nose pocket) -->
+            <path d="M6,-28 Q4,-28 3,-26 Q2,-24 4,-22 Q6,-21 8,-22 L8,-24 Q8,-26 10,-26 Q12,-24 12,-22 Q14,-21 16,-22 Q18,-24 18,-26 Q18,-28 16,-28 Z" fill="rgba(100,200,255,0.5)" stroke="rgba(255,255,255,0.55)" stroke-width="0.8" />
+            <!-- Mask strap -->
+            <path d="M3,-25 Q0,-24 -1,-22" stroke="rgba(200,200,200,0.3)" stroke-width="0.8" fill="none" />
+            <!-- Regulator + hose -->
+            <path d="M14,-25 Q18,-24 20,-22 Q22,-20 20,-18 Q18,-16 16,-16" stroke="rgba(255,255,255,0.45)" stroke-width="1.8" fill="none" stroke-linecap="round" />
+            <circle cx="14" cy="-22" r="1.5" fill="rgba(255,255,255,0.4)" />
+            <!-- SPG console (hose from tank) -->
+            <path d="M8,-18 Q4,-16 2,-12 Q0,-8 2,-4" stroke="rgba(255,255,255,0.3)" stroke-width="1" fill="none" />
+            <circle cx="2" cy="-4" r="2.5" fill="rgba(0,0,0,0.2)" stroke="rgba(255,255,255,0.3)" stroke-width="0.8" />
+            <!-- Arms -->
+            <path d="M4,-8 Q-2,-4 -6,0 Q-8,2 -10,0" stroke="rgba(0,0,0,0.25)" stroke-width="2.5" stroke-linecap="round" fill="none" />
+            <path d="M20,-8 Q26,-4 30,0 Q32,2 34,0" stroke="rgba(0,0,0,0.25)" stroke-width="2.5" stroke-linecap="round" fill="none" />
+            <!-- Legs -->
+            <path d="M6,18 Q2,24 0,30" stroke="rgba(0,0,0,0.25)" stroke-width="2.5" stroke-linecap="round" fill="none" />
+            <path d="M16,18 Q20,24 22,30" stroke="rgba(0,0,0,0.25)" stroke-width="2.5" stroke-linecap="round" fill="none" />
+            <!-- Short fins -->
+            <path d="M0,30 Q-6,32 -10,30 Q-8,36 -2,36 Q2,34 0,30 Z" fill="rgba(0,0,0,0.2)" />
+            <path d="M22,30 Q28,32 32,30 Q30,36 24,36 Q20,34 22,30 Z" fill="rgba(0,0,0,0.2)" />
+            <!-- Bubbles from regulator -->
+            <circle cx="22" cy="-28" r="2" fill="rgba(255,255,255,0.3)" class="reg-bubble reg-bubble--1" />
+            <circle cx="26" cy="-36" r="1.5" fill="rgba(255,255,255,0.25)" class="reg-bubble reg-bubble--2" />
+            <circle cx="20" cy="-42" r="2.5" fill="rgba(255,255,255,0.2)" class="reg-bubble reg-bubble--3" />
+          </g>
+        </g>
+
+        <!-- Marine life: Turtle (hexagonal scute pattern, beak head, paddle flippers) -->
+        <g class="marine marine--turtle">
+          <g transform="scale(1.5)">
+            <!-- Shell (carapace) -->
+            <path d="M-18,0 Q-20,-10 -12,-14 Q0,-18 12,-14 Q20,-10 18,0 Q20,10 12,14 Q0,18 -12,14 Q-20,10 -18,0 Z" fill="rgba(80,160,100,0.5)" />
+            <!-- Central scutes (vertebral) -->
+            <path d="M-3,-12 L3,-12 L4,-6 L-4,-6 Z" fill="rgba(100,180,120,0.35)" stroke="rgba(70,140,90,0.3)" stroke-width="0.6" />
+            <path d="M-4,-6 L4,-6 L5,0 L-5,0 Z" fill="rgba(100,180,120,0.35)" stroke="rgba(70,140,90,0.3)" stroke-width="0.6" />
+            <path d="M-5,0 L5,0 L4,6 L-4,6 Z" fill="rgba(100,180,120,0.35)" stroke="rgba(70,140,90,0.3)" stroke-width="0.6" />
+            <path d="M-4,6 L4,6 L3,12 L-3,12 Z" fill="rgba(100,180,120,0.35)" stroke="rgba(70,140,90,0.3)" stroke-width="0.6" />
+            <!-- Costal scutes (sides) -->
+            <path d="M-4,-6 L-12,-10 L-14,-4 L-5,0 Z" fill="rgba(90,170,110,0.3)" stroke="rgba(70,140,90,0.25)" stroke-width="0.5" />
+            <path d="M4,-6 L12,-10 L14,-4 L5,0 Z" fill="rgba(90,170,110,0.3)" stroke="rgba(70,140,90,0.25)" stroke-width="0.5" />
+            <path d="M-5,0 L-14,-4 L-16,4 L-4,6 Z" fill="rgba(90,170,110,0.3)" stroke="rgba(70,140,90,0.25)" stroke-width="0.5" />
+            <path d="M5,0 L14,-4 L16,4 L4,6 Z" fill="rgba(90,170,110,0.3)" stroke="rgba(70,140,90,0.25)" stroke-width="0.5" />
+            <!-- Head with beak -->
+            <path d="M18,-2 Q22,-4 26,-4 Q30,-3 32,-1 Q30,1 26,2 Q22,2 18,1 Z" fill="rgba(100,180,120,0.5)" />
+            <path d="M30,-2 Q33,-1 33,0 Q33,1 30,1 Z" fill="rgba(80,150,100,0.5)" />
+            <circle cx="28" cy="-3" r="1.2" fill="rgba(0,0,0,0.45)" />
+            <!-- Front flippers (paddle-shaped) -->
+            <path d="M12,-12 Q18,-18 24,-22 Q28,-24 30,-20 Q28,-16 22,-12 Q18,-10 12,-10 Z" fill="rgba(80,160,100,0.4)" />
+            <path d="M12,10 Q18,16 24,20 Q28,22 30,18 Q28,14 22,10 Q18,8 12,8 Z" fill="rgba(80,160,100,0.4)" />
+            <!-- Rear flippers (smaller) -->
+            <path d="M-14,-10 Q-18,-14 -22,-14 Q-24,-12 -22,-10 Q-18,-8 -14,-8 Z" fill="rgba(80,160,100,0.35)" />
+            <path d="M-14,8 Q-18,12 -22,12 Q-24,10 -22,8 Q-18,6 -14,6 Z" fill="rgba(80,160,100,0.35)" />
+            <!-- Tail -->
+            <path d="M-18,0 Q-22,0 -24,2 Q-22,2 -20,1 Z" fill="rgba(80,160,100,0.35)" />
+          </g>
+        </g>
+
+        <!-- Marine life: Shark (streamlined, pointed snout, asymmetric tail, 5 gills) -->
+        <g class="marine marine--shark">
+          <g transform="scale(1.6)">
+            <!-- Body (fusiform, pointed snout, jaw line) -->
+            <path d="M-28,0 Q-22,-8 -10,-8 Q0,-9 10,-8 Q22,-6 30,-4 Q36,-2 40,0 Q36,2 30,3 Q22,5 10,6 Q0,7 -10,6 Q-22,5 -28,0 Z" fill="rgba(120,140,160,0.5)" />
+            <!-- Snout (pointed) -->
+            <path d="M36,-2 Q42,-1 44,0 Q42,1 36,1 Z" fill="rgba(120,140,160,0.48)" />
+            <!-- Jaw line -->
+            <path d="M30,2 Q34,3 38,2" stroke="rgba(100,120,140,0.3)" stroke-width="0.5" fill="none" />
+            <!-- Underbelly (lighter) -->
+            <path d="M-24,2 Q-10,7 10,7 Q28,5 36,2 Q28,6 10,8 Q-10,8 -24,4 Z" fill="rgba(160,175,190,0.25)" />
+            <!-- Dorsal fin (tall, triangular) -->
+            <path d="M-2,-8 Q0,-20 4,-24 Q6,-22 10,-8 Z" fill="rgba(120,140,160,0.5)" />
+            <!-- Second dorsal (small) -->
+            <path d="M-20,-4 Q-19,-8 -17,-4 Z" fill="rgba(120,140,160,0.4)" />
+            <!-- Asymmetric tail (upper lobe larger) -->
+            <path d="M-28,0 Q-32,-2 -38,-14 Q-36,-12 -32,-6 Q-30,-2 -28,0 Z" fill="rgba(120,140,160,0.45)" />
+            <path d="M-28,0 Q-32,2 -36,8 Q-34,6 -30,2 Z" fill="rgba(120,140,160,0.4)" />
+            <!-- Pectoral fins (wide, triangular) -->
+            <path d="M14,5 Q18,12 24,18 Q26,16 22,10 Q18,6 16,4 Z" fill="rgba(120,140,160,0.4)" />
+            <path d="M12,-6 Q16,-12 20,-16 Q22,-14 18,-8 Q14,-4 12,-4 Z" fill="rgba(120,140,160,0.35)" />
+            <!-- Pelvic fin -->
+            <path d="M-8,5 Q-6,10 -4,8 Q-6,6 -8,5 Z" fill="rgba(120,140,160,0.35)" />
+            <!-- Anal fin -->
+            <path d="M-16,4 Q-14,8 -12,6 Q-14,4 -16,4 Z" fill="rgba(120,140,160,0.35)" />
+            <!-- 5 gill slits -->
+            <path d="M24,-4 L24,3" stroke="rgba(100,120,140,0.3)" stroke-width="0.7" />
+            <path d="M22,-4 L22,4" stroke="rgba(100,120,140,0.3)" stroke-width="0.7" />
+            <path d="M20,-3 L20,4" stroke="rgba(100,120,140,0.3)" stroke-width="0.7" />
+            <path d="M18,-3 L18,4" stroke="rgba(100,120,140,0.3)" stroke-width="0.7" />
+            <path d="M16,-2 L16,4" stroke="rgba(100,120,140,0.3)" stroke-width="0.7" />
+            <!-- Eye -->
+            <circle cx="34" cy="-2" r="1.8" fill="rgba(0,0,0,0.45)" />
+          </g>
+        </g>
+
+        <!-- Marine life: Hammerhead (T-shaped cephalofoil, S-curve body, falcate dorsal) -->
+        <g class="marine marine--hammerhead">
+          <g transform="scale(1.4)">
+            <!-- S-curve body -->
+            <path d="M-25,2 Q-18,-4 -8,-6 Q2,-7 12,-5 Q20,-2 26,0 Q22,3 12,5 Q2,6 -8,5 Q-18,4 -25,2 Z" fill="rgba(100,130,150,0.45)" />
+            <!-- Underbelly -->
+            <path d="M-20,3 Q-8,6 8,6 Q20,4 26,1 Q20,5 8,7 Q-8,7 -20,4 Z" fill="rgba(130,155,175,0.2)" />
+            <!-- Cephalofoil (T-shaped hammer) -->
+            <path d="M26,0 L28,-2 Q30,-4 32,-6 Q36,-8 40,-8 Q44,-7 44,-5 Q44,-3 40,-2 Q36,-1 32,0 Z" fill="rgba(100,130,150,0.45)" />
+            <path d="M26,0 L28,2 Q30,4 32,6 Q36,8 40,8 Q44,7 44,5 Q44,3 40,2 Q36,1 32,0 Z" fill="rgba(100,130,150,0.45)" />
+            <!-- Eyes at hammer tips -->
+            <circle cx="43" cy="-6" r="1.5" fill="rgba(0,0,0,0.45)" />
+            <circle cx="43" cy="6" r="1.5" fill="rgba(0,0,0,0.45)" />
+            <!-- Tall dorsal fin (falcate/curved) -->
+            <path d="M2,-6 Q0,-14 2,-22 Q4,-24 6,-20 Q8,-14 10,-5 Z" fill="rgba(100,130,150,0.45)" />
+            <!-- Second dorsal (small) -->
+            <path d="M-16,-2 Q-15,-6 -13,-2 Z" fill="rgba(100,130,150,0.35)" />
+            <!-- Asymmetric tail -->
+            <path d="M-25,2 Q-30,0 -36,-10 Q-34,-8 -30,-2 Q-28,0 -25,2 Z" fill="rgba(100,130,150,0.4)" />
+            <path d="M-25,2 Q-30,4 -34,10 Q-32,8 -28,4 Z" fill="rgba(100,130,150,0.35)" />
+            <!-- Pectoral fins -->
+            <path d="M10,4 Q14,10 18,16 Q20,14 16,8 Q12,4 10,3 Z" fill="rgba(100,130,150,0.35)" />
+            <!-- Pelvic fin -->
+            <path d="M-6,4 Q-4,8 -2,6 Q-4,4 -6,4 Z" fill="rgba(100,130,150,0.3)" />
+            <!-- 5 gill slits -->
+            <path d="M20,-2 L20,3" stroke="rgba(80,110,130,0.3)" stroke-width="0.6" />
+            <path d="M18,-2 L18,3" stroke="rgba(80,110,130,0.3)" stroke-width="0.6" />
+            <path d="M16,-1 L16,3" stroke="rgba(80,110,130,0.3)" stroke-width="0.6" />
+            <path d="M14,-1 L14,3" stroke="rgba(80,110,130,0.3)" stroke-width="0.6" />
+            <path d="M12,0 L12,3" stroke="rgba(80,110,130,0.3)" stroke-width="0.6" />
+          </g>
+        </g>
+
+        <!-- Bubbles -->
+        <circle class="bubble bubble--1" cx="300" cy="900" r="4" fill="rgba(255,255,255,0.15)" />
+        <circle class="bubble bubble--2" cx="520" cy="900" r="3" fill="rgba(255,255,255,0.12)" />
+        <circle class="bubble bubble--3" cx="780" cy="900" r="5" fill="rgba(255,255,255,0.18)" />
+        <circle class="bubble bubble--4" cx="1000" cy="900" r="3.5" fill="rgba(255,255,255,0.14)" />
+        <circle class="bubble bubble--5" cx="1150" cy="900" r="4.5" fill="rgba(255,255,255,0.16)" />
+        <circle class="bubble bubble--6" cx="400" cy="900" r="2.5" fill="rgba(255,255,255,0.10)" />
+        <circle class="bubble bubble--7" cx="650" cy="900" r="3" fill="rgba(255,255,255,0.13)" />
+        <circle class="bubble bubble--8" cx="900" cy="900" r="4" fill="rgba(255,255,255,0.15)" />
+      </svg>
+    </div>
+
+    <div class="landing__card">
+      <div class="landing__logo">
+        <svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M2 12C2 7 7 2 12 2s10 5 10 10"/>
+          <path d="M12 22c-2-3-6-7-6-10a6 6 0 0 1 12 0c0 3-4 7-6 10z"/>
+          <circle cx="12" cy="12" r="2"/>
+        </svg>
+        <span>Where2Dive</span>
+      </div>
+      <p class="landing__tagline" data-i18n="landing.tagline">전 세계 다이빙 스팟을 찾아보세요</p>
+      <form id="login-form" class="landing__form" autocomplete="off">
+        <div class="landing__field">
+          <label for="login-email" class="sr-only" data-i18n="landing.email">이메일</label>
+          <input type="email" id="login-email" class="landing__input" placeholder="Email" required />
+        </div>
+        <div class="landing__field">
+          <label for="login-password" class="sr-only" data-i18n="landing.password">비밀번호</label>
+          <input type="password" id="login-password" class="landing__input" placeholder="Password" required />
+        </div>
+        <button type="submit" class="landing__submit" data-i18n="landing.login">로그인</button>
+        <p class="landing__error hidden" id="login-error" data-i18n="landing.error">이메일 또는 비밀번호가 올바르지 않습니다.</p>
+      </form>
+      <p class="landing__demo" data-i18n="landing.demo">데모: demo@where2dive.com / 1234</p>
+      <div class="landing__lang" id="landing-lang-toggle">
+        <button class="lang-toggle__btn active" data-lang="ko">한국어</button>
+        <button class="lang-toggle__btn" data-lang="en">EN</button>
+      </div>
+    </div>
+  </section>
+
   <!-- ═══ Header ═══ -->
   <header class="header">
     <div class="header__inner">
@@ -35,11 +284,13 @@
         <button class="nav-btn" data-view="favorites" aria-pressed="false">
           즐겨찾기(<span id="fav-count">0</span>)
         </button>
+        <button class="nav-btn" data-view="logbook" aria-pressed="false" data-i18n="nav.logbook">로그북</button>
       </nav>
       <div class="lang-toggle" id="lang-toggle">
         <button class="lang-toggle__btn active" data-lang="ko">한국어</button>
         <button class="lang-toggle__btn" data-lang="en">EN</button>
       </div>
+      <button class="header__logout" id="logout-btn" data-i18n="nav.logout">로그아웃</button>
       <button class="header__mobile-filter-toggle" id="filter-toggle" aria-label="필터 열기/닫기" aria-expanded="false">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg>
         <span id="filter-toggle-text">필터</span>
@@ -56,9 +307,9 @@
       </div>
       <div class="filter-group filter-group--activity">
         <div class="activity-toggle" role="radiogroup" aria-label="활동 유형">
-          <button class="activity-toggle__btn active" data-activity="" aria-pressed="true">전체</button>
-          <button class="activity-toggle__btn" data-activity="skin" aria-pressed="false">스킨</button>
-          <button class="activity-toggle__btn" data-activity="scuba" aria-pressed="false">스쿠버</button>
+          <button class="activity-toggle__btn active" data-activity="" aria-pressed="true">전체<span class="activity-toggle__count" id="count-all">0</span></button>
+          <button class="activity-toggle__btn" data-activity="skin" aria-pressed="false">스킨<span class="activity-toggle__count" id="count-skin">0</span></button>
+          <button class="activity-toggle__btn" data-activity="scuba" aria-pressed="false">스쿠버<span class="activity-toggle__count" id="count-scuba">0</span></button>
         </div>
       </div>
       <div class="filter-group filter-group--country">
@@ -75,14 +326,15 @@
           <option value="">모든 지역</option>
         </select>
       </div>
-      <div class="filter-group filter-group--range">
-        <label for="temp-range">수온: <span id="temp-value">0°C ~ 35°C</span></label>
-        <div class="range-wrapper">
-          <input type="range" id="temp-min" min="0" max="35" value="0" step="1" aria-label="최소 수온" />
-          <input type="range" id="temp-max" min="0" max="35" value="35" step="1" aria-label="최대 수온" />
-        </div>
-      </div>
+      <label class="myspot-toggle">
+        <input type="checkbox" id="myspot-toggle" checked />
+        <span id="myspot-toggle-text">내 스팟</span>
+      </label>
       <button class="filter-reset" id="filter-reset">초기화</button>
+      <button class="list-toggle" id="list-toggle" aria-pressed="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+        <span id="list-toggle-text">목록</span>
+      </button>
     </div>
   </section>
 
@@ -92,6 +344,11 @@
       <!-- Map Panel -->
       <div class="map-panel" id="map-panel">
         <div id="map" class="map"></div>
+        <button class="fab fab--add-spot" id="add-spot-btn" title="Add Spot">+</button>
+        <div class="map-pick-banner hidden" id="map-pick-banner">
+          <span id="map-pick-banner-text">지도를 클릭하여 위치를 선택하세요</span>
+          <button type="button" class="btn btn--secondary" id="map-pick-cancel">취소</button>
+        </div>
       </div>
       <!-- Cards Panel -->
       <div class="cards-panel" id="cards-panel">
@@ -107,6 +364,17 @@
           <p>아직 즐겨찾기한 스팟이 없습니다.</p>
           <p class="empty-state__sub">하트를 눌러 관심 있는 스팟을 저장해보세요!</p>
         </div>
+        <!-- Logbook view -->
+        <div class="logbook-view hidden" id="logbook-view">
+          <div class="logbook-stats" id="logbook-stats"></div>
+          <button class="btn btn--primary logbook-add-btn" id="add-log-btn">+ 새 로그</button>
+          <div class="logbook-list" id="logbook-list"></div>
+          <div class="empty-state hidden" id="logbook-empty-state">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" opacity=".4"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+            <p id="logbook-empty-text">아직 다이빙 로그가 없습니다.</p>
+            <p class="empty-state__sub" id="logbook-empty-sub">첫 다이빙 기록을 추가해보세요!</p>
+          </div>
+        </div>
       </div>
     </div>
   </main>
@@ -117,6 +385,176 @@
       <button class="modal__close" id="modal-close" aria-label="닫기">&times;</button>
       <div class="modal__body" id="modal-body">
         <!-- Dynamically rendered -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ Log Form Modal ═══ -->
+  <div class="modal-overlay hidden" id="log-modal-overlay" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true">
+      <button class="modal__close" id="log-modal-close" aria-label="닫기">&times;</button>
+      <div class="modal__body">
+        <h2 class="modal__title" id="log-modal-title">새 다이빙 로그</h2>
+        <form class="log-form" id="log-form" autocomplete="off">
+          <input type="hidden" id="log-edit-id" value="" />
+          <div class="log-form__grid">
+            <div class="log-form__field">
+              <label for="log-date" id="log-date-label">날짜</label>
+              <input type="date" id="log-date" required />
+            </div>
+            <div class="log-form__field">
+              <label for="log-spot-name" id="log-spot-label">스팟 이름</label>
+              <input type="text" id="log-spot-name" list="log-spot-datalist" />
+              <datalist id="log-spot-datalist"></datalist>
+            </div>
+          </div>
+          <div class="log-form__field">
+            <label id="log-activity-label">활동 유형</label>
+            <div class="log-form__toggle">
+              <label class="log-form__radio">
+                <input type="radio" name="log-activity" value="skin" checked /> 스킨
+              </label>
+              <label class="log-form__radio">
+                <input type="radio" name="log-activity" value="scuba" /> 스쿠버
+              </label>
+            </div>
+          </div>
+          <div class="log-form__grid">
+            <div class="log-form__field">
+              <label for="log-depth" id="log-depth-label">최대 수심 (m)</label>
+              <input type="number" id="log-depth" step="0.1" min="0" />
+            </div>
+            <div class="log-form__field">
+              <label for="log-time" id="log-time-label">다이빙 시간 (분)</label>
+              <input type="number" id="log-time" min="0" />
+            </div>
+          </div>
+          <div class="log-form__grid">
+            <div class="log-form__field">
+              <label for="log-temp" id="log-temp-label">수온 (°C)</label>
+              <input type="number" id="log-temp" step="0.1" />
+            </div>
+            <div class="log-form__field">
+              <label for="log-visibility" id="log-vis-label">시야 (m)</label>
+              <input type="number" id="log-visibility" step="0.1" min="0" />
+            </div>
+          </div>
+          <div class="log-form__grid">
+            <div class="log-form__field">
+              <label for="log-equipment" id="log-equip-label">장비</label>
+              <input type="text" id="log-equipment" />
+            </div>
+            <div class="log-form__field">
+              <label for="log-weight" id="log-weight-label">웨이트 (kg)</label>
+              <input type="number" id="log-weight" step="0.1" min="0" />
+            </div>
+          </div>
+          <!-- Scuba-only fields -->
+          <div class="log-form__grid" id="log-scuba-fields">
+            <div class="log-form__field">
+              <label for="log-tank-start" id="log-tank-start-label">시작 잔압 (bar)</label>
+              <input type="number" id="log-tank-start" min="0" />
+            </div>
+            <div class="log-form__field">
+              <label for="log-tank-end" id="log-tank-end-label">종료 잔압 (bar)</label>
+              <input type="number" id="log-tank-end" min="0" />
+            </div>
+          </div>
+          <div class="log-form__grid">
+            <div class="log-form__field">
+              <label for="log-buddy" id="log-buddy-label">버디</label>
+              <input type="text" id="log-buddy" />
+            </div>
+            <div class="log-form__field">
+              <label for="log-weather" id="log-weather-label">날씨</label>
+              <input type="text" id="log-weather" />
+            </div>
+          </div>
+          <div class="log-form__field">
+            <label id="log-location-label">위치</label>
+            <div class="map-pick-row">
+              <button type="button" class="btn btn--secondary map-pick-btn" id="log-pick-map-btn">지도에서 선택</button>
+              <span class="map-pick-coords" id="log-coords-text"></span>
+            </div>
+            <input type="hidden" id="log-lat" />
+            <input type="hidden" id="log-lng" />
+          </div>
+          <div class="log-form__field">
+            <label for="log-memo" id="log-memo-label">메모</label>
+            <textarea id="log-memo" rows="3"></textarea>
+          </div>
+          <div class="log-form__actions">
+            <button type="button" class="btn btn--secondary" id="log-cancel">취소</button>
+            <button type="submit" class="btn btn--primary" id="log-save">저장</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ Spot Form Modal ═══ -->
+  <div class="modal-overlay hidden" id="spot-modal-overlay" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true">
+      <button class="modal__close" id="spot-modal-close" aria-label="닫기">&times;</button>
+      <div class="modal__body">
+        <h2 class="modal__title" id="spot-modal-title">새 다이빙 스팟</h2>
+        <form class="log-form" id="spot-form" autocomplete="off">
+          <input type="hidden" id="spot-edit-id" value="" />
+          <div class="log-form__field">
+            <label for="spot-name" id="spot-name-label">스팟 이름</label>
+            <input type="text" id="spot-name" required />
+          </div>
+          <div class="log-form__field">
+            <label id="spot-location-label">위치</label>
+            <div class="map-pick-row">
+              <button type="button" class="btn btn--secondary map-pick-btn" id="spot-pick-map-btn">지도에서 선택</button>
+              <span class="map-pick-coords" id="spot-coords-text"></span>
+            </div>
+            <input type="hidden" id="spot-lat" />
+            <input type="hidden" id="spot-lng" />
+          </div>
+          <div class="log-form__field">
+            <label for="spot-depth" id="spot-depth-label">수심</label>
+            <input type="text" id="spot-depth" />
+          </div>
+          <div class="log-form__grid">
+            <div class="log-form__field">
+              <label for="spot-temp-min" id="spot-temp-min-label">최저 수온 (°C)</label>
+              <input type="number" id="spot-temp-min" step="0.1" />
+            </div>
+            <div class="log-form__field">
+              <label for="spot-temp-max" id="spot-temp-max-label">최고 수온 (°C)</label>
+              <input type="number" id="spot-temp-max" step="0.1" />
+            </div>
+          </div>
+          <div class="log-form__field">
+            <label for="spot-difficulty" id="spot-difficulty-label">난이도</label>
+            <select id="spot-difficulty" class="filter-select">
+              <option value="beginner">초급</option>
+              <option value="intermediate">중급</option>
+              <option value="advanced">상급</option>
+            </select>
+          </div>
+          <div class="log-form__field">
+            <label id="spot-activity-label">활동 유형</label>
+            <div class="log-form__toggle">
+              <label class="log-form__radio">
+                <input type="checkbox" name="spot-activity" value="skin" checked /> 스킨
+              </label>
+              <label class="log-form__radio">
+                <input type="checkbox" name="spot-activity" value="scuba" /> 스쿠버
+              </label>
+            </div>
+          </div>
+          <div class="log-form__field">
+            <label for="spot-memo" id="spot-memo-label">메모</label>
+            <textarea id="spot-memo" rows="3"></textarea>
+          </div>
+          <div class="log-form__actions">
+            <button type="button" class="btn btn--secondary" id="spot-cancel">취소</button>
+            <button type="submit" class="btn btn--primary" id="spot-save">저장</button>
+          </div>
+        </form>
       </div>
     </div>
   </div>
