@@ -757,12 +757,29 @@ function startMapPicking(target) {
   document.getElementById(overlayId).setAttribute('aria-hidden', 'true');
   document.body.style.overflow = '';
 
-  // Ensure map panel is visible
+  // Ensure map panel is visible and full-screen
   const mapPanel = document.getElementById('map-panel');
+  const cardsPanel = document.getElementById('cards-panel');
   const mainInner = document.querySelector('.main__inner');
+  const filterBar = document.getElementById('filter-bar');
+
   mapPanel.classList.remove('hidden');
-  mainInner.style.gridTemplateColumns = '';
+  cardsPanel.classList.add('hidden');
+  filterBar.classList.add('hidden');
+  mainInner.classList.remove('show-list');
+  mainInner.style.gridTemplateColumns = '1fr';
   invalidateMapSize();
+
+  // Show existing markers on the map
+  const isFavView = currentView === 'favorites';
+  const favSet = getFavorites();
+  updateMarkers(isFavView ? filterSpots(true, favSet) : filterSpots(false), false);
+  const showMySpots = document.querySelector('#myspot-toggle input[type="checkbox"]')?.checked;
+  if (showMySpots) {
+    updatePersonalMarkers(filterMySpots(getMySpots()));
+  } else {
+    updatePersonalMarkers([]);
+  }
 
   // Add crosshair cursor
   document.getElementById('map').classList.add('map--picking');
@@ -793,16 +810,17 @@ function finishMapPicking(e) {
   document.getElementById('map').classList.remove('map--picking');
   document.getElementById('map-pick-banner').classList.add('hidden');
 
+  // Restore filter-bar
+  document.getElementById('filter-bar').classList.remove('hidden');
+
   // Re-open the modal
   const overlayId = target === 'log' ? 'log-modal-overlay' : 'spot-modal-overlay';
   document.getElementById(overlayId).classList.remove('hidden');
   document.getElementById(overlayId).setAttribute('aria-hidden', 'false');
   document.body.style.overflow = 'hidden';
 
-  // Restore view if we were in logbook
-  if (currentView === 'logbook') {
-    switchView('logbook');
-  }
+  // Restore original view layout
+  switchView(currentView);
 
   mapPickingState = null;
 }
@@ -819,16 +837,17 @@ function cancelMapPicking() {
   document.getElementById('map').classList.remove('map--picking');
   document.getElementById('map-pick-banner').classList.add('hidden');
 
+  // Restore filter-bar
+  document.getElementById('filter-bar').classList.remove('hidden');
+
   // Re-open the modal
   const overlayId = target === 'log' ? 'log-modal-overlay' : 'spot-modal-overlay';
   document.getElementById(overlayId).classList.remove('hidden');
   document.getElementById(overlayId).setAttribute('aria-hidden', 'false');
   document.body.style.overflow = 'hidden';
 
-  // Restore view if we were in logbook
-  if (currentView === 'logbook') {
-    switchView('logbook');
-  }
+  // Restore original view layout
+  switchView(currentView);
 
   mapPickingState = null;
 }

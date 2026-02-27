@@ -1001,6 +1001,28 @@
     margin-top: var(--sp-2);
   }
 
+  /* ── Log Activity Switch (segment control) ── */
+  .log-activity-switch {
+    display: inline-flex;
+    border: 1px solid var(--c-gray-200);
+    border-radius: var(--r-md);
+    overflow: hidden;
+    background: var(--c-gray-100);
+  }
+  .log-activity-switch__btn {
+    display: flex; align-items: center; gap: 6px;
+    padding: var(--sp-2) var(--sp-4);
+    font-size: 0.85rem; font-weight: 500;
+    color: var(--c-gray-500);
+    border: none; background: none; cursor: pointer;
+    border-right: 1px solid var(--c-gray-200);
+    transition: all var(--dur) var(--ease);
+  }
+  .log-activity-switch__btn:last-child { border-right: none; }
+  .log-activity-switch__btn:hover { color: var(--c-gray-700); background: var(--c-gray-200); }
+  .log-activity-switch__btn.active { background: var(--c-ocean); color: var(--c-white); }
+  .log-activity-switch__icon { display: inline-flex; width: 18px; height: 18px; }
+
   /* ── Map Pick (full-screen picking) ── */
   .map-pick-row {
     display: flex;
@@ -1045,9 +1067,9 @@
   .marker--personal {
     width: 32px; height: 32px;
     border-radius: 50%;
-    background: var(--c-coral);
+    background: var(--c-ocean);
     border: 2px solid var(--c-white);
-    box-shadow: 0 0 8px rgba(255,100,60,0.4);
+    box-shadow: 0 0 8px rgba(0,100,200,0.4);
     display: flex; align-items: center; justify-content: center;
     transform: none;
   }
