@@ -302,6 +302,7 @@
           <button class="activity-toggle__btn active" data-activity="" aria-pressed="true">전체<span class="activity-toggle__count" id="count-all">0</span></button>
           <button class="activity-toggle__btn" data-activity="skin" aria-pressed="false">스킨<span class="activity-toggle__count" id="count-skin">0</span></button>
           <button class="activity-toggle__btn" data-activity="scuba" aria-pressed="false">스쿠버<span class="activity-toggle__count" id="count-scuba">0</span></button>
+          <button class="activity-toggle__btn" data-activity="myspot" aria-pressed="false">내 스팟<span class="activity-toggle__count" id="count-myspot">0</span></button>
         </div>
       </div>
       <div class="filter-group filter-group--country">
@@ -318,10 +319,6 @@
           <option value="">모든 지역</option>
         </select>
       </div>
-      <label class="myspot-toggle">
-        <input type="checkbox" id="myspot-toggle" checked />
-        <span id="myspot-toggle-text">내 스팟</span>
-      </label>
       <button class="filter-reset" id="filter-reset">초기화</button>
       <button class="list-toggle" id="list-toggle" aria-pressed="false">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
@@ -389,6 +386,21 @@
         <h2 class="modal__title" id="log-modal-title">새 다이빙 로그</h2>
         <form class="log-form" id="log-form" autocomplete="off">
           <input type="hidden" id="log-edit-id" value="" />
+          <!-- Activity toggle at top -->
+          <div class="log-form__field">
+            <label id="log-activity-label">활동 유형</label>
+            <div class="log-activity-switch" id="log-activity-switch">
+              <button type="button" class="log-activity-switch__btn active" data-value="skin" id="log-activity-skin">
+                <span class="log-activity-switch__icon" id="log-skin-icon"></span>
+                <span id="log-skin-text">스킨</span>
+              </button>
+              <button type="button" class="log-activity-switch__btn" data-value="scuba" id="log-activity-scuba">
+                <span class="log-activity-switch__icon" id="log-scuba-icon"></span>
+                <span id="log-scuba-text">스쿠버</span>
+              </button>
+            </div>
+            <input type="hidden" id="log-activity-value" value="skin" />
+          </div>
           <div class="log-form__grid">
             <div class="log-form__field">
               <label for="log-date" id="log-date-label">날짜</label>
@@ -398,17 +410,6 @@
               <label for="log-spot-name" id="log-spot-label">스팟 이름</label>
               <input type="text" id="log-spot-name" list="log-spot-datalist" />
               <datalist id="log-spot-datalist"></datalist>
-            </div>
-          </div>
-          <div class="log-form__field">
-            <label id="log-activity-label">활동 유형</label>
-            <div class="log-form__toggle">
-              <label class="log-form__radio">
-                <input type="radio" name="log-activity" value="skin" checked /> 스킨
-              </label>
-              <label class="log-form__radio">
-                <input type="radio" name="log-activity" value="scuba" /> 스쿠버
-              </label>
             </div>
           </div>
           <div class="log-form__grid">
@@ -442,14 +443,26 @@
             </div>
           </div>
           <!-- Scuba-only fields -->
-          <div class="log-form__grid" id="log-scuba-fields">
-            <div class="log-form__field">
-              <label for="log-tank-start" id="log-tank-start-label">시작 잔압 (bar)</label>
-              <input type="number" id="log-tank-start" min="0" />
+          <div class="log-scuba-section hidden" id="log-scuba-fields">
+            <div class="log-form__grid">
+              <div class="log-form__field">
+                <label for="log-tank-start" id="log-tank-start-label">시작 잔압 (bar)</label>
+                <input type="number" id="log-tank-start" min="0" />
+              </div>
+              <div class="log-form__field">
+                <label for="log-tank-end" id="log-tank-end-label">종료 잔압 (bar)</label>
+                <input type="number" id="log-tank-end" min="0" />
+              </div>
             </div>
-            <div class="log-form__field">
-              <label for="log-tank-end" id="log-tank-end-label">종료 잔압 (bar)</label>
-              <input type="number" id="log-tank-end" min="0" />
+            <div class="log-form__grid">
+              <div class="log-form__field">
+                <label for="log-entry-time" id="log-entry-time-label">입수 시간</label>
+                <input type="time" id="log-entry-time" />
+              </div>
+              <div class="log-form__field">
+                <label for="log-exit-time" id="log-exit-time-label">출수 시간</label>
+                <input type="time" id="log-exit-time" />
+              </div>
             </div>
           </div>
           <div class="log-form__grid">

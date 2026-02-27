@@ -119,10 +119,6 @@ function bootApp() {
     cancelMapPicking();
   });
 
-  // My spots toggle
-  document.getElementById('myspot-toggle').addEventListener('change', () => {
-    refresh();
-  });
 }
 
 // ── Boot ──
@@ -220,10 +216,6 @@ function updateStaticLabels() {
   // list toggle text
   const listToggleText = document.getElementById('list-toggle-text');
   if (listToggleText) listToggleText.textContent = t('nav.listToggle');
-
-  // my spot toggle text
-  const myspotToggleText = document.getElementById('myspot-toggle-text');
-  if (myspotToggleText) myspotToggleText.textContent = t('myspot.toggle');
 
   // empty state texts
   const emptyP = document.querySelector('#empty-state p');
@@ -326,14 +318,13 @@ function refresh() {
   const favSet = getFavorites();
   const filtered = filterSpots(isFavView, favSet);
 
-  // Personal spots
-  const showMySpots = document.getElementById('myspot-toggle')?.checked;
-  const mySpots = showMySpots ? filterMySpots(getMySpots()) : [];
+  // Personal spots (always included unless in favorites view)
+  const mySpots = currentView !== 'favorites' ? filterMySpots(getMySpots()) : [];
 
-  if (isFavView && filtered.length === 0) {
+  if (isFavView && filtered.length === 0 && mySpots.length === 0) {
     renderFavEmpty();
   } else {
-    renderCards(filtered, currentView === 'favorites' ? [] : mySpots);
+    renderCards(filtered, mySpots);
   }
 
   // 지도 마커는 항상 현재 필터 기준
@@ -341,7 +332,7 @@ function refresh() {
   updateFavCount();
 
   // Personal markers on map
-  if (showMySpots && currentView !== 'favorites') {
+  if (currentView !== 'favorites') {
     updatePersonalMarkers(filterMySpots(getMySpots()));
   } else {
     updatePersonalMarkers([]);
@@ -352,6 +343,7 @@ function refresh() {
   document.getElementById('count-all').textContent = counts.total;
   document.getElementById('count-skin').textContent = counts.skin;
   document.getElementById('count-scuba').textContent = counts.scuba;
+  document.getElementById('count-myspot').textContent = counts.myspot;
 }
 
 // ═══ Logbook View ═══
@@ -456,14 +448,14 @@ function initLogModal() {
   });
 
   // Activity type toggle — show/hide scuba fields
-  document.querySelectorAll('input[name="log-activity"]').forEach(radio => {
-    radio.addEventListener('change', () => {
+  document.querySelectorAll('#log-activity-switch .log-activity-switch__btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#log-activity-switch .log-activity-switch__btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const val = btn.dataset.value;
+      document.getElementById('log-activity-value').value = val;
       const scubaFields = document.getElementById('log-scuba-fields');
-      if (radio.value === 'scuba' && radio.checked) {
-        scubaFields.classList.remove('hidden');
-      } else if (radio.value === 'skin' && radio.checked) {
-        scubaFields.classList.add('hidden');
-      }
+      scubaFields.classList.toggle('hidden', val !== 'scuba');
     });
   });
 
@@ -474,7 +466,7 @@ function initLogModal() {
     const data = {
       date: document.getElementById('log-date').value,
       spotName: document.getElementById('log-spot-name').value,
-      activityType: document.querySelector('input[name="log-activity"]:checked').value,
+      activityType: document.getElementById('log-activity-value').value,
       maxDepth: parseFloat(document.getElementById('log-depth').value) || null,
       diveTime: parseInt(document.getElementById('log-time').value) || null,
       waterTemp: parseFloat(document.getElementById('log-temp').value) || null,
@@ -551,7 +543,10 @@ function openLogFormModal(editId) {
     document.getElementById('log-edit-id').value = editId;
     document.getElementById('log-date').value = entry.date || '';
     document.getElementById('log-spot-name').value = entry.spotName || '';
-    document.querySelector(`input[name="log-activity"][value="${entry.activityType}"]`).checked = true;
+    document.getElementById('log-activity-value').value = entry.activityType || 'skin';
+    document.querySelectorAll('#log-activity-switch .log-activity-switch__btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.value === (entry.activityType || 'skin'));
+    });
     document.getElementById('log-depth').value = entry.maxDepth ?? '';
     document.getElementById('log-time').value = entry.diveTime ?? '';
     document.getElementById('log-temp').value = entry.waterTemp ?? '';
@@ -569,6 +564,10 @@ function openLogFormModal(editId) {
   } else {
     title.textContent = t('logbook.form.title');
     document.getElementById('log-date').value = new Date().toISOString().slice(0, 10);
+    document.getElementById('log-activity-value').value = 'skin';
+    document.querySelectorAll('#log-activity-switch .log-activity-switch__btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.value === 'skin');
+    });
     scubaFields.classList.add('hidden');
   }
 
@@ -720,10 +719,14 @@ function startMapPicking(target) {
 
   // Ensure map panel is visible
   const mapPanel = document.getElementById('map-panel');
-  const mainInner = document.querySelector('.main__inner');
   mapPanel.classList.remove('hidden');
-  mainInner.style.gridTemplateColumns = '';
-  invalidateMapSize();
+
+  // Enter full-screen map picking mode
+  document.body.classList.add('map-picking-fullscreen');
+
+  // Ensure all spot markers are visible on the map
+  updateMarkers(filterSpots(false));
+  updatePersonalMarkers(filterMySpots(getMySpots()));
 
   // Add crosshair cursor
   document.getElementById('map').classList.add('map--picking');
@@ -733,6 +736,9 @@ function startMapPicking(target) {
   document.getElementById('map-pick-banner-text').textContent = t('logbook.form.pickBanner');
   document.getElementById('map-pick-cancel').textContent = t('logbook.form.pickCancel');
   banner.classList.remove('hidden');
+
+  // Refresh map size after layout change
+  setTimeout(() => invalidateMapSize(), 50);
 
   // Register one-time click handler on main map
   const map = getMapInstance();
@@ -749,6 +755,9 @@ function finishMapPicking(e) {
   document.getElementById(`${prefix}-lat`).value = lat.toFixed(6);
   document.getElementById(`${prefix}-lng`).value = lng.toFixed(6);
   document.getElementById(`${prefix}-coords-text`).textContent = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+
+  // Exit full-screen map picking mode
+  document.body.classList.remove('map-picking-fullscreen');
 
   // Clean up picking UI
   document.getElementById('map').classList.remove('map--picking');
@@ -775,6 +784,9 @@ function cancelMapPicking() {
   // Remove click handler
   const map = getMapInstance();
   map.off('click', finishMapPicking);
+
+  // Exit full-screen map picking mode
+  document.body.classList.remove('map-picking-fullscreen');
 
   // Clean up picking UI
   document.getElementById('map').classList.remove('map--picking');

@@ -1,11 +1,12 @@
 // 필터 상태 관리 + 필터링 로직
 import { spots, REGIONS, COUNTRY_MAP } from './data.js';
 import { getLang, t, td } from './i18n.js';
+import { getMySpots } from './myspots.js';
 
 const state = {
   search: '',
   region: '',
-  activityType: '',  // '' | 'skin' | 'scuba'
+  activityType: '',  // '' | 'skin' | 'scuba' | 'myspot'
   country: '',       // Korean country name (e.g. '한국')
 };
 
@@ -54,6 +55,9 @@ function syncDOM() {
 }
 
 export function filterSpots(favOnly = false, favSet = null) {
+  // 'myspot' filter shows only personal spots, no regular spots
+  if (state.activityType === 'myspot') return [];
+
   return spots.filter(s => {
     if (favOnly && favSet && !favSet.has(s.id)) return false;
 
@@ -77,9 +81,10 @@ export function filterSpots(favOnly = false, favSet = null) {
   });
 }
 
-/** Count spots per activity type using all filters EXCEPT activityType */
+/** Count spots per activity type using all filters EXCEPT activityType.
+ *  Includes personal spots in total/skin/scuba counts. */
 export function getActivityCounts(favOnly = false, favSet = null) {
-  let total = 0, skin = 0, scuba = 0;
+  let total = 0, skin = 0, scuba = 0, myspot = 0;
   for (const s of spots) {
     if (favOnly && favSet && !favSet.has(s.id)) continue;
     if (state.search) {
@@ -96,7 +101,22 @@ export function getActivityCounts(favOnly = false, favSet = null) {
     if (s.activityTypes.includes('skin')) skin++;
     if (s.activityTypes.includes('scuba')) scuba++;
   }
-  return { total, skin, scuba };
+
+  // Include personal spots in counts
+  const mySpots = getMySpots();
+  for (const s of mySpots) {
+    if (state.search) {
+      const q = state.search.toLowerCase();
+      const haystack = [s.name, s.memo || ''].join(' ').toLowerCase();
+      if (!haystack.includes(q)) continue;
+    }
+    myspot++;
+    total++;
+    if (s.activityTypes.includes('skin')) skin++;
+    if (s.activityTypes.includes('scuba')) scuba++;
+  }
+
+  return { total, skin, scuba, myspot };
 }
 
 // ── Country autocomplete helpers ──
@@ -176,6 +196,7 @@ export function refreshFilterLabels() {
     if (act === '') label = t('filter.activity.all');
     else if (act === 'skin') label = t('filter.activity.skin');
     else if (act === 'scuba') label = t('filter.activity.scuba');
+    else if (act === 'myspot') label = t('myspot.badge');
     btn.innerHTML = label + countHTML;
   });
 
@@ -321,7 +342,8 @@ export function filterMySpots(mySpots) {
       const haystack = [s.name, s.memo || ''].join(' ').toLowerCase();
       if (!haystack.includes(q)) return false;
     }
-    if (state.activityType && !s.activityTypes.includes(state.activityType)) return false;
+    // 'myspot' filter shows all personal spots; skin/scuba filters match activity
+    if (state.activityType && state.activityType !== 'myspot' && !s.activityTypes.includes(state.activityType)) return false;
     return true;
   });
 }
