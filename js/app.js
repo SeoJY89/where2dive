@@ -120,9 +120,12 @@ function bootApp() {
   });
 
   // My spots toggle
-  document.getElementById('myspot-toggle').addEventListener('change', () => {
-    refresh(false);
-  });
+  const myspotToggle = document.querySelector('#myspot-toggle input[type="checkbox"]');
+  if (myspotToggle) {
+    myspotToggle.addEventListener('change', () => {
+      refresh(false);
+    });
+  }
 }
 
 // ── Boot ──
@@ -354,7 +357,7 @@ function refresh(fitToMarkers = false) {
   const filtered = filterSpots(isFavView, favSet);
 
   // Personal spots
-  const showMySpots = document.getElementById('myspot-toggle')?.checked;
+  const showMySpots = document.querySelector('#myspot-toggle input[type="checkbox"]')?.checked;
   const mySpots = showMySpots ? filterMySpots(getMySpots()) : [];
 
   if (isFavView && filtered.length === 0) {
