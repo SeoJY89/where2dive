@@ -30,99 +30,91 @@
           <polygon class="light-ray light-ray--4" points="1150,0 1200,0 1300,900 1230,900" fill="rgba(255,255,255,0.03)" />
         </g>
 
-        <!-- Diver 1: Snorkeler (prone, surface position) -->
-        <g class="diver diver--1" transform="translate(720, 220)">
-          <g transform="scale(1.2)">
-            <!-- Torso with rashguard detail -->
-            <path d="M-12,-2 Q-14,-8 -4,-9 Q8,-10 16,-6 Q20,-3 18,2 Q16,7 6,8 Q-4,9 -12,6 Q-16,3 -12,-2 Z" fill="rgba(255,255,255,0.65)" />
-            <path d="M-2,-8 Q4,-9 10,-7" stroke="rgba(200,220,255,0.3)" stroke-width="0.8" fill="none" />
-            <path d="M-4,-5 Q2,-6 8,-4" stroke="rgba(200,220,255,0.3)" stroke-width="0.8" fill="none" />
-            <!-- Head -->
-            <path d="M-20,-6 Q-24,-10 -22,-14 Q-18,-18 -14,-14 Q-12,-10 -14,-4 Q-16,-2 -20,-4 Z" fill="rgba(255,255,255,0.7)" />
-            <!-- Mask with strap -->
-            <path d="M-26,-10 Q-26,-14 -22,-15 Q-18,-14 -17,-10 Q-18,-8 -22,-8 Q-26,-8 -26,-10 Z" fill="rgba(100,200,255,0.5)" stroke="rgba(255,255,255,0.6)" stroke-width="1" />
-            <path d="M-17,-11 Q-14,-12 -14,-10" stroke="rgba(200,200,200,0.4)" stroke-width="0.8" fill="none" />
-            <!-- J-snorkel -->
-            <path d="M-18,-15 Q-16,-22 -14,-28 Q-13,-30 -12,-28" stroke="rgba(255,200,50,0.8)" stroke-width="2.5" stroke-linecap="round" fill="none" />
-            <circle cx="-12" cy="-29" r="1.5" fill="rgba(255,200,50,0.8)" />
-            <!-- Left arm (extended forward) -->
-            <path d="M-12,0 Q-18,4 -24,8 Q-26,9 -28,8" stroke="rgba(255,255,255,0.6)" stroke-width="2.5" stroke-linecap="round" fill="none" />
-            <!-- Right arm (extended back) -->
-            <path d="M10,2 Q16,6 22,10 Q24,11 26,10" stroke="rgba(255,255,255,0.6)" stroke-width="2.5" stroke-linecap="round" fill="none" />
-            <!-- Legs -->
-            <path d="M14,-2 Q20,0 24,4 Q26,6 24,8" stroke="rgba(255,255,255,0.55)" stroke-width="2.5" stroke-linecap="round" fill="none" />
-            <path d="M16,2 Q22,4 26,8 Q28,10 26,12" stroke="rgba(255,255,255,0.55)" stroke-width="2.5" stroke-linecap="round" fill="none" />
-            <!-- Short fins -->
-            <path d="M24,8 Q32,4 38,6 Q36,10 28,10 Q24,10 24,8 Z" fill="rgba(255,200,50,0.55)" />
-            <path d="M26,12 Q34,8 40,10 Q38,14 30,14 Q26,14 26,12 Z" fill="rgba(255,200,50,0.55)" />
+        <!-- Diver 1: Snorkeler (수면 스노클링) -->
+        <g class="diver diver--1" transform="translate(720, 200)">
+          <g transform="scale(2.5)">
+            <!-- 몸통 -->
+            <ellipse cx="0" cy="0" rx="18" ry="8" fill="rgba(255,255,255,0.75)" />
+            <!-- 머리 -->
+            <circle cx="-22" cy="-2" r="8" fill="rgba(255,220,185,0.8)" />
+            <!-- 마스크 -->
+            <ellipse cx="-26" cy="-3" rx="6" ry="4" fill="rgba(80,180,255,0.7)" stroke="rgba(255,255,255,0.9)" stroke-width="1.5" />
+            <ellipse cx="-28" cy="-4" rx="1.5" ry="1" fill="rgba(255,255,255,0.5)" />
+            <!-- J자 스노클 -->
+            <path d="M-20,-8 Q-18,-16 -16,-22" stroke="rgba(255,200,50,1)" stroke-width="3.5" stroke-linecap="round" fill="none" />
+            <circle cx="-16" cy="-24" r="2.5" fill="rgba(255,200,50,1)" />
+            <!-- 팔 -->
+            <path d="M-10,2 Q-18,8 -26,12" stroke="rgba(255,220,185,0.7)" stroke-width="4" stroke-linecap="round" fill="none" />
+            <path d="M10,2 Q18,8 26,10" stroke="rgba(255,220,185,0.7)" stroke-width="4" stroke-linecap="round" fill="none" />
+            <!-- 다리 -->
+            <path d="M14,-2 Q22,2 28,6" stroke="rgba(255,255,255,0.65)" stroke-width="4" stroke-linecap="round" fill="none" />
+            <path d="M16,2 Q24,6 30,10" stroke="rgba(255,255,255,0.65)" stroke-width="4" stroke-linecap="round" fill="none" />
+            <!-- 오리발 -->
+            <path d="M28,6 Q38,2 44,6 Q40,12 32,10 Z" fill="rgba(255,200,50,0.8)" />
+            <path d="M30,10 Q40,6 46,10 Q42,16 34,14 Z" fill="rgba(255,200,50,0.8)" />
           </g>
         </g>
 
-        <!-- Diver 2: Freediver (vertical descent, streamlined) -->
-        <g class="diver diver--2" transform="translate(720, 350)">
-          <g transform="scale(1.2) rotate(-30)">
-            <!-- Streamlined body (wetsuit) -->
-            <path d="M-6,-16 Q-8,-6 -7,4 Q-6,14 -5,18 Q0,20 5,18 Q6,14 7,4 Q8,-6 6,-16 Q3,-20 0,-20 Q-3,-20 -6,-16 Z" fill="rgba(255,255,255,0.65)" />
-            <!-- Wetsuit seam lines -->
-            <path d="M0,-18 Q0,-8 0,16" stroke="rgba(200,220,255,0.2)" stroke-width="0.6" fill="none" />
-            <!-- Head (streamlined) -->
-            <path d="M-5,-20 Q-6,-26 -4,-30 Q0,-34 4,-30 Q6,-26 5,-20 Q3,-18 0,-18 Q-3,-18 -5,-20 Z" fill="rgba(255,255,255,0.7)" />
-            <!-- Low-volume mask -->
-            <path d="M3,-28 Q6,-28 7,-26 Q6,-24 3,-24 Q1,-24 1,-26 Q1,-28 3,-28 Z" fill="rgba(100,200,255,0.5)" stroke="rgba(255,255,255,0.55)" stroke-width="0.8" />
-            <!-- Weight belt -->
-            <path d="M-7,2 Q0,3 7,2" stroke="rgba(160,160,160,0.5)" stroke-width="1.5" fill="none" />
-            <rect x="-2" y="1" width="4" height="3" rx="0.5" fill="rgba(180,180,180,0.4)" />
-            <!-- Arms along body -->
-            <path d="M-6,-14 Q-8,-6 -8,4 Q-8,10 -7,14" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round" fill="none" />
-            <path d="M6,-14 Q8,-6 8,4 Q8,10 7,14" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round" fill="none" />
-            <!-- Long bi-fins (2x body length) -->
-            <path d="M-5,18 Q-7,30 -8,42 Q-9,54 -7,62 Q-4,66 -2,60 Q-1,48 -1,36 Q0,26 0,20 Z" fill="rgba(0,200,200,0.45)" />
-            <path d="M5,18 Q7,30 8,42 Q9,54 7,62 Q4,66 2,60 Q1,48 1,36 Q0,26 0,20 Z" fill="rgba(0,200,200,0.45)" />
-            <!-- Fin blade detail lines -->
-            <path d="M-4,24 Q-6,36 -7,48" stroke="rgba(0,180,180,0.25)" stroke-width="0.6" fill="none" />
-            <path d="M4,24 Q6,36 7,48" stroke="rgba(0,180,180,0.25)" stroke-width="0.6" fill="none" />
+        <!-- Diver 2: Freediver (프리다이빙 하강) -->
+        <g class="diver diver--2" transform="translate(720, 380)">
+          <g transform="scale(2.2) rotate(-25)">
+            <!-- 롱핀 -->
+            <path d="M-4,26 Q-6,50 -5,75 Q-2,82 0,75 Q1,50 0,26 Z" fill="rgba(0,200,200,0.7)" />
+            <path d="M4,26 Q6,50 5,75 Q2,82 0,75 Q-1,50 0,26 Z" fill="rgba(0,200,200,0.7)" />
+            <path d="M-3,35 Q-4,50 -4,65" stroke="rgba(0,180,180,0.4)" stroke-width="0.8" fill="none" />
+            <path d="M3,35 Q4,50 4,65" stroke="rgba(0,180,180,0.4)" stroke-width="0.8" fill="none" />
+            <!-- 웨트슈트 몸통 -->
+            <path d="M-5,-18 Q-7,-8 -6,6 Q-5,18 0,24 Q5,18 6,6 Q7,-8 5,-18 Q2,-22 0,-22 Q-2,-22 -5,-18 Z" fill="rgba(20,20,20,0.8)" />
+            <!-- 머리 -->
+            <ellipse cx="0" cy="-28" rx="6" ry="7" fill="rgba(255,220,185,0.85)" />
+            <!-- 로우볼륨 마스크 -->
+            <path d="M-4,-30 Q-6,-30 -6,-28 Q-6,-26 -4,-26 Q-2,-26 -2,-28 Q-2,-30 -4,-30 Z" fill="rgba(80,180,255,0.7)" stroke="rgba(255,255,255,0.8)" stroke-width="1" />
+            <ellipse cx="-5" cy="-29" rx="0.8" ry="0.5" fill="rgba(255,255,255,0.5)" />
+            <!-- 팔 (유선형) -->
+            <path d="M-5,-12 Q-7,-4 -7,8 Q-6,16 -5,22" stroke="rgba(20,20,20,0.7)" stroke-width="3.5" stroke-linecap="round" fill="none" />
+            <path d="M5,-12 Q7,-4 7,8 Q6,16 5,22" stroke="rgba(20,20,20,0.7)" stroke-width="3.5" stroke-linecap="round" fill="none" />
+            <!-- 웨이트 벨트 -->
+            <rect x="-6" y="4" width="12" height="3" rx="1" fill="rgba(100,100,100,0.6)" />
+            <rect x="-2" y="4" width="4" height="3" rx="0.5" fill="rgba(160,160,160,0.7)" />
           </g>
         </g>
 
-        <!-- Diver 3: Scuba diver (neutral buoyancy, horizontal) -->
-        <g class="diver diver--3" transform="translate(720, 480)">
-          <g transform="scale(1.2)">
-            <!-- Tank with valve -->
-            <path d="M8,-18 Q6,-20 6,-16 Q6,-18 8,-20 Q12,-22 16,-20 Q18,-18 18,-16 Q18,-20 16,-18 L16,10 Q16,14 12,14 Q8,14 8,10 Z" fill="rgba(180,180,180,0.5)" />
-            <rect x="9" y="-22" width="6" height="3" rx="1" fill="rgba(200,200,200,0.5)" />
-            <!-- Valve (1st stage) -->
-            <path d="M10,-22 Q12,-25 14,-22" stroke="rgba(200,200,200,0.5)" stroke-width="1.5" fill="none" />
-            <circle cx="12" cy="-25" r="2" fill="rgba(180,180,180,0.4)" />
-            <!-- BCD wing -->
-            <path d="M6,-14 Q0,-10 -2,-4 Q-4,2 -2,8 Q0,12 4,14 Q6,14 6,10" fill="rgba(60,60,60,0.25)" stroke="rgba(255,200,0,0.4)" stroke-width="1.5" />
-            <path d="M18,-14 Q22,-10 24,-4 Q26,2 24,8 Q22,12 18,14 Q16,14 16,10" fill="rgba(60,60,60,0.25)" stroke="rgba(255,200,0,0.4)" stroke-width="1.5" />
-            <!-- Body (wetsuit) -->
-            <path d="M4,-14 Q0,-12 -2,-6 Q-4,0 -2,8 Q0,14 4,16 Q8,18 14,18 Q18,16 20,10 Q22,4 22,-4 Q20,-12 18,-14 Q14,-16 10,-16 Q6,-16 4,-14 Z" fill="rgba(0,0,0,0.3)" />
-            <!-- Head -->
-            <path d="M4,-16 Q2,-22 4,-28 Q6,-32 12,-32 Q18,-32 20,-28 Q22,-22 20,-16" fill="rgba(255,255,255,0.6)" />
-            <!-- Mask (with nose pocket) -->
-            <path d="M6,-28 Q4,-28 3,-26 Q2,-24 4,-22 Q6,-21 8,-22 L8,-24 Q8,-26 10,-26 Q12,-24 12,-22 Q14,-21 16,-22 Q18,-24 18,-26 Q18,-28 16,-28 Z" fill="rgba(100,200,255,0.5)" stroke="rgba(255,255,255,0.55)" stroke-width="0.8" />
-            <!-- Mask strap -->
-            <path d="M3,-25 Q0,-24 -1,-22" stroke="rgba(200,200,200,0.3)" stroke-width="0.8" fill="none" />
-            <!-- Regulator + hose -->
-            <path d="M14,-25 Q18,-24 20,-22 Q22,-20 20,-18 Q18,-16 16,-16" stroke="rgba(255,255,255,0.45)" stroke-width="1.8" fill="none" stroke-linecap="round" />
-            <circle cx="14" cy="-22" r="1.5" fill="rgba(255,255,255,0.4)" />
-            <!-- SPG console (hose from tank) -->
-            <path d="M8,-18 Q4,-16 2,-12 Q0,-8 2,-4" stroke="rgba(255,255,255,0.3)" stroke-width="1" fill="none" />
-            <circle cx="2" cy="-4" r="2.5" fill="rgba(0,0,0,0.2)" stroke="rgba(255,255,255,0.3)" stroke-width="0.8" />
-            <!-- Arms -->
-            <path d="M4,-8 Q-2,-4 -6,0 Q-8,2 -10,0" stroke="rgba(0,0,0,0.25)" stroke-width="2.5" stroke-linecap="round" fill="none" />
-            <path d="M20,-8 Q26,-4 30,0 Q32,2 34,0" stroke="rgba(0,0,0,0.25)" stroke-width="2.5" stroke-linecap="round" fill="none" />
-            <!-- Legs -->
-            <path d="M6,18 Q2,24 0,30" stroke="rgba(0,0,0,0.25)" stroke-width="2.5" stroke-linecap="round" fill="none" />
-            <path d="M16,18 Q20,24 22,30" stroke="rgba(0,0,0,0.25)" stroke-width="2.5" stroke-linecap="round" fill="none" />
-            <!-- Short fins -->
-            <path d="M0,30 Q-6,32 -10,30 Q-8,36 -2,36 Q2,34 0,30 Z" fill="rgba(0,0,0,0.2)" />
-            <path d="M22,30 Q28,32 32,30 Q30,36 24,36 Q20,34 22,30 Z" fill="rgba(0,0,0,0.2)" />
-            <!-- Bubbles from regulator -->
-            <circle cx="22" cy="-28" r="2" fill="rgba(255,255,255,0.3)" class="reg-bubble reg-bubble--1" />
-            <circle cx="26" cy="-36" r="1.5" fill="rgba(255,255,255,0.25)" class="reg-bubble reg-bubble--2" />
-            <circle cx="20" cy="-42" r="2.5" fill="rgba(255,255,255,0.2)" class="reg-bubble reg-bubble--3" />
+        <!-- Diver 3: Scuba diver (스쿠버다이빙) -->
+        <g class="diver diver--3" transform="translate(720, 560)">
+          <g transform="scale(2.2)">
+            <!-- 탱크 -->
+            <rect x="6" y="-18" width="12" height="28" rx="4" fill="rgba(200,200,200,0.7)" />
+            <rect x="9" y="-22" width="6" height="5" rx="1.5" fill="rgba(180,180,180,0.8)" />
+            <circle cx="12" cy="-24" r="2.5" fill="rgba(160,160,160,0.7)" />
+            <!-- BCD -->
+            <path d="M4,-14 Q-2,-8 -4,0 Q-4,8 0,14 Q4,16 6,14" fill="rgba(40,40,40,0.5)" stroke="rgba(255,180,0,0.7)" stroke-width="2" />
+            <path d="M20,-14 Q26,-8 28,0 Q28,8 24,14 Q20,16 18,14" fill="rgba(40,40,40,0.5)" stroke="rgba(255,180,0,0.7)" stroke-width="2" />
+            <!-- 웨트슈트 몸통 -->
+            <path d="M4,-14 Q0,-10 -2,-2 Q-2,8 2,14 Q8,18 16,18 Q22,14 24,6 Q26,-2 24,-10 Q20,-16 12,-16 Q6,-16 4,-14 Z" fill="rgba(20,20,20,0.75)" />
+            <!-- 머리 -->
+            <ellipse cx="12" cy="-24" rx="8" ry="9" fill="rgba(255,220,185,0.85)" />
+            <!-- 마스크 -->
+            <path d="M6,-26 Q4,-26 4,-24 Q4,-22 8,-21 L8,-23 Q10,-24 14,-24 Q16,-23 16,-21 Q20,-22 20,-24 Q20,-26 18,-26 Z" fill="rgba(80,180,255,0.7)" stroke="rgba(255,255,255,0.8)" stroke-width="1.2" />
+            <ellipse cx="7" cy="-25" rx="1.2" ry="0.8" fill="rgba(255,255,255,0.5)" />
+            <!-- 레귤레이터 -->
+            <path d="M16,-24 Q20,-22 22,-20 Q24,-18 22,-16" stroke="rgba(255,255,255,0.7)" stroke-width="2.5" stroke-linecap="round" fill="none" />
+            <circle cx="16" cy="-22" r="2" fill="rgba(200,200,200,0.6)" />
+            <!-- 게이지 호스 -->
+            <path d="M8,-16 Q2,-12 0,-6" stroke="rgba(255,255,255,0.4)" stroke-width="1.5" fill="none" />
+            <circle cx="0" cy="-4" r="3" fill="rgba(0,0,0,0.3)" stroke="rgba(255,255,255,0.5)" stroke-width="1" />
+            <!-- 팔 -->
+            <path d="M4,-6 Q-4,0 -10,4" stroke="rgba(20,20,20,0.6)" stroke-width="4" stroke-linecap="round" fill="none" />
+            <path d="M22,-6 Q30,0 36,4" stroke="rgba(20,20,20,0.6)" stroke-width="4" stroke-linecap="round" fill="none" />
+            <!-- 다리 -->
+            <path d="M6,18 Q2,26 -2,34" stroke="rgba(20,20,20,0.6)" stroke-width="4" stroke-linecap="round" fill="none" />
+            <path d="M18,18 Q22,26 26,34" stroke="rgba(20,20,20,0.6)" stroke-width="4" stroke-linecap="round" fill="none" />
+            <!-- 오리발 -->
+            <path d="M-2,34 Q-12,32 -16,36 Q-12,42 -4,40 Q0,38 -2,34 Z" fill="rgba(20,20,20,0.5)" />
+            <path d="M26,34 Q36,32 40,36 Q36,42 28,40 Q24,38 26,34 Z" fill="rgba(20,20,20,0.5)" />
+            <!-- 공기방울 -->
+            <circle cx="28" cy="-30" r="3" fill="rgba(255,255,255,0.4)" class="reg-bubble reg-bubble--1" />
+            <circle cx="32" cy="-40" r="2.5" fill="rgba(255,255,255,0.35)" class="reg-bubble reg-bubble--2" />
+            <circle cx="26" cy="-48" r="4" fill="rgba(255,255,255,0.25)" class="reg-bubble reg-bubble--3" />
           </g>
         </g>
 
