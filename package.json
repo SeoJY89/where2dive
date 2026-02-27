@@ -1,0 +1,12 @@
+{
+  "name": "where2dive",
+  "version": "1.0.0",
+  "description": "전 세계 스쿠버 다이빙 명소를 찾고, 지도에서 확인하고, 실시간 날씨·수온 정보를 확인하세요.",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve ."
+  },
+  "keywords": ["diving", "scuba", "snorkeling", "map", "travel"],
+  "license": "MIT",
+  "private": true
+}
