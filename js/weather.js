@@ -1,4 +1,6 @@
 // Open-Meteo API 호출 + 30분 인메모리 캐싱
+import { t } from './i18n.js';
+
 const cache = new Map();
 const CACHE_TTL = 30 * 60 * 1000; // 30분
 
@@ -14,23 +16,17 @@ function getCached(key) {
 }
 
 // 풍향 각도 → 방위 텍스트
+const DIR_KEYS = ['wind.N', 'wind.NE', 'wind.E', 'wind.SE', 'wind.S', 'wind.SW', 'wind.W', 'wind.NW'];
+
 function windDir(deg) {
-  const dirs = ['북', '북동', '동', '남동', '남', '남서', '서', '북서'];
-  return dirs[Math.round(deg / 45) % 8];
+  return t(DIR_KEYS[Math.round(deg / 45) % 8]);
 }
 
 // 날씨 코드 → 설명
 function weatherDesc(code) {
-  const map = {
-    0: '맑음', 1: '대체로 맑음', 2: '구름 약간', 3: '흐림',
-    45: '안개', 48: '짙은 안개',
-    51: '이슬비', 53: '이슬비', 55: '강한 이슬비',
-    61: '약한 비', 63: '비', 65: '강한 비',
-    71: '약한 눈', 73: '눈', 75: '강한 눈',
-    80: '소나기', 81: '소나기', 82: '강한 소나기',
-    95: '뇌우', 96: '우박 뇌우', 99: '강한 우박 뇌우',
-  };
-  return map[code] || '정보 없음';
+  const key = `weather.code.${code}`;
+  const val = t(key);
+  return val !== key ? val : t('weather.code.unknown');
 }
 
 export async function fetchWeather(lat, lng) {
@@ -51,7 +47,7 @@ export async function fetchWeather(lat, lng) {
     ),
   ]);
 
-  if (!forecastRes.ok) throw new Error('날씨 데이터 로딩 실패');
+  if (!forecastRes.ok) throw new Error(t('weather.fetchError'));
 
   const forecast = await forecastRes.json();
   let marine = null;

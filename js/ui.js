@@ -1,14 +1,9 @@
 // DOM 조작, 카드 렌더링, 모달
 import { isFavorite, toggleFavorite, getFavCount } from './favorites.js';
 import { fetchWeather } from './weather.js';
+import { t, td, translateMonth } from './i18n.js';
 
 let onDetailClick = () => {};
-
-const DIFFICULTY_LABEL = {
-  beginner: '초급',
-  intermediate: '중급',
-  advanced: '상급',
-};
 
 // ── 카드 렌더링 ──
 
@@ -28,7 +23,7 @@ export function renderCards(spots) {
   }
 
   emptyState.classList.add('hidden');
-  countEl.textContent = `${spots.length}개 다이빙 스팟`;
+  countEl.textContent = t('card.count').replace('{n}', spots.length);
 
   spots.forEach(spot => {
     grid.appendChild(createCard(spot));
@@ -53,41 +48,47 @@ function createCard(spot) {
   card.dataset.spotId = spot.id;
 
   const fav = isFavorite(spot.id);
-  const seasonBadges = spot.bestSeason.slice(0, 3).map(s => `<span class="badge badge--season">${s}</span>`).join('');
+  const seasonBadges = spot.bestSeason.slice(0, 3).map(s => `<span class="badge badge--season">${translateMonth(s)}</span>`).join('');
   const moreSeasons = spot.bestSeason.length > 3 ? `<span class="badge">+${spot.bestSeason.length - 3}</span>` : '';
+
+  const diffLabel = t('difficulty.' + spot.difficulty);
+  const activityBadges = (spot.activityTypes || []).map(a =>
+    `<span class="badge badge--activity badge--activity-${a}">${t('activity.' + a)}</span>`
+  ).join('');
 
   card.innerHTML = `
     <div class="card__header">
-      <span class="card__tag">${spot.country}</span>
-      <button class="card__fav ${fav ? 'active' : ''}" data-id="${spot.id}" aria-label="즐겨찾기">
+      <span class="card__tag">${td(spot, 'country')}</span>
+      <button class="card__fav ${fav ? 'active' : ''}" data-id="${spot.id}" aria-label="${t('nav.favorites')}">
         ${fav ? '\u2764' : '\u2661'}
       </button>
     </div>
-    <div class="card__name">${spot.name}</div>
-    <div class="card__location">${regionLabel(spot.region)} · ${spot.country}</div>
+    <div class="card__name">${td(spot, 'name')}</div>
+    <div class="card__location">${t('region.' + spot.region)} · ${td(spot, 'country')}</div>
     <div class="card__stats">
       <div class="card__stat">
-        <span class="card__stat-label">수심</span>
+        <span class="card__stat-label">${t('card.depth')}</span>
         <span class="card__stat-value">${spot.depth}</span>
       </div>
       <div class="card__stat">
-        <span class="card__stat-label">수온</span>
+        <span class="card__stat-label">${t('card.waterTemp')}</span>
         <span class="card__stat-value">${spot.waterTemp.min}~${spot.waterTemp.max}°C</span>
       </div>
       <div class="card__stat">
-        <span class="card__stat-label">시야</span>
+        <span class="card__stat-label">${t('card.visibility')}</span>
         <span class="card__stat-value">${spot.visibility}</span>
       </div>
     </div>
     <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
       <span class="card__difficulty card__difficulty--${spot.difficulty}">
         <span class="card__difficulty-dot"></span>
-        ${DIFFICULTY_LABEL[spot.difficulty]}
+        ${diffLabel}
       </span>
+      ${activityBadges}
       <div class="card__badges">${seasonBadges}${moreSeasons}</div>
     </div>
     <div class="card__actions">
-      <button class="btn btn--primary card__detail-btn" data-id="${spot.id}">상세보기</button>
+      <button class="btn btn--primary card__detail-btn" data-id="${spot.id}">${t('card.detail')}</button>
     </div>
   `;
 
@@ -116,64 +117,78 @@ export function openModal(spot) {
   const body = document.getElementById('modal-body');
   const fav = isFavorite(spot.id);
 
+  const seasonTags = spot.bestSeason.map(s => `<span class="modal__tag">${translateMonth(s)}</span>`).join('');
+  const marineLifeItems = (td(spot, 'marineLife') || spot.marineLife).map(m => `<span class="modal__tag">${m}</span>`).join('');
+  const highlightItems = (td(spot, 'highlights') || spot.highlights).map(h => `<li>${h}</li>`).join('');
+  const diffLabel = t('difficulty.' + spot.difficulty);
+  const activityBadges = (spot.activityTypes || []).map(a =>
+    `<span class="badge badge--activity badge--activity-${a}">${t('activity.' + a)}</span>`
+  ).join('');
+
   body.innerHTML = `
     <div class="modal__header">
       <div>
-        <h2 class="modal__title" id="modal-title">${spot.name}</h2>
-        <div class="modal__subtitle">${regionLabel(spot.region)} · ${spot.country}</div>
+        <h2 class="modal__title" id="modal-title">${td(spot, 'name')}</h2>
+        <div class="modal__subtitle">${t('region.' + spot.region)} · ${td(spot, 'country')}</div>
       </div>
-      <button class="modal__fav ${fav ? 'active' : ''}" data-id="${spot.id}" aria-label="즐겨찾기">
+      <button class="modal__fav ${fav ? 'active' : ''}" data-id="${spot.id}" aria-label="${t('nav.favorites')}">
         ${fav ? '\u2764' : '\u2661'}
       </button>
     </div>
 
-    <p class="modal__desc">${spot.description}</p>
+    <p class="modal__desc">${td(spot, 'description')}</p>
 
-    <div class="modal__section-title">다이빙 정보</div>
+    <div class="modal__section-title">${t('modal.info')}</div>
     <div class="modal__stats-grid">
       <div class="modal__stat-card">
-        <div class="modal__stat-card__label">수심</div>
+        <div class="modal__stat-card__label">${t('modal.depth')}</div>
         <div class="modal__stat-card__value">${spot.depth}</div>
       </div>
       <div class="modal__stat-card">
-        <div class="modal__stat-card__label">수온</div>
+        <div class="modal__stat-card__label">${t('modal.waterTemp')}</div>
         <div class="modal__stat-card__value">${spot.waterTemp.min}~${spot.waterTemp.max}°C</div>
       </div>
       <div class="modal__stat-card">
-        <div class="modal__stat-card__label">시야</div>
+        <div class="modal__stat-card__label">${t('modal.visibility')}</div>
         <div class="modal__stat-card__value">${spot.visibility}</div>
       </div>
       <div class="modal__stat-card">
-        <div class="modal__stat-card__label">난이도</div>
+        <div class="modal__stat-card__label">${t('modal.difficulty')}</div>
         <div class="modal__stat-card__value">
           <span class="card__difficulty card__difficulty--${spot.difficulty}">
             <span class="card__difficulty-dot"></span>
-            ${DIFFICULTY_LABEL[spot.difficulty]}
+            ${diffLabel}
           </span>
+        </div>
+      </div>
+      <div class="modal__stat-card">
+        <div class="modal__stat-card__label">${t('modal.activityType')}</div>
+        <div class="modal__stat-card__value" style="display:flex;gap:4px;justify-content:center;flex-wrap:wrap;">
+          ${activityBadges}
         </div>
       </div>
     </div>
 
-    <div class="modal__section-title">추천 시즌</div>
+    <div class="modal__section-title">${t('modal.bestSeason')}</div>
     <div class="modal__tags">
-      ${spot.bestSeason.map(s => `<span class="modal__tag">${s}</span>`).join('')}
+      ${seasonTags}
     </div>
 
-    <div class="modal__section-title">해양 생물</div>
+    <div class="modal__section-title">${t('modal.marineLife')}</div>
     <div class="modal__tags">
-      ${spot.marineLife.map(m => `<span class="modal__tag">${m}</span>`).join('')}
+      ${marineLifeItems}
     </div>
 
-    <div class="modal__section-title">하이라이트</div>
+    <div class="modal__section-title">${t('modal.highlights')}</div>
     <ul class="modal__highlights">
-      ${spot.highlights.map(h => `<li>${h}</li>`).join('')}
+      ${highlightItems}
     </ul>
 
     <div class="modal__weather" id="weather-section">
-      <div class="modal__weather-title">실시간 날씨 · 해양 정보</div>
+      <div class="modal__weather-title">${t('modal.weather.title')}</div>
       <div class="weather-loading" id="weather-loading">
         <div class="spinner"></div>
-        <span style="font-size:0.8rem;color:var(--c-gray-300);">날씨 데이터 불러오는 중...</span>
+        <span style="font-size:0.8rem;color:var(--c-gray-300);">${t('modal.weather.loading')}</span>
       </div>
     </div>
   `;
@@ -205,18 +220,18 @@ async function loadWeather(spot) {
     loading.remove();
 
     const items = [];
-    if (w.temperature != null) items.push({ label: '기온', value: `${w.temperature}°C` });
-    if (w.weatherText) items.push({ label: '날씨', value: w.weatherText });
-    if (w.windSpeed != null) items.push({ label: '풍속', value: `${w.windSpeed} km/h` });
-    if (w.windDir) items.push({ label: '풍향', value: w.windDir });
-    if (w.waterTemp != null) items.push({ label: '수온(실시간)', value: `${w.waterTemp}°C` });
-    if (w.waveHeight != null) items.push({ label: '파고', value: `${w.waveHeight}m` });
-    if (w.waveDir) items.push({ label: '파향', value: w.waveDir });
-    if (w.wavePeriod != null) items.push({ label: '파주기', value: `${w.wavePeriod}s` });
+    if (w.temperature != null) items.push({ label: t('weather.temperature'), value: `${w.temperature}°C` });
+    if (w.weatherText) items.push({ label: t('weather.weather'), value: w.weatherText });
+    if (w.windSpeed != null) items.push({ label: t('weather.windSpeed'), value: `${w.windSpeed} km/h` });
+    if (w.windDir) items.push({ label: t('weather.windDir'), value: w.windDir });
+    if (w.waterTemp != null) items.push({ label: t('weather.waterTemp'), value: `${w.waterTemp}°C` });
+    if (w.waveHeight != null) items.push({ label: t('weather.waveHeight'), value: `${w.waveHeight}m` });
+    if (w.waveDir) items.push({ label: t('weather.waveDir'), value: w.waveDir });
+    if (w.wavePeriod != null) items.push({ label: t('weather.wavePeriod'), value: `${w.wavePeriod}s` });
 
     if (items.length === 0) {
       section.insertAdjacentHTML('beforeend',
-        `<div class="weather-error">이 지역의 날씨 데이터를 사용할 수 없습니다.</div>`
+        `<div class="weather-error">${t('weather.noData')}</div>`
       );
       return;
     }
@@ -233,15 +248,15 @@ async function loadWeather(spot) {
   } catch {
     loading.innerHTML = `
       <div class="weather-error">
-        날씨 데이터를 불러오지 못했습니다.
-        <button class="weather-error__retry" id="weather-retry">다시 시도</button>
+        ${t('weather.error')}
+        <button class="weather-error__retry" id="weather-retry">${t('weather.retry')}</button>
       </div>
     `;
     document.getElementById('weather-retry')?.addEventListener('click', () => {
       loading.innerHTML = `
         <div class="weather-loading">
           <div class="spinner"></div>
-          <span style="font-size:0.8rem;color:var(--c-gray-300);">날씨 데이터 불러오는 중...</span>
+          <span style="font-size:0.8rem;color:var(--c-gray-300);">${t('modal.weather.loading')}</span>
         </div>
       `;
       loadWeather(spot);
@@ -268,24 +283,6 @@ export function initModal() {
 
 export function setDetailClickHandler(fn) {
   onDetailClick = fn;
-}
-
-// ── Helpers ──
-
-const REGION_LABELS = {
-  korea: '한국',
-  'southeast-asia': '동남아시아',
-  oceania: '오세아니아',
-  'indian-ocean': '인도양',
-  'red-sea': '홍해',
-  caribbean: '카리브해',
-  europe: '유럽',
-  'east-asia': '동아시아',
-  pacific: '태평양',
-};
-
-function regionLabel(id) {
-  return REGION_LABELS[id] || id;
 }
 
 export function updateFavCount() {

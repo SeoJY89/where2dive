@@ -36,9 +36,13 @@
           즐겨찾기(<span id="fav-count">0</span>)
         </button>
       </nav>
+      <div class="lang-toggle" id="lang-toggle">
+        <button class="lang-toggle__btn active" data-lang="ko">한국어</button>
+        <button class="lang-toggle__btn" data-lang="en">EN</button>
+      </div>
       <button class="header__mobile-filter-toggle" id="filter-toggle" aria-label="필터 열기/닫기" aria-expanded="false">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg>
-        필터
+        <span id="filter-toggle-text">필터</span>
       </button>
     </div>
   </header>
@@ -50,19 +54,25 @@
         <label for="search-input" class="sr-only">검색</label>
         <input type="search" id="search-input" class="filter-input" placeholder="스팟 이름, 국가, 해양생물 검색..." autocomplete="off" />
       </div>
+      <div class="filter-group filter-group--activity">
+        <div class="activity-toggle" role="radiogroup" aria-label="활동 유형">
+          <button class="activity-toggle__btn active" data-activity="" aria-pressed="true">전체</button>
+          <button class="activity-toggle__btn" data-activity="skin" aria-pressed="false">스킨</button>
+          <button class="activity-toggle__btn" data-activity="scuba" aria-pressed="false">스쿠버</button>
+        </div>
+      </div>
+      <div class="filter-group filter-group--country">
+        <label for="country-input" class="sr-only">국가 검색</label>
+        <div class="autocomplete" id="country-autocomplete">
+          <input type="text" id="country-input" class="filter-input" placeholder="국가 검색 (EN)..." autocomplete="off" />
+          <button class="autocomplete__clear hidden" id="country-clear" aria-label="국가 선택 해제">&times;</button>
+          <ul class="autocomplete__list hidden" id="country-list" role="listbox"></ul>
+        </div>
+      </div>
       <div class="filter-group">
         <label for="region-select" class="sr-only">지역</label>
         <select id="region-select" class="filter-select">
           <option value="">모든 지역</option>
-        </select>
-      </div>
-      <div class="filter-group">
-        <label for="difficulty-select" class="sr-only">난이도</label>
-        <select id="difficulty-select" class="filter-select">
-          <option value="">모든 난이도</option>
-          <option value="beginner">초급</option>
-          <option value="intermediate">중급</option>
-          <option value="advanced">상급</option>
         </select>
       </div>
       <div class="filter-group filter-group--range">

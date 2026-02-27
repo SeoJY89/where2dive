@@ -119,6 +119,28 @@
     background: var(--c-ocean);
   }
 
+  /* Language toggle */
+  .lang-toggle {
+    display: inline-flex;
+    border: 1px solid var(--c-ocean);
+    border-radius: var(--r-full);
+    overflow: hidden;
+    margin-left: var(--sp-2);
+    flex-shrink: 0;
+  }
+  .lang-toggle__btn {
+    padding: var(--sp-1) var(--sp-3);
+    font-size: 0.75rem; font-weight: 600;
+    color: var(--c-gray-300);
+    transition: all var(--dur) var(--ease);
+    white-space: nowrap;
+  }
+  .lang-toggle__btn:hover { color: var(--c-white); background: rgba(255,255,255,.08); }
+  .lang-toggle__btn.active {
+    background: var(--c-ocean);
+    color: var(--c-white);
+  }
+
   .header__mobile-filter-toggle {
     display: none;
     align-items: center; gap: var(--sp-1);
@@ -322,6 +344,79 @@
     background: var(--c-gray-100); color: var(--c-gray-700);
   }
   .badge--season { background: var(--c-aqua); color: var(--c-deep); }
+  .badge--activity {
+    font-size: 0.65rem; font-weight: 600;
+    padding: 2px 8px; border-radius: var(--r-full);
+  }
+  .badge--activity-skin {
+    background: color-mix(in oklch, var(--c-teal) 18%, white);
+    color: var(--c-ocean);
+  }
+  .badge--activity-scuba {
+    background: color-mix(in oklch, var(--c-ocean) 18%, white);
+    color: var(--c-deep);
+  }
+
+  /* Activity toggle */
+  .activity-toggle {
+    display: inline-flex;
+    border: 1px solid var(--c-gray-200);
+    border-radius: var(--r-md);
+    overflow: hidden;
+    background: var(--c-gray-100);
+  }
+  .activity-toggle__btn {
+    padding: var(--sp-2) var(--sp-3);
+    font-size: 0.8rem; font-weight: 500;
+    color: var(--c-gray-500);
+    border-right: 1px solid var(--c-gray-200);
+    transition: all var(--dur) var(--ease);
+    white-space: nowrap;
+  }
+  .activity-toggle__btn:last-child { border-right: none; }
+  .activity-toggle__btn:hover { color: var(--c-gray-700); background: var(--c-gray-200); }
+  .activity-toggle__btn.active {
+    background: var(--c-ocean);
+    color: var(--c-white);
+  }
+
+  /* Autocomplete */
+  .autocomplete {
+    position: relative;
+  }
+  .autocomplete .filter-input {
+    padding-right: 2rem;
+  }
+  .autocomplete__clear {
+    position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+    width: 20px; height: 20px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem; color: var(--c-gray-500);
+    border-radius: 50%;
+    transition: color var(--dur) var(--ease);
+  }
+  .autocomplete__clear:hover { color: var(--c-coral); }
+  .autocomplete__list {
+    position: absolute; top: 100%; left: 0; right: 0;
+    z-index: 900;
+    max-height: 220px; overflow-y: auto;
+    background: var(--c-white);
+    border: 1px solid var(--c-gray-200);
+    border-radius: var(--r-md);
+    box-shadow: var(--shadow-md);
+    margin-top: 4px;
+  }
+  .autocomplete__item {
+    padding: var(--sp-2) var(--sp-3);
+    font-size: 0.85rem; color: var(--c-gray-700);
+    cursor: pointer;
+    transition: background var(--dur) var(--ease);
+  }
+  .autocomplete__item:hover,
+  .autocomplete__item.active {
+    background: var(--c-sky);
+    color: var(--c-ocean);
+  }
 
   .card__difficulty {
     display: inline-flex; align-items: center; gap: 4px;
@@ -606,6 +701,8 @@
     padding: var(--sp-3) var(--sp-4);
   }
   .filter-group { min-width: 100%; }
+  .activity-toggle { width: 100%; }
+  .activity-toggle__btn { flex: 1; text-align: center; }
 
   .map-panel { height: 300px; }
 

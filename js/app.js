@@ -2,8 +2,9 @@
 import { spots } from './data.js';
 import { initMap, updateMarkers, setMapSpotClickHandler, flyToSpot, invalidateMapSize } from './map.js';
 import { renderCards, renderFavEmpty, openModal, initModal, setDetailClickHandler, updateFavCount } from './ui.js';
-import { initFilters, filterSpots, setFilterListener } from './filters.js';
+import { initFilters, filterSpots, setFilterListener, refreshFilterLabels } from './filters.js';
 import { getFavorites } from './favorites.js';
+import { getLang, setLang, setLangChangeListener, t } from './i18n.js';
 
 // ── State ──
 let currentView = 'map'; // 'map' | 'list' | 'favorites'
@@ -13,6 +14,10 @@ document.addEventListener('DOMContentLoaded', () => {
   initMap();
   initFilters();
   initModal();
+
+  // Apply saved language on load
+  applyLangToggleState();
+  updateStaticLabels();
 
   // 초기 렌더
   updateFavCount();
@@ -39,7 +44,62 @@ document.addEventListener('DOMContentLoaded', () => {
       switchView(view);
     });
   });
+
+  // ── Language toggle ──
+  document.querySelectorAll('.lang-toggle__btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      setLang(btn.dataset.lang);
+    });
+  });
+
+  setLangChangeListener(() => {
+    applyLangToggleState();
+    updateStaticLabels();
+    refreshFilterLabels();
+    refresh();
+  });
 });
+
+function applyLangToggleState() {
+  const lang = getLang();
+  document.querySelectorAll('.lang-toggle__btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.lang === lang);
+  });
+}
+
+function updateStaticLabels() {
+  const lang = getLang();
+
+  // html lang attribute
+  document.documentElement.lang = lang === 'en' ? 'en' : 'ko';
+
+  // page title
+  document.title = t('title');
+
+  // nav buttons
+  document.querySelectorAll('.nav-btn').forEach(btn => {
+    const view = btn.dataset.view;
+    if (view === 'map') btn.childNodes[0].textContent = t('nav.map');
+    else if (view === 'list') btn.childNodes[0].textContent = t('nav.list');
+    else if (view === 'favorites') {
+      // Preserve fav-count span
+      const span = btn.querySelector('#fav-count');
+      const count = span ? span.textContent : '0';
+      btn.innerHTML = `${t('nav.favorites')}(<span id="fav-count">${count}</span>)`;
+    }
+  });
+
+  // empty state texts
+  const emptyP = document.querySelector('#empty-state p');
+  if (emptyP) emptyP.textContent = t('empty.noSpots');
+  const emptyResetBtn = document.getElementById('empty-reset');
+  if (emptyResetBtn) emptyResetBtn.textContent = t('empty.reset');
+
+  const favEmptyP = document.querySelector('#fav-empty-state p');
+  if (favEmptyP) favEmptyP.textContent = t('empty.noFavorites');
+  const favEmptySub = document.querySelector('#fav-empty-state .empty-state__sub');
+  if (favEmptySub) favEmptySub.textContent = t('empty.noFavoritesSub');
+}
 
 function switchView(view) {
   currentView = view;

@@ -1,4 +1,6 @@
 // Leaflet 지도 + 마커 관리
+import { t, td } from './i18n.js';
+
 let map;
 let markerLayer;
 let onSpotClick = () => {};
@@ -19,21 +21,15 @@ function createIcon(difficulty) {
   });
 }
 
-const DIFFICULTY_LABEL = {
-  beginner: '초급',
-  intermediate: '중급',
-  advanced: '상급',
-};
-
 function popupHtml(spot) {
   return `
     <div class="popup">
-      <div class="popup__name">${spot.name}</div>
+      <div class="popup__name">${td(spot, 'name')}</div>
       <div class="popup__meta">
-        <span>${DIFFICULTY_LABEL[spot.difficulty]}</span>
+        <span>${t('difficulty.' + spot.difficulty)}</span>
         <span>${spot.waterTemp.min}~${spot.waterTemp.max}°C</span>
       </div>
-      <button class="popup__btn" data-spot-id="${spot.id}">상세보기</button>
+      <button class="popup__btn" data-spot-id="${spot.id}">${t('card.detail')}</button>
     </div>
   `;
 }
