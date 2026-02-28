@@ -163,6 +163,23 @@ const ko = {
   'landing.demo': '데모: demo@where2dive.com / 1234',
   'landing.error': '이메일 또는 비밀번호가 올바르지 않습니다.',
 
+  // signup
+  'landing.nickname': '닉네임',
+  'landing.nickname.placeholder': '닉네임 (2~12자)',
+  'landing.nickname.check': '중복확인',
+  'landing.passwordConfirm': '비밀번호 확인',
+  'landing.passwordConfirm.placeholder': '비밀번호 확인',
+
+  // signup validation
+  'signup.error.email.invalid': '유효한 이메일 주소를 입력해주세요.',
+  'signup.error.nickname.length': '닉네임은 2~12자여야 합니다.',
+  'signup.error.nickname.chars': '한글, 영문, 숫자만 사용할 수 있습니다.',
+  'signup.error.nickname.duplicate': '이미 사용 중인 닉네임입니다.',
+  'signup.error.nickname.available': '사용 가능한 닉네임입니다.',
+  'signup.error.nickname.checkRequired': '닉네임 중복확인을 해주세요.',
+  'signup.error.password.weak': '비밀번호는 8자 이상, 영문+숫자를 포함해야 합니다.',
+  'signup.error.password.mismatch': '비밀번호가 일치하지 않습니다.',
+
   // auth errors
   'auth.error.generic': '인증에 실패했습니다. 다시 시도해주세요.',
   'auth.error.user-not-found': '등록되지 않은 이메일입니다.',
@@ -377,6 +394,23 @@ const en = {
   'landing.google': 'Continue with Google',
   'landing.demo': 'Demo: demo@where2dive.com / 1234',
   'landing.error': 'Invalid email or password.',
+
+  // signup
+  'landing.nickname': 'Nickname',
+  'landing.nickname.placeholder': 'Nickname (2-12 chars)',
+  'landing.nickname.check': 'Check',
+  'landing.passwordConfirm': 'Confirm Password',
+  'landing.passwordConfirm.placeholder': 'Confirm Password',
+
+  // signup validation
+  'signup.error.email.invalid': 'Please enter a valid email address.',
+  'signup.error.nickname.length': 'Nickname must be 2-12 characters.',
+  'signup.error.nickname.chars': 'Only Korean, English, and numbers allowed.',
+  'signup.error.nickname.duplicate': 'This nickname is already taken.',
+  'signup.error.nickname.available': 'This nickname is available.',
+  'signup.error.nickname.checkRequired': 'Please check nickname availability.',
+  'signup.error.password.weak': 'Password must be 8+ chars with letters and numbers.',
+  'signup.error.password.mismatch': 'Passwords do not match.',
 
   // auth errors
   'auth.error.generic': 'Authentication failed. Please try again.',

@@ -4,6 +4,11 @@ service cloud.firestore {
     match /users/{userId}/{document=**} {
       allow read, write: if request.auth != null && request.auth.uid == userId;
     }
+    // 닉네임 중복 확인용 — 누구나 읽기 가능(가입 전 중복확인), 본인 문서만 쓰기
+    match /nicknames/{userId} {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
     match /{document=**} {
       allow read, write: if false;
     }

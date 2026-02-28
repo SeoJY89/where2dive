@@ -5,7 +5,7 @@ import { renderCards, renderFavEmpty, openModal, initModal, setDetailClickHandle
 import { initFilters, filterSpots, setFilterListener, refreshFilterLabels, getActivityCounts, filterMySpots } from './filters.js';
 import { getFavorites, loadFavorites, clearFavorites } from './favorites.js';
 import { getLang, setLang, setLangChangeListener, t } from './i18n.js';
-import { isLoggedIn, login, signup, loginWithGoogle, logout, onAuthChange, waitForAuth } from './auth.js';
+import { isLoggedIn, login, signup, loginWithGoogle, logout, onAuthChange, waitForAuth, checkNickname } from './auth.js';
 import { getLogEntries, getLogEntry, addLogEntry, updateLogEntry, deleteLogEntry, getLogStats, loadLogbook, clearLogbook } from './logbook.js';
 import { getMySpots, getMySpot, addMySpot, updateMySpot, deleteMySpot, loadMySpots, clearMySpots } from './myspots.js';
 import { migrateLocalStorageToFirestore } from './migrate.js';
@@ -59,6 +59,14 @@ function updateLandingLabels() {
 
   const logoutBtn = document.getElementById('logout-btn');
   if (logoutBtn) logoutBtn.textContent = t('nav.logout');
+
+  // Signup field labels
+  const nicknameInput = document.getElementById('login-nickname');
+  if (nicknameInput) nicknameInput.placeholder = t('landing.nickname.placeholder');
+  const checkBtn = document.getElementById('nickname-check-btn');
+  if (checkBtn) checkBtn.textContent = t('landing.nickname.check');
+  const pwConfirmInput = document.getElementById('login-password-confirm');
+  if (pwConfirmInput) pwConfirmInput.placeholder = t('landing.passwordConfirm.placeholder');
 }
 
 // ── Firebase Auth 에러 → i18n 메시지 변환 ──
@@ -193,6 +201,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   });
 
+  // Signup validation init
+  initSignupValidation();
+
   // Login form
   document.getElementById('login-form').addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -206,7 +217,16 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     try {
       if (authMode === 'signup') {
-        await signup(email, pw);
+        const nickname = document.getElementById('login-nickname').value.trim();
+
+        // Final validation check
+        if (!nicknameChecked || nicknameCheckedValue !== nickname) {
+          showFieldError('nickname-error', t('signup.error.nickname.checkRequired'));
+          submitBtn.disabled = false;
+          return;
+        }
+
+        await signup(email, pw, nickname);
       } else {
         await login(email, pw);
       }
@@ -266,6 +286,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 // ── Landing Tabs (login/signup toggle) ──
+let nicknameChecked = false;
+let nicknameCheckedValue = '';
+
 function initLandingTabs() {
   const tabLogin = document.getElementById('tab-login');
   const tabSignup = document.getElementById('tab-signup');
@@ -277,13 +300,173 @@ function initLandingTabs() {
     tabSignup.classList.toggle('active', mode === 'signup');
     const submitBtn = document.getElementById('login-submit');
     if (submitBtn) submitBtn.textContent = mode === 'signup' ? t('landing.signup') : t('landing.login');
-    // Clear error on mode switch
+
+    // Toggle signup-only fields
+    document.querySelectorAll('.landing__signup-field').forEach(el => {
+      el.classList.toggle('hidden', mode !== 'signup');
+    });
+
+    // Clear all errors on mode switch
     const errorEl = document.getElementById('login-error');
     if (errorEl) errorEl.classList.add('hidden');
+    document.querySelectorAll('.landing__field-error').forEach(el => {
+      el.classList.add('hidden');
+      el.textContent = '';
+      el.classList.remove('landing__field-error--success');
+    });
+
+    // Reset nickname check state
+    nicknameChecked = false;
+    nicknameCheckedValue = '';
+
+    // Update submit button state
+    updateSubmitState();
   }
 
   tabLogin.addEventListener('click', () => setMode('login'));
   tabSignup.addEventListener('click', () => setMode('signup'));
+}
+
+// ── Signup Validation ──
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const NICKNAME_RE = /^[가-힣a-zA-Z0-9]+$/;
+const PASSWORD_RE = /^(?=.*[a-zA-Z])(?=.*\d).{8,}$/;
+
+function validateEmail(value) {
+  if (!value) return null;
+  if (!EMAIL_RE.test(value)) return t('signup.error.email.invalid');
+  return '';
+}
+
+function validateNickname(value) {
+  if (!value) return null;
+  if (value.length < 2 || value.length > 12) return t('signup.error.nickname.length');
+  if (!NICKNAME_RE.test(value)) return t('signup.error.nickname.chars');
+  return '';
+}
+
+function validatePassword(value) {
+  if (!value) return null;
+  if (!PASSWORD_RE.test(value)) return t('signup.error.password.weak');
+  return '';
+}
+
+function validatePasswordConfirm(pw, pwConfirm) {
+  if (!pwConfirm) return null;
+  if (pw !== pwConfirm) return t('signup.error.password.mismatch');
+  return '';
+}
+
+function showFieldError(id, msg, isSuccess) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  if (msg === null || msg === undefined) {
+    el.classList.add('hidden');
+    el.textContent = '';
+    el.classList.remove('landing__field-error--success');
+    return;
+  }
+  el.textContent = msg;
+  el.classList.toggle('hidden', msg === '');
+  el.classList.toggle('landing__field-error--success', !!isSuccess);
+}
+
+function updateSubmitState() {
+  const submitBtn = document.getElementById('login-submit');
+  if (!submitBtn) return;
+
+  if (authMode !== 'signup') {
+    submitBtn.disabled = false;
+    return;
+  }
+
+  const email = document.getElementById('login-email').value.trim();
+  const nickname = document.getElementById('login-nickname').value.trim();
+  const pw = document.getElementById('login-password').value;
+  const pwConfirm = document.getElementById('login-password-confirm').value;
+
+  const emailOk = EMAIL_RE.test(email);
+  const nicknameOk = nickname.length >= 2 && nickname.length <= 12 && NICKNAME_RE.test(nickname);
+  const nicknameCheckOk = nicknameChecked && nicknameCheckedValue === nickname;
+  const pwOk = PASSWORD_RE.test(pw);
+  const pwMatchOk = pw === pwConfirm && pwConfirm.length > 0;
+
+  submitBtn.disabled = !(emailOk && nicknameOk && nicknameCheckOk && pwOk && pwMatchOk);
+}
+
+function initSignupValidation() {
+  const emailInput = document.getElementById('login-email');
+  const nicknameInput = document.getElementById('login-nickname');
+  const pwInput = document.getElementById('login-password');
+  const pwConfirmInput = document.getElementById('login-password-confirm');
+  const checkBtn = document.getElementById('nickname-check-btn');
+
+  emailInput.addEventListener('input', () => {
+    if (authMode === 'signup') {
+      const err = validateEmail(emailInput.value.trim());
+      showFieldError('email-error', err);
+    }
+    updateSubmitState();
+  });
+
+  nicknameInput.addEventListener('input', () => {
+    // Reset check state when nickname changes
+    if (nicknameCheckedValue !== nicknameInput.value.trim()) {
+      nicknameChecked = false;
+      nicknameCheckedValue = '';
+    }
+    const err = validateNickname(nicknameInput.value.trim());
+    showFieldError('nickname-error', err);
+    updateSubmitState();
+  });
+
+  pwInput.addEventListener('input', () => {
+    if (authMode === 'signup') {
+      const err = validatePassword(pwInput.value);
+      showFieldError('password-error', err);
+      // Re-validate confirm if it has a value
+      if (pwConfirmInput.value) {
+        const confirmErr = validatePasswordConfirm(pwInput.value, pwConfirmInput.value);
+        showFieldError('password-confirm-error', confirmErr);
+      }
+    }
+    updateSubmitState();
+  });
+
+  pwConfirmInput.addEventListener('input', () => {
+    const err = validatePasswordConfirm(pwInput.value, pwConfirmInput.value);
+    showFieldError('password-confirm-error', err);
+    updateSubmitState();
+  });
+
+  // Nickname check button
+  checkBtn.addEventListener('click', async () => {
+    const nickname = nicknameInput.value.trim();
+    const validErr = validateNickname(nickname);
+    if (validErr !== '') {
+      showFieldError('nickname-error', validErr || t('signup.error.nickname.length'));
+      return;
+    }
+
+    checkBtn.disabled = true;
+    try {
+      const available = await checkNickname(nickname);
+      if (available) {
+        nicknameChecked = true;
+        nicknameCheckedValue = nickname;
+        showFieldError('nickname-error', t('signup.error.nickname.available'), true);
+      } else {
+        nicknameChecked = false;
+        nicknameCheckedValue = '';
+        showFieldError('nickname-error', t('signup.error.nickname.duplicate'));
+      }
+    } catch {
+      showFieldError('nickname-error', t('auth.error.generic'));
+    } finally {
+      checkBtn.disabled = false;
+      updateSubmitState();
+    }
+  });
 }
 
 function applyLangToggleState() {

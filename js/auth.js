@@ -1,13 +1,22 @@
 // Firebase Auth 인증 모듈
-import { auth } from './firebase.js';
+import { auth, db } from './firebase.js';
 import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
+  updateProfile,
   signInWithPopup,
   GoogleAuthProvider,
   signOut,
 } from 'firebase/auth';
+import {
+  doc,
+  setDoc,
+  getDocs,
+  query,
+  collection,
+  where,
+} from 'firebase/firestore';
 
 let currentUser = null;
 let authReady = false;
@@ -55,9 +64,33 @@ export async function login(email, pw) {
   await signInWithEmailAndPassword(auth, email, pw);
 }
 
-/** 이메일/비밀번호 회원가입 */
-export async function signup(email, pw) {
-  await createUserWithEmailAndPassword(auth, email, pw);
+/** 닉네임 중복 확인 */
+export async function checkNickname(nickname) {
+  const q = query(collection(db, 'nicknames'), where('nickname', '==', nickname));
+  const snap = await getDocs(q);
+  return snap.empty; // true = 사용 가능
+}
+
+/** 이메일/비밀번호 회원가입 (닉네임 포함) */
+export async function signup(email, pw, nickname) {
+  const cred = await createUserWithEmailAndPassword(auth, email, pw);
+  const uid = cred.user.uid;
+
+  // Firebase Auth 프로필에 닉네임 저장
+  await updateProfile(cred.user, { displayName: nickname });
+
+  // Firestore users 컬렉션에 저장
+  await setDoc(doc(db, 'users', uid), {
+    nickname,
+    email,
+    createdAt: new Date().toISOString(),
+  });
+
+  // 닉네임 검색용 별도 컬렉션
+  await setDoc(doc(db, 'nicknames', uid), {
+    nickname,
+    uid,
+  });
 }
 
 /** Google 로그인 */

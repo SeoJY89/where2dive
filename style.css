@@ -216,6 +216,47 @@
     text-align: center;
   }
 
+  /* Signup field-level error/success messages */
+  .landing__field-error {
+    font-size: 0.75rem; color: var(--c-coral-light);
+    margin-top: var(--sp-1);
+  }
+  .landing__field-error--success {
+    color: var(--c-easy);
+  }
+
+  /* Nickname row: input + check button */
+  .landing__nickname-row {
+    display: flex; gap: var(--sp-2);
+  }
+  .landing__nickname-row .landing__input {
+    flex: 1; min-width: 0;
+  }
+  .landing__check-btn {
+    flex-shrink: 0;
+    padding: var(--sp-2) var(--sp-3);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: var(--r-md);
+    background: rgba(255,255,255,0.08);
+    color: var(--c-white);
+    font-size: 0.8rem; font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background var(--dur) var(--ease);
+  }
+  .landing__check-btn:hover { background: rgba(255,255,255,0.15); }
+  .landing__check-btn:disabled {
+    opacity: 0.5; cursor: not-allowed;
+  }
+
+  /* Disabled submit button */
+  .landing__submit:disabled {
+    opacity: 0.45; cursor: not-allowed;
+  }
+  .landing__submit:disabled:hover {
+    background: var(--c-ocean);
+  }
+
   .landing__demo {
     font-size: 0.75rem; color: rgba(255,255,255,0.4);
     text-align: center;

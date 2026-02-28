@@ -373,10 +373,27 @@
         <div class="landing__field">
           <label for="login-email" class="sr-only" data-i18n="landing.email">이메일</label>
           <input type="email" id="login-email" class="landing__input" placeholder="Email" required />
+          <p class="landing__field-error hidden" id="email-error"></p>
+        </div>
+        <!-- Signup-only: Nickname -->
+        <div class="landing__field landing__signup-field hidden" id="nickname-field">
+          <label for="login-nickname" class="sr-only">닉네임</label>
+          <div class="landing__nickname-row">
+            <input type="text" id="login-nickname" class="landing__input" placeholder="닉네임 (2~12자)" maxlength="12" />
+            <button type="button" class="landing__check-btn" id="nickname-check-btn">중복확인</button>
+          </div>
+          <p class="landing__field-error hidden" id="nickname-error"></p>
         </div>
         <div class="landing__field">
           <label for="login-password" class="sr-only" data-i18n="landing.password">비밀번호</label>
           <input type="password" id="login-password" class="landing__input" placeholder="Password" required />
+          <p class="landing__field-error hidden" id="password-error"></p>
+        </div>
+        <!-- Signup-only: Password Confirm -->
+        <div class="landing__field landing__signup-field hidden" id="password-confirm-field">
+          <label for="login-password-confirm" class="sr-only">비밀번호 확인</label>
+          <input type="password" id="login-password-confirm" class="landing__input" placeholder="비밀번호 확인" />
+          <p class="landing__field-error hidden" id="password-confirm-error"></p>
         </div>
         <button type="submit" class="landing__submit" id="login-submit" data-i18n="landing.login">로그인</button>
         <p class="landing__error hidden" id="login-error" data-i18n="landing.error">이메일 또는 비밀번호가 올바르지 않습니다.</p>
