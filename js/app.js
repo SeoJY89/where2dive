@@ -236,6 +236,14 @@ function bootApp() {
   // 초기 map 뷰: cards-panel 숨김
   document.getElementById('cards-panel').classList.add('map-hidden');
 
+  // Logo click → reset map to initial view
+  document.getElementById('logo-home').addEventListener('click', e => {
+    e.preventDefault();
+    switchView('map');
+    getMapInstance().flyTo([0, 130], 2, { duration: 1 });
+    resetFilters();
+  });
+
   // 네비게이션 (desktop)
   document.querySelectorAll('.nav-btn').forEach(btn => {
     btn.addEventListener('click', () => {
