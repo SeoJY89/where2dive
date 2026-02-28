@@ -11,6 +11,7 @@ const state = {
 };
 
 let onChange = () => {};
+let onSearchToggle = null;
 
 export function getFilterState() {
   return { ...state };
@@ -18,6 +19,10 @@ export function getFilterState() {
 
 export function setFilterListener(fn) {
   onChange = fn;
+}
+
+export function setSearchToggleListener(fn) {
+  onSearchToggle = fn;
 }
 
 export function resetFilters() {
@@ -29,12 +34,18 @@ export function resetFilters() {
   onChange();
 }
 
+export function setCountry(koName) {
+  state.country = koName;
+  syncDOM();
+  onChange();
+}
+
 function syncDOM() {
   document.getElementById('search-input').value = state.search;
   document.getElementById('region-select').value = state.region;
 
-  // Activity toggle
-  document.querySelectorAll('.activity-toggle__btn').forEach(btn => {
+  // Activity toggle (desktop + mobile)
+  document.querySelectorAll('.activity-toggle__btn, .mobile-activity-tabs__btn').forEach(btn => {
     const isActive = btn.dataset.activity === state.activityType;
     btn.classList.toggle('active', isActive);
     btn.setAttribute('aria-pressed', isActive);
@@ -203,9 +214,21 @@ export function refreshFilterLabels() {
   // Reset button
   document.getElementById('filter-reset').textContent = t('filter.reset');
 
-  // Mobile filter toggle text
+  // Mobile filter toggle text (now search button)
   const filterToggleText = document.getElementById('filter-toggle-text');
-  if (filterToggleText) filterToggleText.textContent = t('filter.button');
+  if (filterToggleText) filterToggleText.textContent = t('filter.search.button');
+
+  // Mobile activity tab labels
+  const mobActLabels = {
+    'mob-act-all-text': 'filter.activity.all',
+    'mob-act-skin-text': 'filter.activity.skin',
+    'mob-act-scuba-text': 'filter.activity.scuba',
+    'mob-act-myspot-text': 'myspot.badge',
+  };
+  for (const [id, key] of Object.entries(mobActLabels)) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = t(key);
+  }
 }
 
 // ── Init ──
@@ -234,11 +257,11 @@ export function initFilters() {
   const emptyReset = document.getElementById('empty-reset');
   if (emptyReset) emptyReset.addEventListener('click', resetFilters);
 
-  // ── Activity toggle ──
-  document.querySelectorAll('.activity-toggle__btn').forEach(btn => {
+  // ── Activity toggle (desktop + mobile) ──
+  document.querySelectorAll('.activity-toggle__btn, .mobile-activity-tabs__btn').forEach(btn => {
     btn.addEventListener('click', () => {
       state.activityType = btn.dataset.activity;
-      document.querySelectorAll('.activity-toggle__btn').forEach(b => {
+      document.querySelectorAll('.activity-toggle__btn, .mobile-activity-tabs__btn').forEach(b => {
         const isActive = b.dataset.activity === state.activityType;
         b.classList.toggle('active', isActive);
         b.setAttribute('aria-pressed', isActive);
@@ -320,13 +343,11 @@ export function initFilters() {
     onChange();
   });
 
-  // 모바일 필터 토글
+  // 모바일 검색 버튼
   const toggle = document.getElementById('filter-toggle');
-  const bar = document.getElementById('filter-bar');
   if (toggle) {
     toggle.addEventListener('click', () => {
-      bar.classList.toggle('open');
-      toggle.setAttribute('aria-expanded', bar.classList.contains('open'));
+      if (onSearchToggle) onSearchToggle();
     });
   }
 

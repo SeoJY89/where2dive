@@ -499,12 +499,32 @@
         <button class="lang-toggle__btn" data-lang="en">EN</button>
       </div>
       <button class="header__logout" id="logout-btn" data-i18n="nav.logout">로그아웃</button>
-      <button class="header__mobile-filter-toggle" id="filter-toggle" aria-label="필터 열기/닫기" aria-expanded="false">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg>
-        <span id="filter-toggle-text">필터</span>
+      <button class="header__mobile-filter-toggle" id="filter-toggle" aria-label="검색" aria-expanded="false">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <span id="filter-toggle-text">검색</span>
       </button>
     </div>
   </header>
+
+  <!-- ═══ Mobile Activity Tabs ═══ -->
+  <div class="mobile-activity-tabs" id="mobile-activity-tabs" role="radiogroup">
+    <button class="mobile-activity-tabs__btn active" data-activity="" aria-pressed="true">
+      <span id="mob-act-all-text">전체</span>
+      <span class="mobile-activity-tabs__count" id="mob-count-all">0</span>
+    </button>
+    <button class="mobile-activity-tabs__btn" data-activity="skin" aria-pressed="false">
+      <span id="mob-act-skin-text">스킨</span>
+      <span class="mobile-activity-tabs__count" id="mob-count-skin">0</span>
+    </button>
+    <button class="mobile-activity-tabs__btn" data-activity="scuba" aria-pressed="false">
+      <span id="mob-act-scuba-text">스쿠버</span>
+      <span class="mobile-activity-tabs__count" id="mob-count-scuba">0</span>
+    </button>
+    <button class="mobile-activity-tabs__btn" data-activity="myspot" aria-pressed="false">
+      <span id="mob-act-myspot-text">내 스팟</span>
+      <span class="mobile-activity-tabs__count" id="mob-count-myspot">0</span>
+    </button>
+  </div>
 
   <!-- ═══ Filter Bar ═══ -->
   <section class="filter-bar" id="filter-bar" aria-label="검색 및 필터">
@@ -894,6 +914,38 @@
         <a href="/contact.html" class="mobile-drawer__link" id="mobile-link-contact">문의하기</a>
       </div>
       <div class="mobile-drawer__copyright" id="mobile-copyright">&copy; 2025 Where2Dive</div>
+    </div>
+  </div>
+
+  <!-- ═══ Search Bottom Sheet ═══ -->
+  <div class="search-sheet-overlay hidden" id="search-sheet-overlay"></div>
+  <div class="search-sheet hidden" id="search-sheet" role="dialog" aria-label="검색">
+    <div class="search-sheet__header">
+      <h2 class="search-sheet__title" id="search-sheet-title">검색</h2>
+      <button class="search-sheet__close" id="search-sheet-close" aria-label="닫기">&times;</button>
+    </div>
+    <div class="search-sheet__input-wrap">
+      <svg class="search-sheet__input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input type="search" class="search-sheet__input" id="search-sheet-input" placeholder="스팟, 국가 검색..." autocomplete="off" />
+      <button class="search-sheet__input-clear hidden" id="search-sheet-clear" aria-label="지우기">&times;</button>
+    </div>
+    <ul class="search-sheet__results" id="search-sheet-results"></ul>
+    <div class="search-sheet__filters">
+      <div class="search-sheet__filter-group">
+        <label class="search-sheet__label" id="search-sheet-country-label">국가</label>
+        <div class="autocomplete" id="sheet-country-autocomplete">
+          <input type="text" id="sheet-country-input" class="search-sheet__filter-input" placeholder="국가 검색 (EN)..." autocomplete="off" />
+          <button class="autocomplete__clear hidden" id="sheet-country-clear" aria-label="국가 선택 해제">&times;</button>
+          <ul class="autocomplete__list hidden" id="sheet-country-list" role="listbox"></ul>
+        </div>
+      </div>
+      <div class="search-sheet__filter-group">
+        <label class="search-sheet__label" id="search-sheet-region-label">지역</label>
+        <select id="sheet-region-select" class="search-sheet__filter-select">
+          <option value="">모든 지역</option>
+        </select>
+      </div>
+      <button class="search-sheet__reset" id="search-sheet-reset">초기화</button>
     </div>
   </div>
 

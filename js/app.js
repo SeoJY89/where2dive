@@ -1,8 +1,8 @@
 // 앱 엔트리 포인트
-import { spots } from './data.js';
+import { spots, COUNTRY_MAP } from './data.js';
 import { initMap, updateMarkers, setMapSpotClickHandler, flyToSpot, invalidateMapSize, updatePersonalMarkers, setPersonalSpotClickHandler, getMapInstance } from './map.js';
 import { renderCards, renderFavEmpty, openModal, initModal, setDetailClickHandler, updateFavCount, setPersonalSpotCardHandlers } from './ui.js';
-import { initFilters, filterSpots, setFilterListener, refreshFilterLabels, getActivityCounts, filterMySpots } from './filters.js';
+import { initFilters, filterSpots, setFilterListener, refreshFilterLabels, getActivityCounts, filterMySpots, setSearchToggleListener, setCountry, resetFilters } from './filters.js';
 import { getFavorites, loadFavorites, clearFavorites } from './favorites.js';
 import { getLang, setLang, setLangChangeListener, t } from './i18n.js';
 import { isLoggedIn, login, signup, loginWithGoogle, logout, onAuthChange, waitForAuth, checkNickname, resetPassword, findEmailByNickname } from './auth.js';
@@ -180,6 +180,10 @@ function bootApp() {
 
   // 모바일 하단 탭 네비게이션
   initMobileTabBar();
+
+  // Search bottom sheet
+  initSearchSheet();
+  setSearchToggleListener(() => openSearchSheet());
 
   // 리스트 토글
   document.getElementById('list-toggle').addEventListener('click', toggleList);
@@ -723,6 +727,241 @@ function closeMobileDrawer() {
   }, 300);
 }
 
+// ═══ Search Bottom Sheet ═══
+
+function openSearchSheet() {
+  const overlay = document.getElementById('search-sheet-overlay');
+  const sheet = document.getElementById('search-sheet');
+  overlay.classList.remove('hidden');
+  sheet.classList.remove('hidden');
+  requestAnimationFrame(() => {
+    overlay.classList.add('visible');
+    sheet.classList.add('visible');
+  });
+  setTimeout(() => {
+    document.getElementById('search-sheet-input').focus();
+  }, 300);
+}
+
+function closeSearchSheet() {
+  const overlay = document.getElementById('search-sheet-overlay');
+  const sheet = document.getElementById('search-sheet');
+  overlay.classList.remove('visible');
+  sheet.classList.remove('visible');
+  setTimeout(() => {
+    overlay.classList.add('hidden');
+    sheet.classList.add('hidden');
+  }, 300);
+}
+
+function renderSearchResults(query) {
+  const list = document.getElementById('search-sheet-results');
+  list.innerHTML = '';
+
+  if (!query || query.length === 0) {
+    return;
+  }
+
+  const q = query.toLowerCase();
+  const results = [];
+
+  // Search countries
+  for (const c of COUNTRY_MAP) {
+    if (c.en.toLowerCase().includes(q) || c.ko.toLowerCase().includes(q)) {
+      results.push({ type: 'country', ko: c.ko, en: c.en });
+    }
+    if (results.length >= 20) break;
+  }
+
+  // Search spots
+  if (results.length < 20) {
+    for (const s of spots) {
+      const name = s.name || '';
+      const nameEn = s.nameEn || '';
+      const country = s.country || '';
+      const countryEn = s.countryEn || '';
+      if (name.toLowerCase().includes(q) || nameEn.toLowerCase().includes(q) ||
+          country.toLowerCase().includes(q) || countryEn.toLowerCase().includes(q)) {
+        results.push({ type: 'spot', spot: s });
+      }
+      if (results.length >= 20) break;
+    }
+  }
+
+  if (results.length === 0) {
+    const li = document.createElement('li');
+    li.className = 'search-sheet__no-results';
+    li.textContent = t('search.noResults');
+    list.appendChild(li);
+    return;
+  }
+
+  for (const r of results) {
+    const li = document.createElement('li');
+    li.className = 'search-sheet__result-item';
+
+    if (r.type === 'country') {
+      li.innerHTML = `
+        <div class="search-sheet__result-icon search-sheet__result-icon--country">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        </div>
+        <div class="search-sheet__result-text">
+          <span class="search-sheet__result-name">${r.en} (${r.ko})</span>
+          <span class="search-sheet__result-sub">${t('search.result.country')}</span>
+        </div>`;
+      li.addEventListener('click', () => {
+        setCountry(r.ko);
+        closeSearchSheet();
+        refresh(false);
+      });
+    } else {
+      const s = r.spot;
+      const displayName = getLang() === 'en' && s.nameEn ? s.nameEn : s.name;
+      const displayCountry = getLang() === 'en' && s.countryEn ? s.countryEn : s.country;
+      li.innerHTML = `
+        <div class="search-sheet__result-icon search-sheet__result-icon--spot">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        </div>
+        <div class="search-sheet__result-text">
+          <span class="search-sheet__result-name">${displayName}</span>
+          <span class="search-sheet__result-sub">${displayCountry} · ${t('search.result.spot')}</span>
+        </div>`;
+      li.addEventListener('click', () => {
+        closeSearchSheet();
+        flyToSpot(s.lat, s.lng);
+        openModal(s);
+      });
+    }
+
+    list.appendChild(li);
+  }
+}
+
+function initSearchSheet() {
+  const overlay = document.getElementById('search-sheet-overlay');
+  const closeBtn = document.getElementById('search-sheet-close');
+  const input = document.getElementById('search-sheet-input');
+  const clearBtn = document.getElementById('search-sheet-clear');
+  const resetBtn = document.getElementById('search-sheet-reset');
+  const sheetRegionSel = document.getElementById('sheet-region-select');
+  const sheetCountryInput = document.getElementById('sheet-country-input');
+  const sheetCountryClear = document.getElementById('sheet-country-clear');
+  const sheetCountryList = document.getElementById('sheet-country-list');
+
+  // Close handlers
+  closeBtn.addEventListener('click', closeSearchSheet);
+  overlay.addEventListener('click', closeSearchSheet);
+
+  // Search input
+  input.addEventListener('input', () => {
+    const q = input.value.trim();
+    clearBtn.classList.toggle('hidden', !q);
+    renderSearchResults(q);
+  });
+
+  clearBtn.addEventListener('click', () => {
+    input.value = '';
+    clearBtn.classList.add('hidden');
+    document.getElementById('search-sheet-results').innerHTML = '';
+    input.focus();
+  });
+
+  // Populate region select from main region-select
+  const mainRegionSel = document.getElementById('region-select');
+  for (let i = 1; i < mainRegionSel.options.length; i++) {
+    const opt = document.createElement('option');
+    opt.value = mainRegionSel.options[i].value;
+    opt.textContent = mainRegionSel.options[i].textContent;
+    sheetRegionSel.appendChild(opt);
+  }
+
+  // Region change → sync to main filter
+  sheetRegionSel.addEventListener('change', () => {
+    mainRegionSel.value = sheetRegionSel.value;
+    mainRegionSel.dispatchEvent(new Event('change'));
+  });
+
+  // Sheet country autocomplete
+  let sheetAcHighlight = -1;
+
+  function getFilteredCountries(q) {
+    const lower = q.toLowerCase();
+    return COUNTRY_MAP.filter(c =>
+      c.en.toLowerCase().includes(lower) || c.ko.toLowerCase().includes(lower)
+    );
+  }
+
+  function renderSheetCountryList(matches) {
+    sheetCountryList.innerHTML = '';
+    if (matches.length === 0) {
+      sheetCountryList.classList.add('hidden');
+      return;
+    }
+    matches.forEach((c, i) => {
+      const li = document.createElement('li');
+      li.className = 'autocomplete__item';
+      li.setAttribute('role', 'option');
+      li.dataset.ko = c.ko;
+      li.textContent = `${c.en} (${c.ko})`;
+      if (i === sheetAcHighlight) li.classList.add('active');
+      li.addEventListener('mousedown', e => {
+        e.preventDefault();
+        selectSheetCountry(c);
+      });
+      sheetCountryList.appendChild(li);
+    });
+    sheetCountryList.classList.remove('hidden');
+  }
+
+  function selectSheetCountry(c) {
+    setCountry(c.ko);
+    sheetCountryInput.value = `${c.en} (${c.ko})`;
+    sheetCountryClear.classList.remove('hidden');
+    sheetCountryList.classList.add('hidden');
+    sheetAcHighlight = -1;
+    refresh(false);
+  }
+
+  sheetCountryInput.addEventListener('input', () => {
+    const q = sheetCountryInput.value.trim();
+    if (!q) {
+      sheetCountryList.classList.add('hidden');
+    } else {
+      sheetAcHighlight = -1;
+      renderSheetCountryList(getFilteredCountries(q));
+    }
+  });
+
+  sheetCountryInput.addEventListener('focus', () => {
+    const q = sheetCountryInput.value.trim();
+    if (q) renderSheetCountryList(getFilteredCountries(q));
+  });
+
+  sheetCountryInput.addEventListener('blur', () => {
+    setTimeout(() => sheetCountryList.classList.add('hidden'), 150);
+  });
+
+  sheetCountryClear.addEventListener('click', () => {
+    sheetCountryInput.value = '';
+    sheetCountryClear.classList.add('hidden');
+    sheetCountryList.classList.add('hidden');
+    setCountry('');
+    refresh(false);
+  });
+
+  // Reset button
+  resetBtn.addEventListener('click', () => {
+    input.value = '';
+    clearBtn.classList.add('hidden');
+    sheetCountryInput.value = '';
+    sheetCountryClear.classList.add('hidden');
+    sheetCountryList.classList.add('hidden');
+    sheetRegionSel.value = '';
+    document.getElementById('search-sheet-results').innerHTML = '';
+    resetFilters();
+  });
+}
+
 function updateMobileLabels() {
   const setText = (id, key) => { const el = document.getElementById(id); if (el) el.textContent = t(key); };
   setText('mob-tab-map-text', 'nav.map');
@@ -738,6 +977,15 @@ function updateMobileLabels() {
   setText('mobile-link-privacy', 'footer.privacy');
   setText('mobile-link-terms', 'footer.terms');
   setText('mobile-link-contact', 'footer.contact');
+
+  // Search sheet labels
+  setText('search-sheet-title', 'search.title');
+  setText('search-sheet-country-label', 'search.country');
+  setText('search-sheet-region-label', 'search.region');
+  const searchInput = document.getElementById('search-sheet-input');
+  if (searchInput) searchInput.placeholder = t('search.placeholder');
+  const sheetReset = document.getElementById('search-sheet-reset');
+  if (sheetReset) sheetReset.textContent = t('filter.reset');
 }
 
 function applyLangToggleState() {
@@ -862,6 +1110,10 @@ function switchView(view) {
   // Show/hide filter bar for logbook
   filterBar.classList.toggle('logbook-hidden', view === 'logbook');
 
+  // Show/hide mobile activity tabs for logbook
+  const mobileActivityTabs = document.getElementById('mobile-activity-tabs');
+  if (mobileActivityTabs) mobileActivityTabs.classList.toggle('logbook-hidden', view === 'logbook');
+
   if (view === 'map') {
     mapPanel.classList.remove('hidden');
     mainInner.style.gridTemplateColumns = '';
@@ -931,13 +1183,23 @@ function refresh(fitToMarkers = false) {
     updatePersonalMarkers([]);
   }
 
-  // Activity tab counts
+  // Activity tab counts (desktop + mobile)
   const counts = getActivityCounts(isFavView, favSet);
   document.getElementById('count-all').textContent = counts.total;
   document.getElementById('count-skin').textContent = counts.skin;
   document.getElementById('count-scuba').textContent = counts.scuba;
   const countMyspot = document.getElementById('count-myspot');
   if (countMyspot) countMyspot.textContent = counts.myspot;
+
+  // Mobile activity tab counts
+  const mobAll = document.getElementById('mob-count-all');
+  const mobSkin = document.getElementById('mob-count-skin');
+  const mobScuba = document.getElementById('mob-count-scuba');
+  const mobMyspot = document.getElementById('mob-count-myspot');
+  if (mobAll) mobAll.textContent = counts.total;
+  if (mobSkin) mobSkin.textContent = counts.skin;
+  if (mobScuba) mobScuba.textContent = counts.scuba;
+  if (mobMyspot) mobMyspot.textContent = counts.myspot;
 }
 
 // ═══ Logbook View ═══

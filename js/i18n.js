@@ -61,6 +61,7 @@ const ko = {
   'filter.activity.skin': '스킨',
   'filter.activity.scuba': '스쿠버',
   'filter.button': '필터',
+  'filter.search.button': '검색',
   'filter.temp.label': '수온',
 
   // card
@@ -296,6 +297,15 @@ const ko = {
   'footer.openMeteo': 'Open-Meteo',
   'footer.osm': 'OpenStreetMap',
 
+  // search sheet
+  'search.placeholder': '스팟, 국가 검색...',
+  'search.title': '검색',
+  'search.country': '국가',
+  'search.region': '지역',
+  'search.result.country': '국가',
+  'search.result.spot': '다이빙 스팟',
+  'search.noResults': '검색 결과가 없습니다',
+
   // cookie
   'cookie.text': '이 웹사이트는 사용자 경험 개선을 위해 쿠키를 사용합니다. 계속 사용하면 쿠키 사용에 동의하는 것으로 간주합니다.',
   'cookie.accept': '동의',
@@ -319,6 +329,7 @@ const en = {
   'filter.activity.skin': 'Skin',
   'filter.activity.scuba': 'Scuba',
   'filter.button': 'Filter',
+  'filter.search.button': 'Search',
   'filter.temp.label': 'Temp',
 
   // card
@@ -553,6 +564,15 @@ const en = {
   'footer.copyright': '© 2025 Where2Dive. All rights reserved.',
   'footer.openMeteo': 'Open-Meteo',
   'footer.osm': 'OpenStreetMap',
+
+  // search sheet
+  'search.placeholder': 'Search spots, countries...',
+  'search.title': 'Search',
+  'search.country': 'Country',
+  'search.region': 'Region',
+  'search.result.country': 'Country',
+  'search.result.spot': 'Dive Spot',
+  'search.noResults': 'No results found',
 
   // cookie
   'cookie.text': 'This website uses cookies to improve your experience. By continuing to use this site, you consent to the use of cookies.',
