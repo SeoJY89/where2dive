@@ -169,7 +169,7 @@
     font-size: 1.6rem; font-weight: 700;
     color: var(--c-white);
   }
-  .landing__logo svg { color: var(--c-aqua); }
+  .landing__logo img { width: 48px; height: 48px; object-fit: contain; }
 
   .landing__tagline {
     font-size: 0.95rem; color: rgba(255,255,255,0.6);
@@ -516,7 +516,7 @@
     font-weight: 700; font-size: 1.2rem; white-space: nowrap;
     color: var(--c-white);
   }
-  .header__icon { color: var(--c-aqua); flex-shrink: 0; }
+  .header__icon { flex-shrink: 0; width: 32px; height: 32px; object-fit: contain; }
   .header__nav { display: flex; gap: var(--sp-1); margin-left: auto; }
 
   .nav-btn {
