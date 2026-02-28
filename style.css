@@ -1550,6 +1550,21 @@
     text-decoration: underline;
   }
   .page a:hover { color: var(--c-teal); }
+  .contact-result {
+    margin-top: var(--sp-4);
+    padding: var(--sp-3) var(--sp-4);
+    border-radius: var(--r-md);
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+  .contact-result--success {
+    background: rgba(72,187,120,.12);
+    color: #276749;
+  }
+  .contact-result--error {
+    background: rgba(245,101,101,.12);
+    color: #c53030;
+  }
   .page .page__update {
     font-size: 0.85rem;
     color: var(--c-gray-500);
