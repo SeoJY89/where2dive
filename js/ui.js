@@ -2,6 +2,8 @@
 import { isFavorite, toggleFavorite, getFavCount } from './favorites.js';
 import { fetchWeather } from './weather.js';
 import { t, td, translateMonth } from './i18n.js';
+import { loadReviews, getCachedReviews, getAverageRating, sortReviews } from './reviews.js';
+import { getCurrentUid } from './auth.js';
 
 let onDetailClick = () => {};
 
@@ -259,7 +261,40 @@ export function openModal(spot) {
         <span style="font-size:0.8rem;color:var(--c-gray-300);">${t('modal.weather.loading')}</span>
       </div>
     </div>
+
+    <div class="review-section" id="review-section" data-spot-id="${spot.id}">
+      <div class="review-section__header">
+        <span class="review-section__title">${t('review.title')}</span>
+        <button class="review-section__write-btn" id="review-write-btn">${t('review.write')}</button>
+      </div>
+      <div id="review-summary"></div>
+      <div class="review-sort" id="review-sort-wrap" style="display:none;">
+        <select class="review-sort__select" id="review-sort">
+          <option value="latest">${t('review.sort.latest')}</option>
+          <option value="ratingHigh">${t('review.sort.ratingHigh')}</option>
+          <option value="ratingLow">${t('review.sort.ratingLow')}</option>
+        </select>
+      </div>
+      <div class="review-list" id="review-list">
+        <div class="review-empty">${t('modal.weather.loading')}</div>
+      </div>
+    </div>
   `;
+
+  // Review write button
+  body.querySelector('#review-write-btn').addEventListener('click', () => {
+    const uid = getCurrentUid();
+    if (!uid) {
+      alert(t('review.loginRequired'));
+      return;
+    }
+    document.dispatchEvent(new CustomEvent('open-review-modal', { detail: { spotId: spot.id, spotName: td(spot, 'name') } }));
+  });
+
+  // Review sort handler
+  body.querySelector('#review-sort').addEventListener('change', (e) => {
+    renderReviewList(spot.id, e.target.value);
+  });
 
   // 즐겨찾기 토글
   body.querySelector('.modal__fav').addEventListener('click', async e => {
@@ -280,6 +315,9 @@ export function openModal(spot) {
 
   // 날씨 로딩
   loadWeather(spot);
+
+  // 리뷰 로딩
+  loadAndRenderReviews(spot.id);
 }
 
 async function loadWeather(spot) {
@@ -359,4 +397,127 @@ export function setDetailClickHandler(fn) {
 
 export function updateFavCount() {
   document.getElementById('fav-count').textContent = getFavCount();
+}
+
+// ── Review Rendering ──
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+function renderStars(rating, prefix = 'review-summary') {
+  let html = '';
+  for (let i = 1; i <= 5; i++) {
+    html += `<span class="${prefix}__star ${i <= rating ? prefix + '__star--filled' : ''}">&#9733;</span>`;
+  }
+  return html;
+}
+
+function formatReviewDate(ts) {
+  if (!ts) return '';
+  const seconds = ts.seconds || ts._seconds || (typeof ts === 'number' ? ts : 0);
+  if (!seconds) return '';
+  const d = new Date(seconds * 1000);
+  return d.toLocaleDateString();
+}
+
+async function loadAndRenderReviews(spotId) {
+  const listEl = document.getElementById('review-list');
+  if (!listEl) return;
+  try {
+    const reviews = await loadReviews(spotId);
+    renderReviewSummary(reviews);
+    const sortWrap = document.getElementById('review-sort-wrap');
+    if (sortWrap) sortWrap.style.display = reviews.length > 0 ? '' : 'none';
+    renderReviewList(spotId, 'latest');
+  } catch {
+    listEl.innerHTML = `<div class="review-empty">${t('review.error.load')}</div>`;
+  }
+}
+
+function renderReviewSummary(reviews) {
+  const el = document.getElementById('review-summary');
+  if (!el) return;
+  if (!reviews || reviews.length === 0) {
+    el.innerHTML = '';
+    return;
+  }
+  const avg = getAverageRating(reviews);
+  el.innerHTML = `
+    <div class="review-summary">
+      <span class="review-summary__avg">${avg.toFixed(1)}</span>
+      <div class="review-summary__stars">${renderStars(Math.round(avg))}</div>
+      <span class="review-summary__count">${reviews.length}${t('review.countSuffix')}</span>
+    </div>
+  `;
+}
+
+function renderReviewList(spotId, sortBy) {
+  const listEl = document.getElementById('review-list');
+  if (!listEl) return;
+  const reviews = getCachedReviews(spotId);
+  if (!reviews || reviews.length === 0) {
+    listEl.innerHTML = `<div class="review-empty">${t('review.empty')}</div>`;
+    return;
+  }
+  const sorted = sortReviews(reviews, sortBy);
+  const uid = getCurrentUid();
+  listEl.innerHTML = '';
+  sorted.forEach(review => {
+    const card = document.createElement('div');
+    card.className = 'review-card';
+    const isOwner = uid && review.userId === uid;
+    const mediaThumbs = (review.media || []).map((m, i) => {
+      const isVideo = m.url && (m.url.includes('.mp4') || m.url.includes('.mov') || m.url.includes('video'));
+      return `<div class="review-card__thumb ${isVideo ? 'review-card__thumb--video' : ''}" data-review-id="${review.id}" data-media-index="${i}">
+        <img src="${escapeHtml(m.url)}" alt="" loading="lazy" />
+      </div>`;
+    }).join('');
+
+    card.innerHTML = `
+      <div class="review-card__header">
+        <span class="review-card__author">${escapeHtml(review.nickname || 'Anonymous')}</span>
+        <span class="review-card__date">${formatReviewDate(review.createdAt)}</span>
+      </div>
+      <div class="review-card__stars">${renderStars(review.rating, 'review-card')}</div>
+      ${review.title ? `<div class="review-card__title">${escapeHtml(review.title)}</div>` : ''}
+      ${review.content ? `<div class="review-card__content">${escapeHtml(review.content)}</div>` : ''}
+      ${review.visitDate ? `<div class="review-card__visit">${escapeHtml(review.visitDate)}</div>` : ''}
+      ${mediaThumbs ? `<div class="review-card__media">${mediaThumbs}</div>` : ''}
+      ${isOwner ? `<div class="review-card__actions">
+        <button class="review-card__edit-btn" data-review-id="${review.id}">${t('review.edit')}</button>
+        <button class="review-card__delete-btn" data-review-id="${review.id}">${t('review.delete')}</button>
+      </div>` : ''}
+    `;
+
+    // Media thumbnail click → open viewer
+    card.querySelectorAll('.review-card__thumb').forEach(thumb => {
+      thumb.addEventListener('click', () => {
+        const rId = thumb.dataset.reviewId;
+        const idx = parseInt(thumb.dataset.mediaIndex);
+        const r = reviews.find(rv => rv.id === rId);
+        if (r?.media) {
+          document.dispatchEvent(new CustomEvent('open-media-viewer', { detail: { media: r.media, index: idx } }));
+        }
+      });
+    });
+
+    // Edit/Delete buttons
+    if (isOwner) {
+      card.querySelector('.review-card__edit-btn')?.addEventListener('click', () => {
+        document.dispatchEvent(new CustomEvent('edit-review', { detail: { review, spotId } }));
+      });
+      card.querySelector('.review-card__delete-btn')?.addEventListener('click', () => {
+        document.dispatchEvent(new CustomEvent('delete-review', { detail: { reviewId: review.id, spotId } }));
+      });
+    }
+
+    listEl.appendChild(card);
+  });
+}
+
+export function refreshReviews(spotId) {
+  loadAndRenderReviews(spotId);
 }

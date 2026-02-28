@@ -815,6 +815,69 @@
     </div>
   </div>
 
+  <!-- ═══ Review Form Modal ═══ -->
+  <div class="modal-overlay hidden" id="review-modal-overlay" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true">
+      <button class="modal__close" id="review-modal-close" aria-label="닫기">&times;</button>
+      <div class="modal__body">
+        <h2 class="modal__title" id="review-modal-title">리뷰 작성</h2>
+        <form class="log-form" id="review-form" autocomplete="off">
+          <input type="hidden" id="review-edit-id" value="" />
+          <input type="hidden" id="review-spot-id" value="" />
+          <input type="hidden" id="review-rating-value" value="0" />
+          <div class="log-form__field">
+            <label id="review-rating-label">별점</label>
+            <div class="review-star-input" id="review-star-input">
+              <span class="review-star" data-value="1">&#9734;</span>
+              <span class="review-star" data-value="2">&#9734;</span>
+              <span class="review-star" data-value="3">&#9734;</span>
+              <span class="review-star" data-value="4">&#9734;</span>
+              <span class="review-star" data-value="5">&#9734;</span>
+            </div>
+          </div>
+          <div class="log-form__field">
+            <label for="review-title-input" id="review-title-label">제목</label>
+            <input type="text" id="review-title-input" maxlength="50" placeholder="리뷰 제목 (최대 50자)" />
+            <div class="review-char-count"><span id="review-title-count">0</span>/50</div>
+          </div>
+          <div class="log-form__field">
+            <label for="review-content-input" id="review-content-label">내용</label>
+            <textarea id="review-content-input" rows="4" maxlength="500" placeholder="다이빙 경험을 공유해주세요 (최대 500자)"></textarea>
+            <div class="review-char-count"><span id="review-content-count">0</span>/500</div>
+          </div>
+          <div class="log-form__field">
+            <label for="review-visit-date" id="review-visit-date-label">방문일</label>
+            <input type="date" id="review-visit-date" />
+          </div>
+          <div class="log-form__field">
+            <label id="review-media-label">사진/동영상</label>
+            <div class="review-media-hint" id="review-media-hint">최대 5개 (이미지 5MB, 동영상 50MB)</div>
+            <div class="review-media-preview" id="review-media-preview"></div>
+            <input type="file" id="review-file-input" accept="image/jpeg,image/png,image/gif,video/mp4,video/quicktime" multiple hidden />
+            <button type="button" class="btn btn--secondary review-add-media-btn" id="review-add-media-btn">+ 파일 추가</button>
+          </div>
+          <div class="review-upload-progress hidden" id="review-upload-progress">
+            <div class="review-upload-bar"><div class="review-upload-fill" id="review-upload-fill"></div></div>
+            <span class="review-upload-text" id="review-upload-text">0%</span>
+          </div>
+          <div class="log-form__actions">
+            <button type="button" class="btn btn--secondary" id="review-cancel">취소</button>
+            <button type="submit" class="btn btn--primary" id="review-save">저장</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ Media Viewer ═══ -->
+  <div class="media-viewer-overlay hidden" id="media-viewer-overlay">
+    <button class="media-viewer__close" id="media-viewer-close" aria-label="닫기">&times;</button>
+    <button class="media-viewer__nav media-viewer__nav--prev" id="media-viewer-prev" aria-label="이전">&#10094;</button>
+    <button class="media-viewer__nav media-viewer__nav--next" id="media-viewer-next" aria-label="다음">&#10095;</button>
+    <div class="media-viewer__content" id="media-viewer-content"></div>
+    <div class="media-viewer__counter" id="media-viewer-counter"></div>
+  </div>
+
   <!-- ═══ Footer ═══ -->
   <footer class="footer">
     <div class="footer__inner">

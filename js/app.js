@@ -1,8 +1,9 @@
 // 앱 엔트리 포인트
 import { spots, COUNTRY_MAP } from './data.js';
 import { initMap, updateMarkers, setMapSpotClickHandler, flyToSpot, invalidateMapSize, updatePersonalMarkers, setPersonalSpotClickHandler, getMapInstance } from './map.js';
-import { renderCards, renderFavEmpty, openModal, initModal, setDetailClickHandler, updateFavCount, setPersonalSpotCardHandlers } from './ui.js';
+import { renderCards, renderFavEmpty, openModal, initModal, setDetailClickHandler, updateFavCount, setPersonalSpotCardHandlers, refreshReviews } from './ui.js';
 import { initFilters, filterSpots, setFilterListener, refreshFilterLabels, getActivityCounts, filterMySpots, setSearchToggleListener, setCountry, resetFilters } from './filters.js';
+import { addReview, updateReview, deleteReview, clearReviewCache, validateFile, isVideoFile } from './reviews.js';
 import { getFavorites, loadFavorites, clearFavorites } from './favorites.js';
 import { getLang, setLang, setLangChangeListener, t } from './i18n.js';
 import { isLoggedIn, login, signup, loginWithGoogle, logout, onAuthChange, waitForAuth, checkNickname, resetPassword, findEmailByNickname } from './auth.js';
@@ -137,6 +138,8 @@ function bootApp() {
   initModal();
   initLogModal();
   initSpotModal();
+  initReviewModal();
+  initMediaViewer();
 
   // 초기 렌더 (첫 로딩 시 모든 마커 보이도록)
   updateFavCount();
@@ -249,6 +252,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       clearFavorites();
       clearLogbook();
       clearMySpots();
+      clearReviewCache();
       showLanding();
     }
   });
@@ -1674,6 +1678,336 @@ function cancelMapPicking() {
   switchView(currentView);
 
   mapPickingState = null;
+}
+
+// ═══ Cookie Consent Banner ═══
+
+// ═══ Review Modal ═══
+
+function initReviewModal() {
+  const overlay = document.getElementById('review-modal-overlay');
+  const closeBtn = document.getElementById('review-modal-close');
+  const cancelBtn = document.getElementById('review-cancel');
+  const form = document.getElementById('review-form');
+  const starInput = document.getElementById('review-star-input');
+  const ratingValue = document.getElementById('review-rating-value');
+  const titleInput = document.getElementById('review-title-input');
+  const contentInput = document.getElementById('review-content-input');
+  const fileInput = document.getElementById('review-file-input');
+  const addMediaBtn = document.getElementById('review-add-media-btn');
+  const previewContainer = document.getElementById('review-media-preview');
+  const progressWrap = document.getElementById('review-upload-progress');
+  const progressFill = document.getElementById('review-upload-fill');
+  const progressText = document.getElementById('review-upload-text');
+
+  let pendingFiles = [];    // new File objects to upload
+  let existingMedia = [];   // existing {url,path} from edit mode
+  let removedPaths = [];    // paths to delete on save
+
+  function close() {
+    overlay.classList.add('hidden');
+    overlay.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
+
+  closeBtn.addEventListener('click', close);
+  cancelBtn.addEventListener('click', close);
+  overlay.addEventListener('click', e => { if (e.target === overlay) close(); });
+
+  // Star rating interaction
+  starInput.addEventListener('click', e => {
+    const star = e.target.closest('.review-star');
+    if (!star) return;
+    const val = parseInt(star.dataset.value);
+    ratingValue.value = val;
+    updateStarDisplay(val);
+  });
+
+  starInput.addEventListener('mouseover', e => {
+    const star = e.target.closest('.review-star');
+    if (!star) return;
+    updateStarDisplay(parseInt(star.dataset.value));
+  });
+
+  starInput.addEventListener('mouseleave', () => {
+    updateStarDisplay(parseInt(ratingValue.value) || 0);
+  });
+
+  function updateStarDisplay(val) {
+    starInput.querySelectorAll('.review-star').forEach(s => {
+      const sv = parseInt(s.dataset.value);
+      s.classList.toggle('review-star--active', sv <= val);
+      s.textContent = sv <= val ? '\u2605' : '\u2606';
+    });
+  }
+
+  // Character counters
+  titleInput.addEventListener('input', () => {
+    document.getElementById('review-title-count').textContent = titleInput.value.length;
+  });
+  contentInput.addEventListener('input', () => {
+    document.getElementById('review-content-count').textContent = contentInput.value.length;
+  });
+
+  // File input
+  addMediaBtn.addEventListener('click', () => fileInput.click());
+  fileInput.addEventListener('change', () => {
+    const totalCount = pendingFiles.length + existingMedia.length;
+    const newFiles = Array.from(fileInput.files);
+    for (const f of newFiles) {
+      if (totalCount + pendingFiles.length >= 5) {
+        alert(t('review.validation.fileCount'));
+        break;
+      }
+      const err = validateFile(f);
+      if (err === 'type') { alert(t('review.validation.fileType')); continue; }
+      if (err === 'size') { alert(t('review.validation.fileSize')); continue; }
+      pendingFiles.push(f);
+    }
+    fileInput.value = '';
+    renderMediaPreview();
+  });
+
+  function renderMediaPreview() {
+    previewContainer.innerHTML = '';
+    // Existing media (edit mode)
+    existingMedia.forEach((m, i) => {
+      const item = document.createElement('div');
+      item.className = 'review-media-preview__item';
+      const isVid = isVideoFile(m.url);
+      item.innerHTML = `
+        ${isVid ? `<video src="${m.url}" muted></video>` : `<img src="${m.url}" alt="" />`}
+        <span class="review-media-preview__remove" data-type="existing" data-index="${i}">&times;</span>
+      `;
+      item.querySelector('.review-media-preview__remove').addEventListener('click', () => {
+        removedPaths.push(m.path);
+        existingMedia.splice(i, 1);
+        renderMediaPreview();
+      });
+      previewContainer.appendChild(item);
+    });
+    // Pending new files
+    pendingFiles.forEach((f, i) => {
+      const item = document.createElement('div');
+      item.className = 'review-media-preview__item';
+      const url = URL.createObjectURL(f);
+      const isVid = isVideoFile(f);
+      item.innerHTML = `
+        ${isVid ? `<video src="${url}" muted></video>` : `<img src="${url}" alt="" />`}
+        <span class="review-media-preview__remove" data-type="pending" data-index="${i}">&times;</span>
+      `;
+      item.querySelector('.review-media-preview__remove').addEventListener('click', () => {
+        pendingFiles.splice(i, 1);
+        renderMediaPreview();
+      });
+      previewContainer.appendChild(item);
+    });
+  }
+
+  function openReviewFormModal(spotId, spotName, editReview) {
+    form.reset();
+    pendingFiles = [];
+    existingMedia = [];
+    removedPaths = [];
+    ratingValue.value = '0';
+    updateStarDisplay(0);
+    document.getElementById('review-title-count').textContent = '0';
+    document.getElementById('review-content-count').textContent = '0';
+    previewContainer.innerHTML = '';
+    progressWrap.classList.add('hidden');
+
+    document.getElementById('review-spot-id').value = spotId;
+    document.getElementById('review-edit-id').value = '';
+
+    // Update labels
+    document.getElementById('review-rating-label').textContent = t('review.form.rating');
+    document.getElementById('review-title-label').textContent = t('review.form.reviewTitle');
+    titleInput.placeholder = t('review.form.reviewTitlePlaceholder');
+    document.getElementById('review-content-label').textContent = t('review.form.content');
+    contentInput.placeholder = t('review.form.contentPlaceholder');
+    document.getElementById('review-visit-date-label').textContent = t('review.form.visitDate');
+    document.getElementById('review-media-label').textContent = t('review.form.media');
+    document.getElementById('review-media-hint').textContent = t('review.form.mediaHint');
+    document.getElementById('review-save').textContent = t('review.form.save');
+    document.getElementById('review-cancel').textContent = t('review.form.cancel');
+
+    if (editReview) {
+      document.getElementById('review-modal-title').textContent = t('review.form.titleEdit');
+      document.getElementById('review-edit-id').value = editReview.id;
+      ratingValue.value = editReview.rating || 0;
+      updateStarDisplay(editReview.rating || 0);
+      titleInput.value = editReview.title || '';
+      contentInput.value = editReview.content || '';
+      document.getElementById('review-visit-date').value = editReview.visitDate || '';
+      document.getElementById('review-title-count').textContent = (editReview.title || '').length;
+      document.getElementById('review-content-count').textContent = (editReview.content || '').length;
+      existingMedia = [...(editReview.media || [])];
+      renderMediaPreview();
+    } else {
+      document.getElementById('review-modal-title').textContent = t('review.form.title');
+      document.getElementById('review-visit-date').value = new Date().toISOString().slice(0, 10);
+    }
+
+    overlay.classList.remove('hidden');
+    overlay.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }
+
+  // Form submit
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    const rating = parseInt(ratingValue.value);
+    if (!rating || rating < 1) { alert(t('review.validation.rating')); return; }
+    const title = titleInput.value.trim();
+    if (!title) { alert(t('review.validation.title')); return; }
+    const content = contentInput.value.trim();
+    if (!content) { alert(t('review.validation.content')); return; }
+
+    const spotId = document.getElementById('review-spot-id').value;
+    const editId = document.getElementById('review-edit-id').value;
+    const visitDate = document.getElementById('review-visit-date').value;
+
+    const saveBtn = document.getElementById('review-save');
+    saveBtn.disabled = true;
+
+    // Show progress if there are files
+    if (pendingFiles.length > 0) {
+      progressWrap.classList.remove('hidden');
+      progressFill.style.width = '0%';
+      progressText.textContent = '0%';
+    }
+
+    try {
+      const data = { rating, title, content, visitDate };
+      if (editId) {
+        await updateReview(editId, spotId, data, pendingFiles, removedPaths, (p) => {
+          const pct = Math.round(p * 100);
+          progressFill.style.width = pct + '%';
+          progressText.textContent = pct + '%';
+        });
+      } else {
+        await addReview(spotId, data, pendingFiles, (p) => {
+          const pct = Math.round(p * 100);
+          progressFill.style.width = pct + '%';
+          progressText.textContent = pct + '%';
+        });
+      }
+      close();
+      refreshReviews(spotId);
+    } catch (err) {
+      console.error('Review save error:', err);
+      alert(t('review.error.save'));
+    } finally {
+      saveBtn.disabled = false;
+      progressWrap.classList.add('hidden');
+    }
+  });
+
+  // Listen for custom events
+  document.addEventListener('open-review-modal', e => {
+    const { spotId, spotName } = e.detail;
+    openReviewFormModal(spotId, spotName);
+  });
+
+  document.addEventListener('edit-review', e => {
+    const { review, spotId } = e.detail;
+    openReviewFormModal(spotId, '', review);
+  });
+
+  document.addEventListener('delete-review', async e => {
+    const { reviewId, spotId } = e.detail;
+    if (!confirm(t('review.delete.confirm'))) return;
+    try {
+      await deleteReview(reviewId, spotId);
+      refreshReviews(spotId);
+    } catch (err) {
+      console.error('Review delete error:', err);
+      alert(t('review.error.delete'));
+    }
+  });
+}
+
+// ═══ Media Viewer ═══
+
+function initMediaViewer() {
+  const overlay = document.getElementById('media-viewer-overlay');
+  const closeBtn = document.getElementById('media-viewer-close');
+  const prevBtn = document.getElementById('media-viewer-prev');
+  const nextBtn = document.getElementById('media-viewer-next');
+  const content = document.getElementById('media-viewer-content');
+  const counter = document.getElementById('media-viewer-counter');
+
+  let mediaItems = [];
+  let currentIndex = 0;
+
+  function open(media, index) {
+    mediaItems = media;
+    currentIndex = index || 0;
+    overlay.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+    render();
+  }
+
+  function close() {
+    overlay.classList.add('hidden');
+    document.body.style.overflow = '';
+    content.innerHTML = '';
+    mediaItems = [];
+  }
+
+  function render() {
+    if (!mediaItems.length) return;
+    const item = mediaItems[currentIndex];
+    const isVid = item.url && (item.url.includes('.mp4') || item.url.includes('.mov') || item.url.includes('video'));
+    if (isVid) {
+      content.innerHTML = `<video src="${item.url}" controls autoplay playsinline style="max-width:90vw;max-height:85vh;"></video>`;
+    } else {
+      content.innerHTML = `<img src="${item.url}" alt="" />`;
+    }
+    counter.textContent = `${currentIndex + 1} / ${mediaItems.length}`;
+    prevBtn.style.display = mediaItems.length > 1 ? '' : 'none';
+    nextBtn.style.display = mediaItems.length > 1 ? '' : 'none';
+  }
+
+  function prev() {
+    currentIndex = (currentIndex - 1 + mediaItems.length) % mediaItems.length;
+    render();
+  }
+
+  function next() {
+    currentIndex = (currentIndex + 1) % mediaItems.length;
+    render();
+  }
+
+  closeBtn.addEventListener('click', close);
+  overlay.addEventListener('click', e => { if (e.target === overlay) close(); });
+  prevBtn.addEventListener('click', prev);
+  nextBtn.addEventListener('click', next);
+
+  document.addEventListener('keydown', e => {
+    if (overlay.classList.contains('hidden')) return;
+    if (e.key === 'Escape') close();
+    else if (e.key === 'ArrowLeft') prev();
+    else if (e.key === 'ArrowRight') next();
+  });
+
+  // Touch swipe support
+  let touchStartX = 0;
+  overlay.addEventListener('touchstart', e => {
+    touchStartX = e.touches[0].clientX;
+  }, { passive: true });
+  overlay.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    if (Math.abs(dx) > 50) {
+      if (dx > 0) prev(); else next();
+    }
+  }, { passive: true });
+
+  // Listen for open event
+  document.addEventListener('open-media-viewer', e => {
+    const { media, index } = e.detail;
+    open(media, index);
+  });
 }
 
 // ═══ Cookie Consent Banner ═══
