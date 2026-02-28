@@ -1174,8 +1174,8 @@ function refresh(fitToMarkers = false) {
     renderCards(filtered, currentView === 'favorites' ? [] : mySpots);
   }
 
-  // 지도 마커는 항상 현재 필터 기준
-  updateMarkers(isFavView ? filtered : filterSpots(false), fitToMarkers);
+  // 지도 마커는 항상 현재 필터 기준 (pass favSet so 'favorites' activity works)
+  updateMarkers(isFavView ? filtered : filterSpots(false, favSet), fitToMarkers);
   updateFavCount();
 
   // Personal markers on map
@@ -1192,16 +1192,20 @@ function refresh(fitToMarkers = false) {
   document.getElementById('count-scuba').textContent = counts.scuba;
   const countMyspot = document.getElementById('count-myspot');
   if (countMyspot) countMyspot.textContent = counts.myspot;
+  const countFav = document.getElementById('count-favorites');
+  if (countFav) countFav.textContent = counts.favorites;
 
   // Mobile activity tab counts
   const mobAll = document.getElementById('mob-count-all');
   const mobSkin = document.getElementById('mob-count-skin');
   const mobScuba = document.getElementById('mob-count-scuba');
   const mobMyspot = document.getElementById('mob-count-myspot');
+  const mobFav = document.getElementById('mob-count-favorites');
   if (mobAll) mobAll.textContent = counts.total;
   if (mobSkin) mobSkin.textContent = counts.skin;
   if (mobScuba) mobScuba.textContent = counts.scuba;
   if (mobMyspot) mobMyspot.textContent = counts.myspot;
+  if (mobFav) mobFav.textContent = counts.favorites;
 }
 
 // ═══ Logbook View ═══

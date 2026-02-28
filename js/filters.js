@@ -69,8 +69,11 @@ export function filterSpots(favOnly = false, favSet = null) {
   // 'myspot' filter shows only personal spots, no regular spots
   if (state.activityType === 'myspot') return [];
 
+  // 'favorites' filter shows only favorited spots
+  const isFavFilter = state.activityType === 'favorites';
+
   return spots.filter(s => {
-    if (favOnly && favSet && !favSet.has(String(s.id))) return false;
+    if ((favOnly || isFavFilter) && favSet && !favSet.has(String(s.id))) return false;
 
     if (state.search) {
       const q = state.search.toLowerCase();
@@ -82,8 +85,8 @@ export function filterSpots(favOnly = false, favSet = null) {
     }
     if (state.region && s.region !== state.region) return false;
 
-    // Activity type filter
-    if (state.activityType && !s.activityTypes.includes(state.activityType)) return false;
+    // Activity type filter (skip for 'favorites' — already handled above)
+    if (state.activityType && state.activityType !== 'favorites' && !s.activityTypes.includes(state.activityType)) return false;
 
     // Country filter
     if (state.country && s.country !== state.country) return false;
@@ -95,7 +98,7 @@ export function filterSpots(favOnly = false, favSet = null) {
 /** Count spots per activity type using all filters EXCEPT activityType.
  *  Includes personal spots in total/skin/scuba counts. */
 export function getActivityCounts(favOnly = false, favSet = null) {
-  let total = 0, skin = 0, scuba = 0, myspot = 0;
+  let total = 0, skin = 0, scuba = 0, myspot = 0, favorites = 0;
   for (const s of spots) {
     if (favOnly && favSet && !favSet.has(String(s.id))) continue;
     if (state.search) {
@@ -111,6 +114,7 @@ export function getActivityCounts(favOnly = false, favSet = null) {
     total++;
     if (s.activityTypes.includes('skin')) skin++;
     if (s.activityTypes.includes('scuba')) scuba++;
+    if (favSet && favSet.has(String(s.id))) favorites++;
   }
 
   // Include personal spots in counts
@@ -127,7 +131,7 @@ export function getActivityCounts(favOnly = false, favSet = null) {
     if (s.activityTypes.includes('scuba')) scuba++;
   }
 
-  return { total, skin, scuba, myspot };
+  return { total, skin, scuba, myspot, favorites };
 }
 
 // ── Country autocomplete helpers ──
@@ -208,6 +212,7 @@ export function refreshFilterLabels() {
     else if (act === 'skin') label = t('filter.activity.skin');
     else if (act === 'scuba') label = t('filter.activity.scuba');
     else if (act === 'myspot') label = t('myspot.badge');
+    else if (act === 'favorites') label = '♥ ' + t('filter.activity.favorites');
     btn.innerHTML = label + countHTML;
   });
 
@@ -229,6 +234,8 @@ export function refreshFilterLabels() {
     const el = document.getElementById(id);
     if (el) el.textContent = t(key);
   }
+  const mobFavEl = document.getElementById('mob-act-fav-text');
+  if (mobFavEl) mobFavEl.textContent = '♥ ' + t('filter.activity.favorites');
 }
 
 // ── Init ──
