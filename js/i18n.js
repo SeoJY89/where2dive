@@ -827,7 +827,7 @@ const en = {
   'footer.section.legal': 'Legal',
   'footer.section.info': 'Info',
   'footer.section.data': 'Data',
-  'footer.desc': 'Discover diving spots worldwide with live weather and marine info.',
+  'footer.desc': 'Find diving spots worldwide with weather and marine information.',
   'footer.copyright': '© 2025 Where2Dive. All rights reserved.',
   'footer.openMeteo': 'Open-Meteo',
   'footer.osm': 'OpenStreetMap',

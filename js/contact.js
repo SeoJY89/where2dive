@@ -1,7 +1,6 @@
 import { db } from './firebase.js';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
-
-const LANG_KEY = 'where2dive_lang';
+import { applySubpageI18n, initLangToggle, getLang } from './subpage-i18n.js';
 
 const i18n = {
   ko: {
@@ -21,9 +20,6 @@ const i18n = {
     responseDesc: '문의에 대한 응답은 일반적으로 1-3 영업일 이내에 처리됩니다.',
     feedbackTitle: '피드백',
     feedbackDesc: 'Where2Dive를 개선하기 위한 여러분의 의견을 항상 환영합니다. 새로운 기능 제안, 데이터 오류 신고, UX 개선 아이디어 등 무엇이든 보내주세요.',
-    navHome: '홈',
-    navAbout: '소개',
-    navGuide: '가이드',
   },
   en: {
     title: 'Contact Us',
@@ -42,15 +38,8 @@ const i18n = {
     responseDesc: 'We typically respond to inquiries within 1-3 business days.',
     feedbackTitle: 'Feedback',
     feedbackDesc: 'We always welcome your ideas to improve Where2Dive. Whether it\'s feature suggestions, data error reports, or UX improvements — we\'d love to hear from you.',
-    navHome: 'Home',
-    navAbout: 'About',
-    navGuide: 'Guide',
   },
 };
-
-function getLang() {
-  return localStorage.getItem(LANG_KEY) || 'ko';
-}
 
 function t(key) {
   const lang = getLang();
@@ -58,9 +47,10 @@ function t(key) {
 }
 
 function applyLabels() {
-  const lang = getLang();
-  if (lang === 'en') document.documentElement.lang = 'en';
+  // Shared subpage i18n (footer, nav, lang toggle)
+  applySubpageI18n();
 
+  // Contact-specific labels
   document.getElementById('page-title').textContent = t('title');
   document.getElementById('contact-email-title').textContent = t('emailTitle');
   document.getElementById('contact-email-desc').textContent = t('emailDesc');
@@ -74,10 +64,10 @@ function applyLabels() {
   document.getElementById('contact-response-desc').textContent = t('responseDesc');
   document.getElementById('contact-feedback-title').textContent = t('feedbackTitle');
   document.getElementById('contact-feedback-desc').textContent = t('feedbackDesc');
-  document.getElementById('nav-home').textContent = t('navHome');
-  document.getElementById('nav-about').textContent = t('navAbout');
-  document.getElementById('nav-guide').textContent = t('navGuide');
 }
+
+// Expose for lang toggle callback
+window._applyContactLabels = applyLabels;
 
 function showResult(message, type) {
   const el = document.getElementById('contact-result');
@@ -142,3 +132,4 @@ form.addEventListener('submit', async (e) => {
 });
 
 applyLabels();
+initLangToggle();
