@@ -1519,6 +1519,8 @@ function openSpotFormModal(editId) {
   document.getElementById('spot-temp-max-label').textContent = t('myspot.form.tempMax');
   document.getElementById('spot-difficulty-label').textContent = t('myspot.form.difficulty');
   document.getElementById('spot-activity-label').textContent = t('myspot.form.activityTypes');
+  document.getElementById('spot-skin-text').textContent = t('activity.skin');
+  document.getElementById('spot-scuba-text').textContent = t('activity.scuba');
   document.getElementById('spot-memo-label').textContent = t('myspot.form.memo');
   document.getElementById('spot-save').textContent = t('myspot.form.save');
   document.getElementById('spot-cancel').textContent = t('myspot.form.cancel');
