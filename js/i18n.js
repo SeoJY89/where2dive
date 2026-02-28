@@ -82,6 +82,10 @@ const ko = {
   'modal.bestSeason': '추천 시즌',
   'modal.marineLife': '해양 생물',
   'modal.highlights': '하이라이트',
+  'modal.location': '위치',
+  'modal.openInMaps': 'Google Maps에서 열기',
+  'modal.addToLogbook': '로그북에 추가',
+  'modal.share': '공유',
 
   // weather (modal)
   'modal.weather.title': '실시간 날씨 · 해양 정보',
@@ -415,6 +419,10 @@ const en = {
   'modal.bestSeason': 'Best Season',
   'modal.marineLife': 'Marine Life',
   'modal.highlights': 'Highlights',
+  'modal.location': 'Location',
+  'modal.openInMaps': 'Open in Google Maps',
+  'modal.addToLogbook': 'Add to Logbook',
+  'modal.share': 'Share',
 
   // weather (modal)
   'modal.weather.title': 'Live Weather & Marine Info',

@@ -2168,6 +2168,18 @@ function initReviewModal() {
     openReviewFormModal(spotId, spotName);
   });
 
+  document.addEventListener('open-log-from-spot', e => {
+    const { spotName, lat, lng } = e.detail;
+    openLogFormModal();
+    document.getElementById('log-spot-name').value = spotName || '';
+    if (lat != null) document.getElementById('log-lat').value = lat;
+    if (lng != null) document.getElementById('log-lng').value = lng;
+    const coordsText = document.getElementById('log-coords-text');
+    if (lat != null && lng != null && coordsText) {
+      coordsText.textContent = `${parseFloat(lat).toFixed(4)}, ${parseFloat(lng).toFixed(4)}`;
+    }
+  });
+
   document.addEventListener('edit-review', e => {
     const { review, spotId } = e.detail;
     openReviewFormModal(spotId, '', review);

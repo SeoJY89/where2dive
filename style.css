@@ -1029,6 +1029,47 @@
     background: var(--c-teal);
   }
 
+  /* Location section in modal */
+  .modal__location {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: var(--sp-3);
+    margin-bottom: var(--sp-5);
+    padding: var(--sp-3) var(--sp-4);
+    background: var(--c-gray-100);
+    border-radius: var(--r-md);
+    font-size: 0.85rem;
+  }
+  .modal__location-coords { color: var(--c-gray-500); font-family: monospace; }
+  .modal__location-link {
+    color: var(--c-ocean); text-decoration: none; font-weight: 600; white-space: nowrap;
+  }
+  .modal__location-link:hover { color: var(--c-teal); }
+
+  /* Action buttons in modal */
+  .modal__actions {
+    display: flex; gap: var(--sp-3);
+    margin-top: var(--sp-5);
+    padding-top: var(--sp-4);
+    border-top: 1px solid var(--c-gray-200);
+  }
+  .modal__action-btn {
+    flex: 1;
+    display: flex; align-items: center; justify-content: center; gap: var(--sp-2);
+    padding: var(--sp-3);
+    border: 1px solid var(--c-gray-200);
+    border-radius: var(--r-md);
+    background: var(--c-white);
+    font-size: 0.85rem; font-weight: 600;
+    color: var(--c-deep);
+    cursor: pointer;
+    transition: all var(--dur) var(--ease);
+  }
+  .modal__action-btn:hover {
+    background: var(--c-ocean);
+    color: var(--c-white);
+    border-color: var(--c-ocean);
+  }
+
   /* Weather section in modal */
   .modal__weather {
     background: linear-gradient(135deg, var(--c-deep), var(--c-navy));

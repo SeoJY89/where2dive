@@ -262,6 +262,12 @@ export function openModal(spot) {
       </div>
     </div>
 
+    <div class="modal__section-title">${t('modal.location')}</div>
+    <div class="modal__location">
+      <span class="modal__location-coords">${spot.lat.toFixed(4)}, ${spot.lng.toFixed(4)}</span>
+      <a class="modal__location-link" href="https://www.google.com/maps?q=${spot.lat},${spot.lng}" target="_blank" rel="noopener">${t('modal.openInMaps')} ↗</a>
+    </div>
+
     <div class="review-section" id="review-section" data-spot-id="${spot.id}">
       <div class="review-section__header">
         <span class="review-section__title">${t('review.title')}</span>
@@ -278,6 +284,11 @@ export function openModal(spot) {
       <div class="review-list" id="review-list">
         <div class="review-empty">${t('modal.weather.loading')}</div>
       </div>
+    </div>
+
+    <div class="modal__actions" id="modal-actions">
+      <button class="modal__action-btn" id="modal-add-log"><span>📝</span> ${t('modal.addToLogbook')}</button>
+      <button class="modal__action-btn" id="modal-share"><span>📤</span> ${t('modal.share')}</button>
     </div>
   `;
 
@@ -306,6 +317,28 @@ export function openModal(spot) {
       updateFavCount();
     } catch (err) {
       console.error('Favorite toggle failed:', err);
+    }
+  });
+
+  // Add to logbook button
+  body.querySelector('#modal-add-log').addEventListener('click', () => {
+    closeModal();
+    document.dispatchEvent(new CustomEvent('open-log-from-spot', { detail: { spotId: spot.id, spotName: td(spot, 'name'), lat: spot.lat, lng: spot.lng } }));
+  });
+
+  // Share button
+  body.querySelector('#modal-share').addEventListener('click', () => {
+    const url = `${location.origin}/?spot=${spot.id}`;
+    const text = `${td(spot, 'name')} - ${td(spot, 'country')} | Where2Dive`;
+    if (navigator.share) {
+      navigator.share({ title: td(spot, 'name'), text, url }).catch(() => {});
+    } else {
+      navigator.clipboard.writeText(url).then(() => {
+        const btn = body.querySelector('#modal-share');
+        const orig = btn.innerHTML;
+        btn.innerHTML = '<span>✅</span> Copied!';
+        setTimeout(() => { btn.innerHTML = orig; }, 2000);
+      });
     }
   });
 
