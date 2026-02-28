@@ -739,6 +739,17 @@
             <label for="log-memo" id="log-memo-label">메모</label>
             <textarea id="log-memo" rows="3"></textarea>
           </div>
+          <div class="log-form__field">
+            <label id="log-media-label">사진/동영상</label>
+            <div class="log-media-hint" id="log-media-hint">최대 4개 (이미지 5MB, 동영상 50MB)</div>
+            <div class="log-media-preview" id="log-media-preview"></div>
+            <input type="file" id="log-file-input" accept="image/jpeg,image/png,image/gif,video/mp4,video/quicktime" multiple hidden />
+            <button type="button" class="btn btn--secondary log-add-media-btn" id="log-add-media-btn">+ Add files</button>
+          </div>
+          <div class="log-upload-progress hidden" id="log-upload-progress">
+            <div class="log-upload-bar"><div class="log-upload-fill" id="log-upload-fill"></div></div>
+            <span class="log-upload-text" id="log-upload-text">0%</span>
+          </div>
           <div class="log-form__actions">
             <button type="button" class="btn btn--secondary" id="log-cancel">취소</button>
             <button type="submit" class="btn btn--primary" id="log-save">저장</button>
@@ -865,6 +876,25 @@
             <button type="submit" class="btn btn--primary" id="review-save">저장</button>
           </div>
         </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ Info FAB Button ═══ -->
+  <button class="info-fab" id="info-fab" aria-label="Info">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+  </button>
+
+  <!-- ═══ Info Modal ═══ -->
+  <div class="info-modal-overlay hidden" id="info-modal-overlay">
+    <div class="info-modal" role="dialog" aria-modal="true">
+      <div class="info-modal__header">
+        <h2 class="info-modal__title" id="info-modal-title">Where2Dive 안내</h2>
+        <button class="info-modal__close" id="info-modal-close" aria-label="닫기">&times;</button>
+      </div>
+      <div class="info-modal__content" id="info-modal-content"></div>
+      <div class="info-modal__footer">
+        <button class="btn btn--primary info-modal__ok" id="info-modal-ok">확인</button>
       </div>
     </div>
   </div>

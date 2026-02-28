@@ -244,6 +244,8 @@ const ko = {
   'logbook.form.visibility': '시야 (m)',
   'logbook.form.equipment': '장비',
   'logbook.form.weight': '웨이트 (kg)',
+  'logbook.form.entryTime': '입수 시간',
+  'logbook.form.exitTime': '출수 시간',
   'logbook.form.tankStart': '시작 잔압 (bar)',
   'logbook.form.tankEnd': '종료 잔압 (bar)',
   'logbook.form.buddy': '버디',
@@ -258,6 +260,13 @@ const ko = {
   'logbook.delete.confirm': '이 로그를 삭제하시겠습니까?',
   'logbook.card.edit': '수정',
   'logbook.card.delete': '삭제',
+  'logbook.form.media': '사진/동영상',
+  'logbook.form.mediaHint': '최대 4개 (이미지 5MB, 동영상 50MB)',
+  'logbook.validation.fileType': '지원하지 않는 파일 형식입니다.',
+  'logbook.validation.fileSize': '파일 크기가 초과되었습니다.',
+  'logbook.validation.fileCount': '최대 4개까지 첨부할 수 있습니다.',
+  'logbook.uploading': '업로드 중...',
+  'logbook.error.upload': '파일 업로드에 실패했습니다.',
 
   // my spots
   'myspot.badge': '내 스팟',
@@ -347,6 +356,11 @@ const ko = {
   'review.validation.fileType': '지원하지 않는 파일 형식입니다.',
   'review.validation.fileSize': '파일 크기가 초과되었습니다.',
   'review.validation.fileCount': '최대 5개까지 첨부할 수 있습니다.',
+
+  // info
+  'info.title': 'Where2Dive 안내',
+  'info.content': '안녕하세요, Where2Dive를 방문해 주셔서 감사합니다!\n\n전 세계 스노클러, 프리다이버, 스쿠버 다이버들의 편의를 위해 이 서비스를 만들었습니다.\n\n직접 방문한 장소는 최대한 상세하게 기록하고 있지만, 아직 가보지 못한 곳은 자료를 찾아 입력하였습니다. 이로 인해 위치나 정보에 오류가 있을 수 있으니 양해 부탁드립니다.\n\n앞으로도 지속적으로 보완하여, 전 세계에서 가장 많은 다이빙 스팟과 가장 정확한 정보를 제공하는 "Where2Dive"가 되도록 노력하겠습니다.\n\n감사합니다! \uD83E\uDD3F',
+  'info.close': '확인',
 };
 
 // ── English strings ──
@@ -549,6 +563,8 @@ const en = {
   'logbook.form.visibility': 'Visibility (m)',
   'logbook.form.equipment': 'Equipment',
   'logbook.form.weight': 'Weight (kg)',
+  'logbook.form.entryTime': 'Entry Time',
+  'logbook.form.exitTime': 'Exit Time',
   'logbook.form.tankStart': 'Tank Start (bar)',
   'logbook.form.tankEnd': 'Tank End (bar)',
   'logbook.form.buddy': 'Buddy',
@@ -563,6 +579,13 @@ const en = {
   'logbook.delete.confirm': 'Delete this log?',
   'logbook.card.edit': 'Edit',
   'logbook.card.delete': 'Delete',
+  'logbook.form.media': 'Photos/Videos',
+  'logbook.form.mediaHint': 'Max 4 files (images 5MB, videos 50MB)',
+  'logbook.validation.fileType': 'Unsupported file format.',
+  'logbook.validation.fileSize': 'File size exceeded.',
+  'logbook.validation.fileCount': 'Max 4 files allowed.',
+  'logbook.uploading': 'Uploading...',
+  'logbook.error.upload': 'File upload failed.',
 
   // my spots
   'myspot.badge': 'My Spot',
@@ -652,4 +675,9 @@ const en = {
   'review.validation.fileType': 'Unsupported file format.',
   'review.validation.fileSize': 'File size exceeded.',
   'review.validation.fileCount': 'Max 5 files allowed.',
+
+  // info
+  'info.title': 'About Where2Dive',
+  'info.content': 'Hello, and thank you for visiting Where2Dive!\n\nThis service was created for the convenience of snorkelers, freedivers, and scuba divers around the world.\n\nI\'ve done my best to provide detailed information for places I\'ve personally visited. However, locations I haven\'t been to yet were researched and added based on available resources. Because of this, there may be some inaccuracies in locations or other information, and I appreciate your understanding.\n\nI\'m committed to continuously improving this service, with the goal of making Where2Dive the most comprehensive and accurate diving spot guide in the world.\n\nThank you! \uD83E\uDD3F',
+  'info.close': 'OK',
 };

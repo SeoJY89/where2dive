@@ -18,6 +18,11 @@ let booted = false;
 let mapPickingState = null; // { target: 'log'|'spot' }
 let authMode = 'login'; // 'login' | 'signup'
 
+// Logbook media state
+let logPendingFiles = [];   // new File objects to upload
+let logExistingMedia = [];  // existing {url,path} from edit mode
+let logRemovedPaths = [];   // paths to delete on save
+
 // ── Landing / App visibility ──
 function showLanding() {
   document.getElementById('landing').classList.remove('hidden');
@@ -335,6 +340,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // ── Cookie consent ──
   initCookieBanner();
+
+  // ── Info modal ──
+  initInfoModal();
 
   setLangChangeListener(() => {
     applyLangToggleState();
@@ -1214,6 +1222,44 @@ function refresh(fitToMarkers = false) {
 
 // ═══ Logbook View ═══
 
+function renderLogMediaPreview() {
+  const container = document.getElementById('log-media-preview');
+  if (!container) return;
+  container.innerHTML = '';
+  // Existing media (edit mode)
+  logExistingMedia.forEach((m, i) => {
+    const item = document.createElement('div');
+    item.className = 'log-media-preview__item';
+    const isVid = isVideoFile(m.url);
+    item.innerHTML = `
+      ${isVid ? `<video src="${m.url}" muted></video>` : `<img src="${m.url}" alt="" />`}
+      <span class="log-media-preview__remove" data-type="existing" data-index="${i}">&times;</span>
+    `;
+    item.querySelector('.log-media-preview__remove').addEventListener('click', () => {
+      logRemovedPaths.push(m.path);
+      logExistingMedia.splice(i, 1);
+      renderLogMediaPreview();
+    });
+    container.appendChild(item);
+  });
+  // Pending new files
+  logPendingFiles.forEach((f, i) => {
+    const item = document.createElement('div');
+    item.className = 'log-media-preview__item';
+    const url = URL.createObjectURL(f);
+    const isVid = isVideoFile(f);
+    item.innerHTML = `
+      ${isVid ? `<video src="${url}" muted></video>` : `<img src="${url}" alt="" />`}
+      <span class="log-media-preview__remove" data-type="pending" data-index="${i}">&times;</span>
+    `;
+    item.querySelector('.log-media-preview__remove').addEventListener('click', () => {
+      logPendingFiles.splice(i, 1);
+      renderLogMediaPreview();
+    });
+    container.appendChild(item);
+  });
+}
+
 function renderLogbook() {
   const view = document.getElementById('logbook-view');
   const statsEl = document.getElementById('logbook-stats');
@@ -1254,27 +1300,55 @@ function renderLogbook() {
 
   entries.forEach(entry => {
     const card = document.createElement('div');
-    card.className = 'log-card';
+    const hasMedia = entry.media && entry.media.length > 0;
+    card.className = hasMedia ? 'log-card log-card--has-media' : 'log-card';
 
     const actLabel = entry.activityType === 'scuba' ? t('activity.scuba') : t('activity.skin');
 
+    // Build media grid HTML
+    let mediaHtml = '';
+    if (hasMedia) {
+      const thumbs = entry.media.map((m, idx) => {
+        const isVid = isVideoFile(m.url);
+        return `<div class="log-card__thumb${isVid ? ' log-card__thumb--video' : ''}" data-media-index="${idx}">
+          ${isVid ? `<video src="${m.url}" muted preload="metadata"></video>` : `<img src="${m.url}" alt="" />`}
+        </div>`;
+      }).join('');
+      mediaHtml = `<div class="log-card__media">${thumbs}</div>`;
+    }
+
     card.innerHTML = `
-      <div class="log-card__header">
-        <span class="log-card__date">${entry.date}</span>
-        <span class="badge badge--activity badge--activity-${entry.activityType}">${actLabel}</span>
+      <div class="log-card__body">
+        <div class="log-card__header">
+          <span class="log-card__date">${entry.date}</span>
+          <span class="badge badge--activity badge--activity-${entry.activityType}">${actLabel}</span>
+        </div>
+        <div class="log-card__spot">${entry.spotName || '-'}</div>
+        <div class="log-card__stats">
+          ${entry.maxDepth != null ? `<div class="card__stat"><span class="card__stat-label">${t('logbook.depth')}</span><span class="card__stat-value">${entry.maxDepth}m</span></div>` : ''}
+          ${entry.diveTime != null ? `<div class="card__stat"><span class="card__stat-label">${t('logbook.time')}</span><span class="card__stat-value">${entry.diveTime}min</span></div>` : ''}
+          ${entry.waterTemp != null ? `<div class="card__stat"><span class="card__stat-label">${t('logbook.temp')}</span><span class="card__stat-value">${entry.waterTemp}°C</span></div>` : ''}
+        </div>
+        ${entry.memo ? `<div class="log-card__memo">${entry.memo}</div>` : ''}
+        <div class="log-card__actions">
+          <button class="log-edit-btn" data-id="${entry.id}">${t('logbook.card.edit')}</button>
+          <button class="log-delete-btn" data-id="${entry.id}">${t('logbook.card.delete')}</button>
+        </div>
       </div>
-      <div class="log-card__spot">${entry.spotName || '-'}</div>
-      <div class="log-card__stats">
-        ${entry.maxDepth != null ? `<div class="card__stat"><span class="card__stat-label">${t('logbook.depth')}</span><span class="card__stat-value">${entry.maxDepth}m</span></div>` : ''}
-        ${entry.diveTime != null ? `<div class="card__stat"><span class="card__stat-label">${t('logbook.time')}</span><span class="card__stat-value">${entry.diveTime}min</span></div>` : ''}
-        ${entry.waterTemp != null ? `<div class="card__stat"><span class="card__stat-label">${t('logbook.temp')}</span><span class="card__stat-value">${entry.waterTemp}°C</span></div>` : ''}
-      </div>
-      ${entry.memo ? `<div class="log-card__memo">${entry.memo}</div>` : ''}
-      <div class="log-card__actions">
-        <button class="log-edit-btn" data-id="${entry.id}">${t('logbook.card.edit')}</button>
-        <button class="log-delete-btn" data-id="${entry.id}">${t('logbook.card.delete')}</button>
-      </div>
+      ${mediaHtml}
     `;
+
+    // Thumbnail click → open media viewer
+    if (hasMedia) {
+      card.querySelectorAll('.log-card__thumb').forEach(thumb => {
+        thumb.addEventListener('click', () => {
+          const idx = parseInt(thumb.dataset.mediaIndex);
+          document.dispatchEvent(new CustomEvent('open-media-viewer', {
+            detail: { media: entry.media, index: idx }
+          }));
+        });
+      });
+    }
 
     card.querySelector('.log-edit-btn').addEventListener('click', () => {
       openLogFormModal(entry.id);
@@ -1297,6 +1371,11 @@ function initLogModal() {
   const closeBtn = document.getElementById('log-modal-close');
   const cancelBtn = document.getElementById('log-cancel');
   const form = document.getElementById('log-form');
+  const fileInput = document.getElementById('log-file-input');
+  const addMediaBtn = document.getElementById('log-add-media-btn');
+  const progressWrap = document.getElementById('log-upload-progress');
+  const progressFill = document.getElementById('log-upload-fill');
+  const progressText = document.getElementById('log-upload-text');
 
   function close() {
     overlay.classList.add('hidden');
@@ -1324,9 +1403,29 @@ function initLogModal() {
     });
   });
 
+  // File input for media
+  addMediaBtn.addEventListener('click', () => fileInput.click());
+  fileInput.addEventListener('change', () => {
+    const totalCount = logPendingFiles.length + logExistingMedia.length;
+    const newFiles = Array.from(fileInput.files);
+    for (const f of newFiles) {
+      if (totalCount + logPendingFiles.length >= 4) {
+        alert(t('logbook.validation.fileCount'));
+        break;
+      }
+      const err = validateFile(f);
+      if (err === 'type') { alert(t('logbook.validation.fileType')); continue; }
+      if (err === 'size') { alert(t('logbook.validation.fileSize')); continue; }
+      logPendingFiles.push(f);
+    }
+    fileInput.value = '';
+    renderLogMediaPreview();
+  });
+
   form.addEventListener('submit', async e => {
     e.preventDefault();
     const editId = document.getElementById('log-edit-id').value;
+    const saveBtn = document.getElementById('log-save');
 
     const data = {
       date: document.getElementById('log-date').value,
@@ -1347,14 +1446,38 @@ function initLogModal() {
       memo: document.getElementById('log-memo').value,
     };
 
-    if (editId) {
-      await updateLogEntry(editId, data);
-    } else {
-      await addLogEntry(data);
+    saveBtn.disabled = true;
+
+    // Show progress if there are files
+    if (logPendingFiles.length > 0) {
+      progressWrap.classList.remove('hidden');
+      progressFill.style.width = '0%';
+      progressText.textContent = '0%';
     }
 
-    close();
-    if (currentView === 'logbook') renderLogbook();
+    try {
+      if (editId) {
+        await updateLogEntry(editId, data, logPendingFiles, logRemovedPaths, (p) => {
+          const pct = Math.round(p * 100);
+          progressFill.style.width = pct + '%';
+          progressText.textContent = pct + '%';
+        });
+      } else {
+        await addLogEntry(data, logPendingFiles, (p) => {
+          const pct = Math.round(p * 100);
+          progressFill.style.width = pct + '%';
+          progressText.textContent = pct + '%';
+        });
+      }
+      close();
+      if (currentView === 'logbook') renderLogbook();
+    } catch (err) {
+      console.error('Log save error:', err);
+      alert(t('logbook.error.upload'));
+    } finally {
+      saveBtn.disabled = false;
+      progressWrap.classList.add('hidden');
+    }
   });
 }
 
@@ -1366,6 +1489,13 @@ function openLogFormModal(editId) {
 
   form.reset();
   document.getElementById('log-edit-id').value = '';
+
+  // Reset media state
+  logPendingFiles = [];
+  logExistingMedia = [];
+  logRemovedPaths = [];
+  document.getElementById('log-media-preview').innerHTML = '';
+  document.getElementById('log-upload-progress').classList.add('hidden');
 
   // Populate spot datalist
   const datalist = document.getElementById('log-spot-datalist');
@@ -1391,6 +1521,8 @@ function openLogFormModal(editId) {
   document.getElementById('log-vis-label').textContent = t('logbook.form.visibility');
   document.getElementById('log-equip-label').textContent = t('logbook.form.equipment');
   document.getElementById('log-weight-label').textContent = t('logbook.form.weight');
+  document.getElementById('log-entry-time-label').textContent = t('logbook.form.entryTime');
+  document.getElementById('log-exit-time-label').textContent = t('logbook.form.exitTime');
   document.getElementById('log-tank-start-label').textContent = t('logbook.form.tankStart');
   document.getElementById('log-tank-end-label').textContent = t('logbook.form.tankEnd');
   document.getElementById('log-buddy-label').textContent = t('logbook.form.buddy');
@@ -1398,6 +1530,8 @@ function openLogFormModal(editId) {
   document.getElementById('log-location-label').textContent = t('logbook.form.location');
   document.getElementById('log-pick-map-btn').textContent = t('logbook.form.pickOnMap');
   document.getElementById('log-memo-label').textContent = t('logbook.form.memo');
+  document.getElementById('log-media-label').textContent = t('logbook.form.media');
+  document.getElementById('log-media-hint').textContent = t('logbook.form.mediaHint');
   document.getElementById('log-save').textContent = t('logbook.form.save');
   document.getElementById('log-cancel').textContent = t('logbook.form.cancel');
   document.getElementById('log-skin-text').textContent = t('activity.skin');
@@ -1428,6 +1562,9 @@ function openLogFormModal(editId) {
     document.getElementById('log-lng').value = entry.lng ?? '';
     document.getElementById('log-memo').value = entry.memo || '';
     scubaFields.classList.toggle('hidden', entry.activityType !== 'scuba');
+    // Populate existing media for edit
+    logExistingMedia = [...(entry.media || [])];
+    renderLogMediaPreview();
   } else {
     title.textContent = t('logbook.form.title');
     document.getElementById('log-date').value = new Date().toISOString().slice(0, 10);
@@ -2026,5 +2163,38 @@ function initCookieBanner() {
   acceptBtn.addEventListener('click', () => {
     localStorage.setItem('where2dive_cookie_consent', 'accepted');
     banner.classList.add('hidden');
+  });
+}
+
+// ═══ Info Modal ═══
+
+function initInfoModal() {
+  const fab = document.getElementById('info-fab');
+  const overlay = document.getElementById('info-modal-overlay');
+  const closeBtn = document.getElementById('info-modal-close');
+  const okBtn = document.getElementById('info-modal-ok');
+  const titleEl = document.getElementById('info-modal-title');
+  const contentEl = document.getElementById('info-modal-content');
+  if (!fab || !overlay) return;
+
+  function open() {
+    titleEl.textContent = t('info.title');
+    contentEl.textContent = t('info.content');
+    okBtn.textContent = t('info.close');
+    overlay.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function close() {
+    overlay.classList.add('hidden');
+    document.body.style.overflow = '';
+  }
+
+  fab.addEventListener('click', open);
+  closeBtn.addEventListener('click', close);
+  okBtn.addEventListener('click', close);
+  overlay.addEventListener('click', e => { if (e.target === overlay) close(); });
+  document.addEventListener('keydown', e => {
+    if (!overlay.classList.contains('hidden') && e.key === 'Escape') close();
   });
 }
