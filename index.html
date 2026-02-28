@@ -707,12 +707,22 @@
             </div>
             <div class="log-form__grid">
               <div class="log-form__field">
-                <label for="log-entry-time" id="log-entry-time-label">입수 시간</label>
-                <input type="time" id="log-entry-time" />
+                <label id="log-entry-time-label">입수 시간</label>
+                <div class="log-time-selects" id="log-entry-time-group">
+                  <select id="log-entry-ampm" class="log-time-select log-time-select--ampm"><option value="">--</option><option value="AM">오전</option><option value="PM">오후</option></select>
+                  <select id="log-entry-hour" class="log-time-select log-time-select--hour"><option value="">--</option></select>
+                  <span class="log-time-colon">:</span>
+                  <select id="log-entry-min" class="log-time-select log-time-select--min"><option value="">--</option></select>
+                </div>
               </div>
               <div class="log-form__field">
-                <label for="log-exit-time" id="log-exit-time-label">출수 시간</label>
-                <input type="time" id="log-exit-time" />
+                <label id="log-exit-time-label">출수 시간</label>
+                <div class="log-time-selects" id="log-exit-time-group">
+                  <select id="log-exit-ampm" class="log-time-select log-time-select--ampm"><option value="">--</option><option value="AM">오전</option><option value="PM">오후</option></select>
+                  <select id="log-exit-hour" class="log-time-select log-time-select--hour"><option value="">--</option></select>
+                  <span class="log-time-colon">:</span>
+                  <select id="log-exit-min" class="log-time-select log-time-select--min"><option value="">--</option></select>
+                </div>
               </div>
             </div>
           </div>

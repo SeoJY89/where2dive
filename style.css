@@ -1231,6 +1231,29 @@
     border-color: var(--c-teal);
     box-shadow: 0 0 0 3px rgba(96,200,190,.2);
   }
+  .log-time-selects {
+    display: flex; align-items: center; gap: var(--sp-1);
+  }
+  .log-time-select {
+    padding: var(--sp-2) var(--sp-1);
+    border: 1px solid var(--c-gray-200);
+    border-radius: var(--r-md);
+    background: var(--c-gray-100);
+    font-size: 0.875rem;
+    transition: border-color var(--dur) var(--ease);
+    min-width: 0;
+  }
+  .log-time-select:focus {
+    outline: none;
+    border-color: var(--c-teal);
+    box-shadow: 0 0 0 3px rgba(96,200,190,.2);
+  }
+  .log-time-select--ampm { flex: 0 0 auto; }
+  .log-time-select--hour,
+  .log-time-select--min { flex: 1 1 0; }
+  .log-time-colon {
+    font-weight: 700; font-size: 0.875rem; color: var(--c-gray-500);
+  }
   .log-form__hint {
     font-size: 0.75rem; color: var(--c-gray-300);
   }

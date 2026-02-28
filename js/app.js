@@ -23,6 +23,62 @@ let logPendingFiles = [];   // new File objects to upload
 let logExistingMedia = [];  // existing {url,path} from edit mode
 let logRemovedPaths = [];   // paths to delete on save
 
+// Convert custom time selects → "HH:mm" 24h string (or '' if incomplete)
+function getTimeFromSelects(prefix) {
+  const ampm = document.getElementById(`${prefix}-ampm`).value;
+  const hour = document.getElementById(`${prefix}-hour`).value;
+  const min = document.getElementById(`${prefix}-min`).value;
+  if (!ampm || !hour || !min) return '';
+  let h = parseInt(hour);
+  if (ampm === 'AM' && h === 12) h = 0;
+  else if (ampm === 'PM' && h !== 12) h += 12;
+  return `${String(h).padStart(2, '0')}:${String(parseInt(min)).padStart(2, '0')}`;
+}
+
+// Set custom time selects from "HH:mm" 24h string
+function setTimeToSelects(prefix, value) {
+  const ampmSel = document.getElementById(`${prefix}-ampm`);
+  const hourSel = document.getElementById(`${prefix}-hour`);
+  const minSel = document.getElementById(`${prefix}-min`);
+  if (!value) { ampmSel.value = ''; hourSel.value = ''; minSel.value = ''; return; }
+  const [hStr, mStr] = value.split(':');
+  let h = parseInt(hStr);
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  if (h === 0) h = 12;
+  else if (h > 12) h -= 12;
+  ampmSel.value = ampm;
+  hourSel.value = String(h);
+  // Snap to nearest 5-min option
+  const m = parseInt(mStr);
+  const snapped = Math.round(m / 5) * 5;
+  minSel.value = String(snapped >= 60 ? 55 : snapped);
+}
+
+// Format "HH:mm" 24h → "h:mm AM/PM" with localized label
+function formatTime12(value) {
+  if (!value) return '';
+  const [hStr, mStr] = value.split(':');
+  let h = parseInt(hStr);
+  const ampm = h >= 12 ? t('logbook.time.pm') : t('logbook.time.am');
+  if (h === 0) h = 12;
+  else if (h > 12) h -= 12;
+  return `${h}:${mStr} ${ampm}`;
+}
+
+// Update AM/PM option labels based on current language
+function updateTimeSelectLabels() {
+  const amLabel = t('logbook.time.am');
+  const pmLabel = t('logbook.time.pm');
+  ['log-entry-ampm', 'log-exit-ampm'].forEach(id => {
+    const sel = document.getElementById(id);
+    if (!sel) return;
+    sel.querySelectorAll('option').forEach(opt => {
+      if (opt.value === 'AM') opt.textContent = amLabel;
+      else if (opt.value === 'PM') opt.textContent = pmLabel;
+    });
+  });
+}
+
 // ── Landing / App visibility ──
 function showLanding() {
   document.getElementById('landing').classList.remove('hidden');
@@ -1327,6 +1383,8 @@ function renderLogbook() {
         <div class="log-card__stats">
           ${entry.maxDepth != null ? `<div class="card__stat"><span class="card__stat-label">${t('logbook.depth')}</span><span class="card__stat-value">${entry.maxDepth}m</span></div>` : ''}
           ${entry.diveTime != null ? `<div class="card__stat"><span class="card__stat-label">${t('logbook.time')}</span><span class="card__stat-value">${entry.diveTime}min</span></div>` : ''}
+          ${entry.entryTime ? `<div class="card__stat"><span class="card__stat-label">${t('logbook.form.entryTime')}</span><span class="card__stat-value">${formatTime12(entry.entryTime)}</span></div>` : ''}
+          ${entry.exitTime ? `<div class="card__stat"><span class="card__stat-label">${t('logbook.form.exitTime')}</span><span class="card__stat-value">${formatTime12(entry.exitTime)}</span></div>` : ''}
           ${entry.waterTemp != null ? `<div class="card__stat"><span class="card__stat-label">${t('logbook.temp')}</span><span class="card__stat-value">${entry.waterTemp}°C</span></div>` : ''}
         </div>
         ${entry.memo ? `<div class="log-card__memo">${entry.memo}</div>` : ''}
@@ -1386,6 +1444,16 @@ function initLogModal() {
   closeBtn.addEventListener('click', close);
   cancelBtn.addEventListener('click', close);
 
+  // Populate hour (1-12) and minute (00-55) options for custom time selects
+  ['log-entry-hour', 'log-exit-hour'].forEach(id => {
+    const sel = document.getElementById(id);
+    for (let h = 1; h <= 12; h++) sel.insertAdjacentHTML('beforeend', `<option value="${h}">${h}</option>`);
+  });
+  ['log-entry-min', 'log-exit-min'].forEach(id => {
+    const sel = document.getElementById(id);
+    for (let m = 0; m < 60; m += 5) sel.insertAdjacentHTML('beforeend', `<option value="${m}">${String(m).padStart(2, '0')}</option>`);
+  });
+
   // Log pick-on-map button
   document.getElementById('log-pick-map-btn').addEventListener('click', () => {
     startMapPicking('log');
@@ -1439,6 +1507,8 @@ function initLogModal() {
       weight: parseFloat(document.getElementById('log-weight').value) || null,
       tankPressureStart: parseInt(document.getElementById('log-tank-start').value) || null,
       tankPressureEnd: parseInt(document.getElementById('log-tank-end').value) || null,
+      entryTime: getTimeFromSelects('log-entry') || null,
+      exitTime: getTimeFromSelects('log-exit') || null,
       buddy: document.getElementById('log-buddy').value,
       weather: document.getElementById('log-weather').value,
       lat: parseFloat(document.getElementById('log-lat').value) || null,
@@ -1523,6 +1593,7 @@ function openLogFormModal(editId) {
   document.getElementById('log-weight-label').textContent = t('logbook.form.weight');
   document.getElementById('log-entry-time-label').textContent = t('logbook.form.entryTime');
   document.getElementById('log-exit-time-label').textContent = t('logbook.form.exitTime');
+  updateTimeSelectLabels();
   document.getElementById('log-tank-start-label').textContent = t('logbook.form.tankStart');
   document.getElementById('log-tank-end-label').textContent = t('logbook.form.tankEnd');
   document.getElementById('log-buddy-label').textContent = t('logbook.form.buddy');
@@ -1556,6 +1627,8 @@ function openLogFormModal(editId) {
     document.getElementById('log-weight').value = entry.weight ?? '';
     document.getElementById('log-tank-start').value = entry.tankPressureStart ?? '';
     document.getElementById('log-tank-end').value = entry.tankPressureEnd ?? '';
+    setTimeToSelects('log-entry', entry.entryTime || '');
+    setTimeToSelects('log-exit', entry.exitTime || '');
     document.getElementById('log-buddy').value = entry.buddy || '';
     document.getElementById('log-weather').value = entry.weather || '';
     document.getElementById('log-lat').value = entry.lat ?? '';
@@ -1572,6 +1645,8 @@ function openLogFormModal(editId) {
     document.querySelectorAll('#log-activity-switch .log-activity-switch__btn').forEach(b => {
       b.classList.toggle('active', b.dataset.value === 'skin');
     });
+    setTimeToSelects('log-entry', '');
+    setTimeToSelects('log-exit', '');
     scubaFields.classList.add('hidden');
   }
 
