@@ -22,6 +22,7 @@ function showLanding() {
   document.getElementById('landing').classList.remove('hidden');
   document.querySelector('.header').classList.add('app-hidden');
   document.querySelector('.filter-bar').classList.add('app-hidden');
+  document.querySelector('.mobile-activity-tabs').classList.add('app-hidden');
   document.querySelector('.main').classList.add('app-hidden');
   document.querySelector('.footer').classList.add('app-hidden');
 }
@@ -30,6 +31,7 @@ function hideLanding() {
   document.getElementById('landing').classList.add('hidden');
   document.querySelector('.header').classList.remove('app-hidden');
   document.querySelector('.filter-bar').classList.remove('app-hidden');
+  document.querySelector('.mobile-activity-tabs').classList.remove('app-hidden');
   document.querySelector('.main').classList.remove('app-hidden');
   document.querySelector('.footer').classList.remove('app-hidden');
 }

@@ -1559,13 +1559,29 @@
   .cards-panel.map-hidden { display: none; }
 }
 
+/* ═══ Mobile Activity Tabs — hidden on desktop ═══ */
+.mobile-activity-tabs {
+  display: none;
+}
+
 @media (max-width: 768px) {
   /* ── Header: simplified ── */
   .header__inner { padding: var(--sp-2) var(--sp-4); }
   .header__nav { display: none; }        /* hide desktop nav */
-  .lang-toggle:not(.mobile-drawer .lang-toggle) { display: none; } /* hide header lang toggle */
   .header__logout { display: none; }     /* hide header logout */
-  .header__mobile-filter-toggle { display: inline-flex; margin-left: auto; }
+
+  /* Show compact lang toggle in header on mobile */
+  .lang-toggle:not(.mobile-drawer .lang-toggle) {
+    display: inline-flex;
+    margin-left: auto;
+    border-color: var(--c-ocean);
+  }
+  .lang-toggle:not(.mobile-drawer .lang-toggle) .lang-toggle__btn {
+    padding: var(--sp-1) var(--sp-2);
+    font-size: 0.7rem;
+  }
+
+  .header__mobile-filter-toggle { display: inline-flex; margin-left: var(--sp-2); }
 
   /* ── Filter bar: always hidden on mobile ── */
   .filter-bar { display: none !important; }
@@ -1798,11 +1814,6 @@
     text-align: center;
     padding-top: var(--sp-3);
   }
-}
-
-/* ═══ Mobile Activity Tabs — Desktop hidden ═══ */
-.mobile-activity-tabs {
-  display: none;
 }
 
 /* ═══ Search Bottom Sheet ═══ */
