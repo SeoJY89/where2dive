@@ -334,9 +334,16 @@ export function initFilters() {
   });
 
   // 이벤트 바인딩
+  let searchTrackTimer;
   document.getElementById('search-input').addEventListener('input', e => {
     state.search = e.target.value.trim();
     onChange();
+    clearTimeout(searchTrackTimer);
+    if (state.search.length > 2) {
+      searchTrackTimer = setTimeout(() => {
+        if (typeof gtag === 'function') gtag('event', 'search', { search_term: state.search });
+      }, 1000);
+    }
   });
   document.getElementById('region-select').addEventListener('change', e => {
     state.region = e.target.value;

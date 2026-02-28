@@ -98,6 +98,8 @@ export async function signup(email, pw, nickname, { marketingConsent = false } =
     uid,
     email,
   });
+
+  if (typeof gtag === 'function') gtag('event', 'sign_up', { method: 'email' });
 }
 
 /** 비밀번호 재설정 이메일 발송 */
@@ -121,7 +123,11 @@ export async function findEmailByNickname(nickname) {
 /** Google 로그인 */
 export async function loginWithGoogle() {
   const provider = new GoogleAuthProvider();
-  await signInWithPopup(auth, provider);
+  const result = await signInWithPopup(auth, provider);
+  if (typeof gtag === 'function') {
+    const isNew = result?._tokenResponse?.isNewUser;
+    gtag('event', isNew ? 'sign_up' : 'login', { method: 'google' });
+  }
 }
 
 /** 로그아웃 */
