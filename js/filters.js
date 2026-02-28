@@ -70,7 +70,7 @@ export function filterSpots(favOnly = false, favSet = null) {
   if (state.activityType === 'myspot') return [];
 
   return spots.filter(s => {
-    if (favOnly && favSet && !favSet.has(s.id)) return false;
+    if (favOnly && favSet && !favSet.has(String(s.id))) return false;
 
     if (state.search) {
       const q = state.search.toLowerCase();
@@ -97,7 +97,7 @@ export function filterSpots(favOnly = false, favSet = null) {
 export function getActivityCounts(favOnly = false, favSet = null) {
   let total = 0, skin = 0, scuba = 0, myspot = 0;
   for (const s of spots) {
-    if (favOnly && favSet && !favSet.has(s.id)) continue;
+    if (favOnly && favSet && !favSet.has(String(s.id))) continue;
     if (state.search) {
       const q = state.search.toLowerCase();
       const haystack = [

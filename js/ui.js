@@ -111,10 +111,14 @@ function createCard(spot) {
   card.querySelector('.card__fav').addEventListener('click', async e => {
     e.stopPropagation();
     const btn = e.currentTarget;
-    const nowFav = await toggleFavorite(spot.id);
-    btn.classList.toggle('active', nowFav);
-    btn.innerHTML = nowFav ? '\u2764' : '\u2661';
-    updateFavCount();
+    try {
+      const nowFav = await toggleFavorite(spot.id);
+      btn.classList.toggle('active', nowFav);
+      btn.innerHTML = nowFav ? '\u2764' : '\u2661';
+      updateFavCount();
+    } catch (err) {
+      console.error('Favorite toggle failed:', err);
+    }
   });
 
   // 상세보기
@@ -260,10 +264,14 @@ export function openModal(spot) {
   // 즐겨찾기 토글
   body.querySelector('.modal__fav').addEventListener('click', async e => {
     const btn = e.currentTarget;
-    const nowFav = await toggleFavorite(spot.id);
-    btn.classList.toggle('active', nowFav);
-    btn.innerHTML = nowFav ? '\u2764' : '\u2661';
-    updateFavCount();
+    try {
+      const nowFav = await toggleFavorite(spot.id);
+      btn.classList.toggle('active', nowFav);
+      btn.innerHTML = nowFav ? '\u2764' : '\u2661';
+      updateFavCount();
+    } catch (err) {
+      console.error('Favorite toggle failed:', err);
+    }
   });
 
   overlay.classList.remove('hidden');

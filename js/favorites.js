@@ -29,20 +29,21 @@ export function getFavorites() {
 }
 
 export function isFavorite(id) {
-  return favSet.has(id);
+  return favSet.has(String(id));
 }
 
 /** 즐겨찾기 토글 (async) — 반환: 토글 후 즐겨찾기 여부 */
 export async function toggleFavorite(id) {
   const col = userFavCol();
   if (!col) return false;
-  if (favSet.has(id)) {
-    favSet.delete(id);
-    await deleteDoc(doc(col, id));
+  const strId = String(id);
+  if (favSet.has(strId)) {
+    favSet.delete(strId);
+    await deleteDoc(doc(col, strId));
     return false;
   } else {
-    favSet.add(id);
-    await setDoc(doc(col, id), { spotId: id, addedAt: serverTimestamp() });
+    favSet.add(strId);
+    await setDoc(doc(col, strId), { spotId: id, addedAt: serverTimestamp() });
     return true;
   }
 }
