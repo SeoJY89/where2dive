@@ -1162,11 +1162,10 @@
     color: var(--c-coral); border-color: var(--c-coral);
   }
 
-  /* ── Log Card 2-column layout with media ── */
+  /* ── Log Card layout with media ── */
   .log-card--has-media {
-    display: grid;
-    grid-template-columns: 1fr 140px;
-    gap: var(--sp-4);
+    display: flex;
+    flex-direction: column;
   }
   .log-card__body {
     display: flex; flex-direction: column; gap: var(--sp-3);
@@ -1174,9 +1173,9 @@
   }
   .log-card__media {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 4px;
-    align-self: start;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--sp-3);
+    margin-top: var(--sp-4);
   }
   .log-card__thumb {
     position: relative;
@@ -1406,10 +1405,11 @@
   /* ── Info FAB ── */
   .info-fab {
     position: fixed;
-    bottom: 140px;
-    right: 20px;
+    bottom: 80px;
+    left: 20px;
+    right: auto;
     z-index: 1000;
-    width: 44px; height: 44px;
+    width: 36px; height: 36px;
     border-radius: 50%;
     background: var(--c-white);
     border: 2px solid var(--c-ocean);
@@ -1800,19 +1800,24 @@
   .logbook-stats { grid-template-columns: 1fr; }
   .log-form__grid { grid-template-columns: 1fr; }
 
-  /* ── Log card media: stack vertically on mobile ── */
+  /* ── Log card media: side grid on mobile ── */
   .log-card--has-media {
-    grid-template-columns: 1fr;
+    display: grid;
+    grid-template-columns: 1fr 100px;
+    gap: var(--sp-3);
   }
   .log-card__media {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+    margin-top: 0;
+    align-self: start;
   }
   .log-media-preview__item { width: 64px; height: 64px; }
   .modal { max-width: 100%; margin: var(--sp-2); }
   .modal__body { padding: 0 var(--sp-4) var(--sp-4); }
 
   /* ── Info FAB above tab bar ── */
-  .info-fab { bottom: 76px; right: 16px; width: 40px; height: 40px; }
+  .info-fab { bottom: 68px; left: 16px; right: auto; width: 32px; height: 32px; }
 
   /* ── Cookie banner above tab bar ── */
   .cookie-banner { flex-direction: column; text-align: center; bottom: 56px; }

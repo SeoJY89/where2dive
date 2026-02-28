@@ -1,5 +1,5 @@
 // 앱 엔트리 포인트
-import { spots, COUNTRY_MAP } from './data.js';
+import { spots, COUNTRY_MAP, REGIONS } from './data.js';
 import { initMap, updateMarkers, setMapSpotClickHandler, flyToSpot, invalidateMapSize, updatePersonalMarkers, setPersonalSpotClickHandler, getMapInstance } from './map.js';
 import { renderCards, renderFavEmpty, openModal, initModal, setDetailClickHandler, updateFavCount, setPersonalSpotCardHandlers, refreshReviews } from './ui.js';
 import { initFilters, filterSpots, setFilterListener, refreshFilterLabels, getActivityCounts, filterMySpots, setSearchToggleListener, setCountry, resetFilters } from './filters.js';
@@ -1054,6 +1054,17 @@ function updateMobileLabels() {
   setText('search-sheet-region-label', 'search.region');
   const searchInput = document.getElementById('search-sheet-input');
   if (searchInput) searchInput.placeholder = t('search.placeholder');
+  const sheetCountryEl = document.getElementById('sheet-country-input');
+  if (sheetCountryEl) sheetCountryEl.placeholder = t('search.countryPlaceholder');
+  const sheetRegionSel = document.getElementById('sheet-region-select');
+  if (sheetRegionSel) {
+    sheetRegionSel.options[0].textContent = t('filter.region.all');
+    REGIONS.forEach((r, i) => {
+      if (sheetRegionSel.options[i + 1]) {
+        sheetRegionSel.options[i + 1].textContent = getLang() === 'en' ? r.labelEn : r.label;
+      }
+    });
+  }
   const sheetReset = document.getElementById('search-sheet-reset');
   if (sheetReset) sheetReset.textContent = t('filter.reset');
 }
