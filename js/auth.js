@@ -8,6 +8,7 @@ import {
   signInWithPopup,
   GoogleAuthProvider,
   signOut,
+  sendPasswordResetEmail,
 } from 'firebase/auth';
 import {
   doc,
@@ -91,11 +92,30 @@ export async function signup(email, pw, nickname, { marketingConsent = false } =
     createdAt: now,
   });
 
-  // 닉네임 검색용 별도 컬렉션
+  // 닉네임 검색용 별도 컬렉션 (이메일 찾기 기능용 email 포함)
   await setDoc(doc(db, 'nicknames', uid), {
     nickname,
     uid,
+    email,
   });
+}
+
+/** 비밀번호 재설정 이메일 발송 */
+export async function resetPassword(email) {
+  await sendPasswordResetEmail(auth, email);
+}
+
+/** 닉네임으로 이메일 찾기 (마스킹 처리) */
+export async function findEmailByNickname(nickname) {
+  const q = query(collection(db, 'nicknames'), where('nickname', '==', nickname));
+  const snap = await getDocs(q);
+  if (snap.empty) return null;
+  const email = snap.docs[0].data().email;
+  if (!email) return null;
+  // 이메일 마스킹: sj***@gmail.com
+  const [local, domain] = email.split('@');
+  const visible = local.length <= 2 ? local[0] : local.slice(0, 2);
+  return visible + '***@' + domain;
 }
 
 /** Google 로그인 */

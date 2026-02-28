@@ -320,6 +320,51 @@
   }
   .landing__terms-link:hover { color: var(--c-white); }
 
+  /* Recovery links (Find ID | Reset PW) */
+  .landing__recovery {
+    display: flex; align-items: center; justify-content: center;
+    gap: var(--sp-2);
+    width: 100%;
+  }
+  .landing__recovery-link {
+    background: none; border: none;
+    color: rgba(255,255,255,0.5);
+    font-size: 0.78rem; cursor: pointer;
+    transition: color var(--dur) var(--ease);
+  }
+  .landing__recovery-link:hover { color: var(--c-aqua); }
+  .landing__recovery-sep {
+    color: rgba(255,255,255,0.2);
+    font-size: 0.75rem;
+  }
+
+  /* Recovery form panels */
+  .landing__recovery-form {
+    width: 100%;
+    display: flex; flex-direction: column; align-items: center; gap: var(--sp-3);
+  }
+  .landing__recovery-title {
+    font-size: 1rem; font-weight: 600;
+    color: var(--c-white);
+    text-align: center;
+    margin: 0;
+  }
+  .landing__recovery-msg {
+    font-size: 0.8rem;
+    text-align: center;
+    line-height: 1.4;
+    word-break: break-all;
+  }
+  .landing__recovery-msg--success { color: var(--c-easy); }
+  .landing__recovery-msg--error { color: var(--c-coral-light); }
+  .landing__back-link {
+    background: none; border: none;
+    color: rgba(255,255,255,0.45);
+    font-size: 0.78rem; cursor: pointer;
+    transition: color var(--dur) var(--ease);
+  }
+  .landing__back-link:hover { color: var(--c-aqua); }
+
   .landing__demo {
     font-size: 0.75rem; color: rgba(255,255,255,0.4);
     text-align: center;

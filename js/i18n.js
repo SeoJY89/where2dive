@@ -180,6 +180,21 @@ const ko = {
   'signup.error.password.weak': '비밀번호는 8자 이상, 영문+숫자를 포함해야 합니다.',
   'signup.error.password.mismatch': '비밀번호가 일치하지 않습니다.',
 
+  // find email / reset password
+  'landing.findEmail': '아이디 찾기',
+  'landing.resetPw': '비밀번호 찾기',
+  'landing.backToLogin': '로그인으로 돌아가기',
+  'findEmail.title': '아이디(이메일) 찾기',
+  'findEmail.nickname.placeholder': '가입 시 사용한 닉네임',
+  'findEmail.submit': '아이디 찾기',
+  'findEmail.success': '등록된 이메일: {email}',
+  'findEmail.notFound': '해당 닉네임으로 가입된 계정이 없습니다.',
+  'resetPw.title': '비밀번호 찾기',
+  'resetPw.email.placeholder': '가입한 이메일 주소',
+  'resetPw.submit': '재설정 링크 발송',
+  'resetPw.success': '비밀번호 재설정 이메일이 발송되었습니다. 이메일을 확인해주세요.',
+  'resetPw.notFound': '등록되지 않은 이메일입니다.',
+
   // terms agreement
   'terms.agreeAll': '전체 동의',
   'terms.required': '[필수]',
@@ -420,6 +435,21 @@ const en = {
   'signup.error.nickname.checkRequired': 'Please check nickname availability.',
   'signup.error.password.weak': 'Password must be 8+ chars with letters and numbers.',
   'signup.error.password.mismatch': 'Passwords do not match.',
+
+  // find email / reset password
+  'landing.findEmail': 'Find ID',
+  'landing.resetPw': 'Forgot Password',
+  'landing.backToLogin': 'Back to login',
+  'findEmail.title': 'Find your email',
+  'findEmail.nickname.placeholder': 'Nickname used at signup',
+  'findEmail.submit': 'Find Email',
+  'findEmail.success': 'Registered email: {email}',
+  'findEmail.notFound': 'No account found with this nickname.',
+  'resetPw.title': 'Reset Password',
+  'resetPw.email.placeholder': 'Your registered email',
+  'resetPw.submit': 'Send Reset Link',
+  'resetPw.success': 'Password reset email sent. Please check your inbox.',
+  'resetPw.notFound': 'No account found with this email.',
 
   // terms agreement
   'terms.agreeAll': 'Agree to all',

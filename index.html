@@ -424,6 +424,36 @@
         <button type="submit" class="landing__submit" id="login-submit" data-i18n="landing.login">로그인</button>
         <p class="landing__error hidden" id="login-error" data-i18n="landing.error">이메일 또는 비밀번호가 올바르지 않습니다.</p>
       </form>
+      <!-- Find ID / Reset PW links (login mode only) -->
+      <div class="landing__recovery" id="recovery-links">
+        <button type="button" class="landing__recovery-link" id="find-email-link">아이디 찾기</button>
+        <span class="landing__recovery-sep">|</span>
+        <button type="button" class="landing__recovery-link" id="reset-pw-link">비밀번호 찾기</button>
+      </div>
+      <!-- Find Email Form -->
+      <div class="landing__recovery-form hidden" id="find-email-panel">
+        <h3 class="landing__recovery-title" id="find-email-title">아이디(이메일) 찾기</h3>
+        <form id="find-email-form" class="landing__form" autocomplete="off">
+          <div class="landing__field">
+            <input type="text" id="find-email-nickname" class="landing__input" placeholder="가입 시 사용한 닉네임" required />
+          </div>
+          <button type="submit" class="landing__submit" id="find-email-submit">아이디 찾기</button>
+          <p class="landing__recovery-msg hidden" id="find-email-msg"></p>
+        </form>
+        <button type="button" class="landing__back-link" id="find-email-back">← 로그인으로 돌아가기</button>
+      </div>
+      <!-- Reset Password Form -->
+      <div class="landing__recovery-form hidden" id="reset-pw-panel">
+        <h3 class="landing__recovery-title" id="reset-pw-title">비밀번호 찾기</h3>
+        <form id="reset-pw-form" class="landing__form" autocomplete="off">
+          <div class="landing__field">
+            <input type="email" id="reset-pw-email" class="landing__input" placeholder="가입한 이메일 주소" required />
+          </div>
+          <button type="submit" class="landing__submit" id="reset-pw-submit">재설정 링크 발송</button>
+          <p class="landing__recovery-msg hidden" id="reset-pw-msg"></p>
+        </form>
+        <button type="button" class="landing__back-link" id="reset-pw-back">← 로그인으로 돌아가기</button>
+      </div>
       <div class="landing__divider"><span id="landing-or">또는</span></div>
       <button class="landing__google-btn" id="google-login-btn" type="button">
         <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59a14.5 14.5 0 0 1 0-9.18l-7.98-6.19a24.0 24.0 0 0 0 0 21.56l7.98-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>

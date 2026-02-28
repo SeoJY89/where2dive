@@ -5,7 +5,7 @@ import { renderCards, renderFavEmpty, openModal, initModal, setDetailClickHandle
 import { initFilters, filterSpots, setFilterListener, refreshFilterLabels, getActivityCounts, filterMySpots } from './filters.js';
 import { getFavorites, loadFavorites, clearFavorites } from './favorites.js';
 import { getLang, setLang, setLangChangeListener, t } from './i18n.js';
-import { isLoggedIn, login, signup, loginWithGoogle, logout, onAuthChange, waitForAuth, checkNickname } from './auth.js';
+import { isLoggedIn, login, signup, loginWithGoogle, logout, onAuthChange, waitForAuth, checkNickname, resetPassword, findEmailByNickname } from './auth.js';
 import { getLogEntries, getLogEntry, addLogEntry, updateLogEntry, deleteLogEntry, getLogStats, loadLogbook, clearLogbook } from './logbook.js';
 import { getMySpots, getMySpot, addMySpot, updateMySpot, deleteMySpot, loadMySpots, clearMySpots } from './myspots.js';
 import { migrateLocalStorageToFirestore } from './migrate.js';
@@ -87,6 +87,28 @@ function updateLandingLabels() {
   if (termsServiceLink) termsServiceLink.textContent = t('terms.view');
   const termsPrivacyLink = document.getElementById('terms-privacy-link');
   if (termsPrivacyLink) termsPrivacyLink.textContent = t('terms.view');
+
+  // Recovery links & forms
+  const findEmailLink = document.getElementById('find-email-link');
+  if (findEmailLink) findEmailLink.textContent = t('landing.findEmail');
+  const resetPwLink = document.getElementById('reset-pw-link');
+  if (resetPwLink) resetPwLink.textContent = t('landing.resetPw');
+  const findEmailTitle = document.getElementById('find-email-title');
+  if (findEmailTitle) findEmailTitle.textContent = t('findEmail.title');
+  const findEmailNickname = document.getElementById('find-email-nickname');
+  if (findEmailNickname) findEmailNickname.placeholder = t('findEmail.nickname.placeholder');
+  const findEmailSubmit = document.getElementById('find-email-submit');
+  if (findEmailSubmit) findEmailSubmit.textContent = t('findEmail.submit');
+  const findEmailBack = document.getElementById('find-email-back');
+  if (findEmailBack) findEmailBack.textContent = '\u2190 ' + t('landing.backToLogin');
+  const resetPwTitle = document.getElementById('reset-pw-title');
+  if (resetPwTitle) resetPwTitle.textContent = t('resetPw.title');
+  const resetPwEmail = document.getElementById('reset-pw-email');
+  if (resetPwEmail) resetPwEmail.placeholder = t('resetPw.email.placeholder');
+  const resetPwSubmit = document.getElementById('reset-pw-submit');
+  if (resetPwSubmit) resetPwSubmit.textContent = t('resetPw.submit');
+  const resetPwBack = document.getElementById('reset-pw-back');
+  if (resetPwBack) resetPwBack.textContent = '\u2190 ' + t('landing.backToLogin');
 }
 
 // ── Firebase Auth 에러 → i18n 메시지 변환 ──
@@ -261,6 +283,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   });
 
+  // Recovery forms
+  initRecoveryForms();
+
   // Google login
   document.getElementById('google-login-btn').addEventListener('click', async () => {
     const errorEl = document.getElementById('login-error');
@@ -345,6 +370,13 @@ function initLandingTabs() {
       const cb = document.getElementById(id);
       if (cb) cb.checked = false;
     });
+
+    // Show/hide recovery links (login only)
+    const recoveryLinks = document.getElementById('recovery-links');
+    if (recoveryLinks) recoveryLinks.classList.toggle('hidden', mode !== 'login');
+
+    // Hide recovery panels if open
+    hideRecoveryPanels();
 
     // Update submit button state
     updateSubmitState();
@@ -522,6 +554,110 @@ function initTermsCheckboxes() {
       allCb.checked = items.every(c => c.checked);
       updateSubmitState();
     });
+  });
+}
+
+// ── Recovery Forms (Find Email / Reset Password) ──
+
+function showRecoveryPanel(panelId) {
+  // Hide login form, tabs, recovery links, divider, google btn
+  document.getElementById('login-form').classList.add('hidden');
+  document.querySelector('.landing__tabs').classList.add('hidden');
+  document.getElementById('recovery-links').classList.add('hidden');
+  document.getElementById('landing-or')?.closest('.landing__divider')?.classList.add('hidden');
+  document.getElementById('google-login-btn').classList.add('hidden');
+
+  // Hide all recovery panels, show the target
+  document.getElementById('find-email-panel').classList.add('hidden');
+  document.getElementById('reset-pw-panel').classList.add('hidden');
+  document.getElementById(panelId).classList.remove('hidden');
+}
+
+function hideRecoveryPanels() {
+  document.getElementById('find-email-panel').classList.add('hidden');
+  document.getElementById('reset-pw-panel').classList.add('hidden');
+
+  // Restore login form and related elements
+  document.getElementById('login-form').classList.remove('hidden');
+  document.querySelector('.landing__tabs').classList.remove('hidden');
+  document.getElementById('recovery-links').classList.remove('hidden');
+  document.getElementById('landing-or')?.closest('.landing__divider')?.classList.remove('hidden');
+  document.getElementById('google-login-btn').classList.remove('hidden');
+
+  // Clear messages
+  ['find-email-msg', 'reset-pw-msg'].forEach(id => {
+    const el = document.getElementById(id);
+    el.classList.add('hidden');
+    el.textContent = '';
+    el.className = 'landing__recovery-msg hidden';
+  });
+}
+
+function showRecoveryMsg(id, msg, isSuccess) {
+  const el = document.getElementById(id);
+  el.textContent = msg;
+  el.classList.remove('hidden', 'landing__recovery-msg--success', 'landing__recovery-msg--error');
+  el.classList.add(isSuccess ? 'landing__recovery-msg--success' : 'landing__recovery-msg--error');
+}
+
+function initRecoveryForms() {
+  // Open panels
+  document.getElementById('find-email-link').addEventListener('click', () => {
+    showRecoveryPanel('find-email-panel');
+  });
+  document.getElementById('reset-pw-link').addEventListener('click', () => {
+    showRecoveryPanel('reset-pw-panel');
+  });
+
+  // Back buttons
+  document.getElementById('find-email-back').addEventListener('click', hideRecoveryPanels);
+  document.getElementById('reset-pw-back').addEventListener('click', hideRecoveryPanels);
+
+  // Find Email form
+  document.getElementById('find-email-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const nickname = document.getElementById('find-email-nickname').value.trim();
+    if (!nickname) return;
+
+    const btn = document.getElementById('find-email-submit');
+    btn.disabled = true;
+
+    try {
+      const maskedEmail = await findEmailByNickname(nickname);
+      if (maskedEmail) {
+        showRecoveryMsg('find-email-msg', t('findEmail.success').replace('{email}', maskedEmail), true);
+      } else {
+        showRecoveryMsg('find-email-msg', t('findEmail.notFound'), false);
+      }
+    } catch {
+      showRecoveryMsg('find-email-msg', t('auth.error.generic'), false);
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+  // Reset Password form
+  document.getElementById('reset-pw-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('reset-pw-email').value.trim();
+    if (!email) return;
+
+    const btn = document.getElementById('reset-pw-submit');
+    btn.disabled = true;
+
+    try {
+      await resetPassword(email);
+      showRecoveryMsg('reset-pw-msg', t('resetPw.success'), true);
+    } catch (err) {
+      const code = err?.code?.replace('auth/', '') || '';
+      if (code === 'user-not-found') {
+        showRecoveryMsg('reset-pw-msg', t('resetPw.notFound'), false);
+      } else {
+        showRecoveryMsg('reset-pw-msg', getAuthErrorMessage(err), false);
+      }
+    } finally {
+      btn.disabled = false;
+    }
   });
 }
 
