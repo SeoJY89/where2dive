@@ -6,7 +6,9 @@ const LANG_KEY = 'where2dive_lang';
 const i18n = {
   ko: {
     title: '문의하기',
-    desc: '서비스 이용 관련 질문, 버그 리포트, 제안 사항이 있으시면 아래 양식을 통해 보내주세요.',
+    emailTitle: '이메일',
+    emailDesc: '질문, 버그 리포트, 또는 서비스 제안은 아래 이메일로 연락해주세요:',
+    formTitle: '문의 양식',
     name: '이름',
     email: '이메일',
     subject: '제목',
@@ -25,7 +27,9 @@ const i18n = {
   },
   en: {
     title: 'Contact Us',
-    desc: 'For questions, bug reports, or suggestions about the service, please use the form below.',
+    emailTitle: 'Email',
+    emailDesc: 'For questions, bug reports, or suggestions about the service, please reach out at:',
+    formTitle: 'Contact Form',
     name: 'Name',
     email: 'Email',
     subject: 'Subject',
@@ -58,7 +62,9 @@ function applyLabels() {
   if (lang === 'en') document.documentElement.lang = 'en';
 
   document.getElementById('page-title').textContent = t('title');
-  document.getElementById('contact-desc').textContent = t('desc');
+  document.getElementById('contact-email-title').textContent = t('emailTitle');
+  document.getElementById('contact-email-desc').textContent = t('emailDesc');
+  document.getElementById('contact-form-title').textContent = t('formTitle');
   document.getElementById('contact-name-label').textContent = t('name');
   document.getElementById('contact-email-label').textContent = t('email');
   document.getElementById('contact-subject-label').textContent = t('subject');
