@@ -235,7 +235,7 @@ export function refreshFilterLabels() {
     if (el) el.textContent = t(key);
   }
   const mobFavEl = document.getElementById('mob-act-fav-text');
-  if (mobFavEl) mobFavEl.textContent = '♥ ' + t('filter.activity.favorites');
+  if (mobFavEl) mobFavEl.textContent = '♥';
 }
 
 // ── Init ──

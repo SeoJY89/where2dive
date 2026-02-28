@@ -1598,26 +1598,24 @@
   .mobile-activity-tabs {
     display: flex;
     align-items: center;
-    gap: var(--sp-2);
-    padding: var(--sp-2) var(--sp-4);
+    gap: 4px;
+    padding: 6px 8px;
     background: var(--c-white);
     border-bottom: 1px solid var(--c-gray-200);
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
   }
-  .mobile-activity-tabs::-webkit-scrollbar { display: none; }
   .mobile-activity-tabs.logbook-hidden { display: none; }
 
   .mobile-activity-tabs__btn {
+    flex: 1;
     display: inline-flex;
     align-items: center;
-    gap: var(--sp-1);
-    padding: var(--sp-1) var(--sp-3);
+    justify-content: center;
+    gap: 2px;
+    padding: 6px 2px;
     border-radius: var(--r-full);
     background: var(--c-gray-100);
     color: var(--c-gray-700);
-    font-size: 0.8rem;
+    font-size: 0.68rem;
     font-weight: 500;
     white-space: nowrap;
     border: none;
@@ -1632,12 +1630,12 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 1.3em;
-    padding: 0 0.3em;
+    min-width: 1.2em;
+    padding: 0 0.2em;
     border-radius: var(--r-full);
     background: rgba(255,255,255,0.25);
-    font-size: 0.7rem;
-    line-height: 1.4;
+    font-size: 0.6rem;
+    line-height: 1.3;
   }
   .mobile-activity-tabs__btn.active .mobile-activity-tabs__count {
     background: rgba(255,255,255,0.3);
