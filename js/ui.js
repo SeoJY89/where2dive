@@ -108,10 +108,10 @@ function createCard(spot) {
   `;
 
   // 즐겨찾기 토글
-  card.querySelector('.card__fav').addEventListener('click', e => {
+  card.querySelector('.card__fav').addEventListener('click', async e => {
     e.stopPropagation();
     const btn = e.currentTarget;
-    const nowFav = toggleFavorite(spot.id);
+    const nowFav = await toggleFavorite(spot.id);
     btn.classList.toggle('active', nowFav);
     btn.innerHTML = nowFav ? '\u2764' : '\u2661';
     updateFavCount();
@@ -258,9 +258,9 @@ export function openModal(spot) {
   `;
 
   // 즐겨찾기 토글
-  body.querySelector('.modal__fav').addEventListener('click', e => {
+  body.querySelector('.modal__fav').addEventListener('click', async e => {
     const btn = e.currentTarget;
-    const nowFav = toggleFavorite(spot.id);
+    const nowFav = await toggleFavorite(spot.id);
     btn.classList.toggle('active', nowFav);
     btn.innerHTML = nowFav ? '\u2764' : '\u2661';
     updateFavCount();

@@ -1,14 +1,27 @@
-// 개인 다이빙 스팟 관리 (localStorage)
-const STORAGE_KEY = 'where2dive_myspots';
+// 개인 다이빙 스팟 관리 (Firestore + 메모리 캐시)
+import { db } from './firebase.js';
+import { getCurrentUid } from './auth.js';
+import { collection, doc, addDoc, updateDoc, deleteDoc, getDocs } from 'firebase/firestore';
 
-let mySpots = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+let mySpots = [];
 
-function persist() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(mySpots));
+function userSpotsCol() {
+  const uid = getCurrentUid();
+  if (!uid) return null;
+  return collection(db, 'users', uid, 'myspots');
 }
 
-function nextId() {
-  return mySpots.length === 0 ? 1 : Math.max(...mySpots.map(s => s.id)) + 1;
+/** Firestore에서 내 스팟 전체 로드 */
+export async function loadMySpots() {
+  const col = userSpotsCol();
+  if (!col) { mySpots = []; return; }
+  const snap = await getDocs(col);
+  mySpots = snap.docs.map(d => ({ id: d.id, ...d.data(), isPersonal: true }));
+}
+
+/** 메모리 캐시 초기화 (로그아웃 시) */
+export function clearMySpots() {
+  mySpots = [];
 }
 
 export function getMySpots() {
@@ -19,9 +32,10 @@ export function getMySpot(id) {
   return mySpots.find(s => s.id === id) || null;
 }
 
-export function addMySpot(spot) {
-  const newSpot = {
-    id: nextId(),
+export async function addMySpot(spot) {
+  const col = userSpotsCol();
+  if (!col) return null;
+  const data = {
     name: spot.name || '',
     lat: spot.lat ?? 0,
     lng: spot.lng ?? 0,
@@ -32,20 +46,26 @@ export function addMySpot(spot) {
     memo: spot.memo || '',
     isPersonal: true,
   };
+  const ref = await addDoc(col, data);
+  const newSpot = { id: ref.id, ...data };
   mySpots.push(newSpot);
-  persist();
   return newSpot;
 }
 
-export function updateMySpot(id, data) {
+export async function updateMySpot(id, data) {
+  const col = userSpotsCol();
+  if (!col) return null;
   const idx = mySpots.findIndex(s => s.id === id);
   if (idx === -1) return null;
-  mySpots[idx] = { ...mySpots[idx], ...data, id, isPersonal: true };
-  persist();
+  const updateData = { ...data, isPersonal: true };
+  await updateDoc(doc(col, id), updateData);
+  mySpots[idx] = { ...mySpots[idx], ...updateData, id };
   return mySpots[idx];
 }
 
-export function deleteMySpot(id) {
+export async function deleteMySpot(id) {
+  const col = userSpotsCol();
+  if (!col) return;
+  await deleteDoc(doc(col, id));
   mySpots = mySpots.filter(s => s.id !== id);
-  persist();
 }

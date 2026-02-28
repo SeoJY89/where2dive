@@ -157,8 +157,22 @@ const ko = {
   'landing.email': '이메일',
   'landing.password': '비밀번호',
   'landing.login': '로그인',
+  'landing.signup': '회원가입',
+  'landing.or': '또는',
+  'landing.google': 'Google로 계속하기',
   'landing.demo': '데모: demo@where2dive.com / 1234',
   'landing.error': '이메일 또는 비밀번호가 올바르지 않습니다.',
+
+  // auth errors
+  'auth.error.generic': '인증에 실패했습니다. 다시 시도해주세요.',
+  'auth.error.user-not-found': '등록되지 않은 이메일입니다.',
+  'auth.error.wrong-password': '비밀번호가 올바르지 않습니다.',
+  'auth.error.invalid-email': '유효하지 않은 이메일 주소입니다.',
+  'auth.error.email-already-in-use': '이미 사용 중인 이메일입니다.',
+  'auth.error.weak-password': '비밀번호는 6자 이상이어야 합니다.',
+  'auth.error.too-many-requests': '요청이 너무 많습니다. 잠시 후 다시 시도해주세요.',
+  'auth.error.invalid-credential': '이메일 또는 비밀번호가 올바르지 않습니다.',
+  'auth.error.network-request-failed': '네트워크 오류가 발생했습니다. 인터넷 연결을 확인해주세요.',
 
   // nav (addition)
   'nav.logout': '로그아웃',
@@ -358,8 +372,22 @@ const en = {
   'landing.email': 'Email',
   'landing.password': 'Password',
   'landing.login': 'Log in',
+  'landing.signup': 'Sign up',
+  'landing.or': 'or',
+  'landing.google': 'Continue with Google',
   'landing.demo': 'Demo: demo@where2dive.com / 1234',
   'landing.error': 'Invalid email or password.',
+
+  // auth errors
+  'auth.error.generic': 'Authentication failed. Please try again.',
+  'auth.error.user-not-found': 'No account found with this email.',
+  'auth.error.wrong-password': 'Incorrect password.',
+  'auth.error.invalid-email': 'Invalid email address.',
+  'auth.error.email-already-in-use': 'This email is already registered.',
+  'auth.error.weak-password': 'Password must be at least 6 characters.',
+  'auth.error.too-many-requests': 'Too many attempts. Please try again later.',
+  'auth.error.invalid-credential': 'Invalid email or password.',
+  'auth.error.network-request-failed': 'Network error. Please check your connection.',
 
   // nav (addition)
   'nav.logout': 'Logout',

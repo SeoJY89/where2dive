@@ -1,33 +1,47 @@
-// 다이빙 로그북 관리 (localStorage)
-const STORAGE_KEY = 'where2dive_logbook';
+// 다이빙 로그북 관리 (Firestore + 메모리 캐시)
+import { db } from './firebase.js';
+import { getCurrentUid } from './auth.js';
+import { collection, doc, addDoc, updateDoc, deleteDoc, getDocs } from 'firebase/firestore';
 
-let entries = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+let entries = [];
 
-function persist() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+function userLogCol() {
+  const uid = getCurrentUid();
+  if (!uid) return null;
+  return collection(db, 'users', uid, 'logbook');
 }
 
-function nextId() {
-  return entries.length === 0 ? 1 : Math.max(...entries.map(e => e.id)) + 1;
+/** Firestore에서 로그 전체 로드 */
+export async function loadLogbook() {
+  const col = userLogCol();
+  if (!col) { entries = []; return; }
+  const snap = await getDocs(col);
+  entries = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+}
+
+/** 메모리 캐시 초기화 (로그아웃 시) */
+export function clearLogbook() {
+  entries = [];
 }
 
 export function getLogEntries() {
-  return [...entries].sort((a, b) => b.date.localeCompare(a.date));
+  return [...entries].sort((a, b) => (b.date || '').localeCompare(a.date || ''));
 }
 
 export function getLogEntry(id) {
   return entries.find(e => e.id === id) || null;
 }
 
-export function addLogEntry(entry) {
-  const newEntry = {
-    id: nextId(),
+export async function addLogEntry(entry) {
+  const col = userLogCol();
+  if (!col) return null;
+  const data = {
     date: entry.date || new Date().toISOString().slice(0, 10),
     spotName: entry.spotName || '',
     spotId: entry.spotId || null,
     lat: entry.lat ?? null,
     lng: entry.lng ?? null,
-    activityType: entry.activityType || 'skin', // 'skin' | 'scuba'
+    activityType: entry.activityType || 'skin',
     maxDepth: entry.maxDepth ?? null,
     diveTime: entry.diveTime ?? null,
     waterTemp: entry.waterTemp ?? null,
@@ -40,22 +54,27 @@ export function addLogEntry(entry) {
     weather: entry.weather || '',
     memo: entry.memo || '',
   };
+  const ref = await addDoc(col, data);
+  const newEntry = { id: ref.id, ...data };
   entries.push(newEntry);
-  persist();
   return newEntry;
 }
 
-export function updateLogEntry(id, data) {
+export async function updateLogEntry(id, data) {
+  const col = userLogCol();
+  if (!col) return null;
   const idx = entries.findIndex(e => e.id === id);
   if (idx === -1) return null;
+  await updateDoc(doc(col, id), data);
   entries[idx] = { ...entries[idx], ...data, id };
-  persist();
   return entries[idx];
 }
 
-export function deleteLogEntry(id) {
+export async function deleteLogEntry(id) {
+  const col = userLogCol();
+  if (!col) return;
+  await deleteDoc(doc(col, id));
   entries = entries.filter(e => e.id !== id);
-  persist();
 }
 
 export function getLogStats() {

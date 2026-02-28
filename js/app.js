@@ -3,17 +3,19 @@ import { spots } from './data.js';
 import { initMap, updateMarkers, setMapSpotClickHandler, flyToSpot, invalidateMapSize, updatePersonalMarkers, setPersonalSpotClickHandler, getMapInstance } from './map.js';
 import { renderCards, renderFavEmpty, openModal, initModal, setDetailClickHandler, updateFavCount, setPersonalSpotCardHandlers } from './ui.js';
 import { initFilters, filterSpots, setFilterListener, refreshFilterLabels, getActivityCounts, filterMySpots } from './filters.js';
-import { getFavorites } from './favorites.js';
+import { getFavorites, loadFavorites, clearFavorites } from './favorites.js';
 import { getLang, setLang, setLangChangeListener, t } from './i18n.js';
-import { isLoggedIn, login, logout } from './auth.js';
-import { getLogEntries, getLogEntry, addLogEntry, updateLogEntry, deleteLogEntry, getLogStats } from './logbook.js';
-import { getMySpots, getMySpot, addMySpot, updateMySpot, deleteMySpot } from './myspots.js';
+import { isLoggedIn, login, signup, loginWithGoogle, logout, onAuthChange, waitForAuth } from './auth.js';
+import { getLogEntries, getLogEntry, addLogEntry, updateLogEntry, deleteLogEntry, getLogStats, loadLogbook, clearLogbook } from './logbook.js';
+import { getMySpots, getMySpot, addMySpot, updateMySpot, deleteMySpot, loadMySpots, clearMySpots } from './myspots.js';
+import { migrateLocalStorageToFirestore } from './migrate.js';
 
 // ── State ──
 let currentView = 'map'; // 'map' | 'list' | 'favorites' | 'logbook'
 let listVisible = false;
 let booted = false;
 let mapPickingState = null; // { target: 'log'|'spot' }
+let authMode = 'login'; // 'login' | 'signup'
 
 // ── Landing / App visibility ──
 function showLanding() {
@@ -37,14 +39,40 @@ function updateLandingLabels() {
   if (!landing) return;
   const tagline = landing.querySelector('.landing__tagline');
   if (tagline) tagline.textContent = t('landing.tagline');
-  const submit = landing.querySelector('.landing__submit');
-  if (submit) submit.textContent = t('landing.login');
-  const demo = landing.querySelector('.landing__demo');
-  if (demo) demo.textContent = t('landing.demo');
+
+  const tabLogin = document.getElementById('tab-login');
+  if (tabLogin) tabLogin.textContent = t('landing.login');
+  const tabSignup = document.getElementById('tab-signup');
+  if (tabSignup) tabSignup.textContent = t('landing.signup');
+
+  const submit = document.getElementById('login-submit');
+  if (submit) submit.textContent = authMode === 'signup' ? t('landing.signup') : t('landing.login');
+
   const error = landing.querySelector('.landing__error');
-  if (error) error.textContent = t('landing.error');
+  if (error && !error.dataset.dynamic) error.textContent = t('landing.error');
+
+  const orEl = document.getElementById('landing-or');
+  if (orEl) orEl.textContent = t('landing.or');
+
+  const googleText = document.getElementById('google-login-text');
+  if (googleText) googleText.textContent = t('landing.google');
+
   const logoutBtn = document.getElementById('logout-btn');
   if (logoutBtn) logoutBtn.textContent = t('nav.logout');
+}
+
+// ── Firebase Auth 에러 → i18n 메시지 변환 ──
+function getAuthErrorMessage(error) {
+  const code = error?.code?.replace('auth/', '') || '';
+  const key = `auth.error.${code}`;
+  const msg = t(key);
+  return msg !== key ? msg : t('auth.error.generic');
+}
+
+// ── 사용자 데이터 로드 ──
+async function loadUserData() {
+  await migrateLocalStorageToFirestore();
+  await Promise.all([loadFavorites(), loadLogbook(), loadMySpots()]);
 }
 
 // ── Boot app (only once) ──
@@ -84,8 +112,7 @@ function bootApp() {
     id => openSpotFormModal(id),
     id => {
       if (confirm(t('myspot.delete.confirm'))) {
-        deleteMySpot(id);
-        refresh(false);
+        deleteMySpot(id).then(() => refresh(false));
       }
     }
   );
@@ -129,40 +156,87 @@ function bootApp() {
 }
 
 // ── Boot ──
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   // Apply saved language on load
   applyLangToggleState();
   updateStaticLabels();
   updateLandingLabels();
 
+  // Landing tabs
+  initLandingTabs();
+
+  // Wait for Firebase Auth to determine initial state
+  await waitForAuth();
+
   // Auth gate
   if (isLoggedIn()) {
+    await loadUserData();
     hideLanding();
     bootApp();
   } else {
     showLanding();
   }
 
+  // Auth state change listener
+  onAuthChange(async (user) => {
+    if (user) {
+      await loadUserData();
+      hideLanding();
+      bootApp();
+      updateFavCount();
+      refresh(true);
+    } else {
+      clearFavorites();
+      clearLogbook();
+      clearMySpots();
+      showLanding();
+    }
+  });
+
   // Login form
-  document.getElementById('login-form').addEventListener('submit', (e) => {
+  document.getElementById('login-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     const email = document.getElementById('login-email').value.trim();
     const pw = document.getElementById('login-password').value;
     const errorEl = document.getElementById('login-error');
+    const submitBtn = document.getElementById('login-submit');
 
-    if (login(email, pw)) {
-      errorEl.classList.add('hidden');
-      hideLanding();
-      bootApp();
-    } else {
+    submitBtn.disabled = true;
+    errorEl.classList.add('hidden');
+
+    try {
+      if (authMode === 'signup') {
+        await signup(email, pw);
+      } else {
+        await login(email, pw);
+      }
+      // onAuthChange callback will handle the rest
+    } catch (err) {
+      errorEl.textContent = getAuthErrorMessage(err);
+      errorEl.dataset.dynamic = 'true';
+      errorEl.classList.remove('hidden');
+    } finally {
+      submitBtn.disabled = false;
+    }
+  });
+
+  // Google login
+  document.getElementById('google-login-btn').addEventListener('click', async () => {
+    const errorEl = document.getElementById('login-error');
+    errorEl.classList.add('hidden');
+    try {
+      await loginWithGoogle();
+    } catch (err) {
+      errorEl.textContent = getAuthErrorMessage(err);
+      errorEl.dataset.dynamic = 'true';
       errorEl.classList.remove('hidden');
     }
   });
 
   // Logout
-  document.getElementById('logout-btn').addEventListener('click', () => {
-    logout();
-    showLanding();
+  document.getElementById('logout-btn').addEventListener('click', async () => {
+    await logout();
+    // onAuthChange callback will handle the rest
   });
 
   // ── Language toggle (header) ──
@@ -190,6 +264,27 @@ document.addEventListener('DOMContentLoaded', () => {
     if (booted) refresh(false);
   });
 });
+
+// ── Landing Tabs (login/signup toggle) ──
+function initLandingTabs() {
+  const tabLogin = document.getElementById('tab-login');
+  const tabSignup = document.getElementById('tab-signup');
+  if (!tabLogin || !tabSignup) return;
+
+  function setMode(mode) {
+    authMode = mode;
+    tabLogin.classList.toggle('active', mode === 'login');
+    tabSignup.classList.toggle('active', mode === 'signup');
+    const submitBtn = document.getElementById('login-submit');
+    if (submitBtn) submitBtn.textContent = mode === 'signup' ? t('landing.signup') : t('landing.login');
+    // Clear error on mode switch
+    const errorEl = document.getElementById('login-error');
+    if (errorEl) errorEl.classList.add('hidden');
+  }
+
+  tabLogin.addEventListener('click', () => setMode('login'));
+  tabSignup.addEventListener('click', () => setMode('signup'));
+}
 
 function applyLangToggleState() {
   const lang = getLang();
@@ -453,9 +548,9 @@ function renderLogbook() {
     card.querySelector('.log-edit-btn').addEventListener('click', () => {
       openLogFormModal(entry.id);
     });
-    card.querySelector('.log-delete-btn').addEventListener('click', () => {
+    card.querySelector('.log-delete-btn').addEventListener('click', async () => {
       if (confirm(t('logbook.delete.confirm'))) {
-        deleteLogEntry(entry.id);
+        await deleteLogEntry(entry.id);
         renderLogbook();
       }
     });
@@ -499,7 +594,7 @@ function initLogModal() {
     });
   });
 
-  form.addEventListener('submit', e => {
+  form.addEventListener('submit', async e => {
     e.preventDefault();
     const editId = document.getElementById('log-edit-id').value;
 
@@ -523,9 +618,9 @@ function initLogModal() {
     };
 
     if (editId) {
-      updateLogEntry(+editId, data);
+      await updateLogEntry(editId, data);
     } else {
-      addLogEntry(data);
+      await addLogEntry(data);
     }
 
     close();
@@ -649,7 +744,7 @@ function initSpotModal() {
     startMapPicking('spot');
   });
 
-  form.addEventListener('submit', e => {
+  form.addEventListener('submit', async e => {
     e.preventDefault();
     const editId = document.getElementById('spot-edit-id').value;
 
@@ -674,9 +769,9 @@ function initSpotModal() {
     };
 
     if (editId) {
-      updateMySpot(+editId, data);
+      await updateMySpot(editId, data);
     } else {
-      addMySpot(data);
+      await addMySpot(data);
     }
 
     close();
