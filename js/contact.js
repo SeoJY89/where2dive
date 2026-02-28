@@ -85,15 +85,27 @@ function showResult(message, type) {
   el.className = `contact-result contact-result--${type}`;
 }
 
-async function sendTelegram(formData) {
+async function sendTelegram(name, email, subject, message) {
   const BOT = '8771139243:AAHTcN6bVTxuPBxTnPMsVRTl4_JjBpUDU8E';
   const CHAT = '6786343916';
-  const text = `📬 새 문의가 도착했습니다!\n\n👤 이름: ${formData.name}\n📧 이메일: ${formData.email}\n📌 제목: ${formData.subject}\n\n💬 내용:\n${formData.message}\n\n🕐 시간: ${new Date().toLocaleString('ko-KR')}`;
-  await fetch(`https://api.telegram.org/bot${BOT}/sendMessage`, {
+  const text = [
+    '📬 새 문의가 도착했습니다!',
+    '',
+    `👤 이름: ${name}`,
+    `📧 이메일: ${email}`,
+    `📌 제목: ${subject}`,
+    '',
+    '💬 내용:',
+    message,
+    '',
+    `🕐 시간: ${new Date().toLocaleString('ko-KR')}`,
+  ].join('\n');
+  const res = await fetch(`https://api.telegram.org/bot${BOT}/sendMessage`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ chat_id: CHAT, text }),
   });
+  if (!res.ok) console.warn('Telegram API error:', res.status, await res.text());
 }
 
 const form = document.getElementById('contact-form');
@@ -104,19 +116,20 @@ form.addEventListener('submit', async (e) => {
   submitBtn.disabled = true;
   submitBtn.textContent = t('sending');
 
-  const data = {
-    name: document.getElementById('contact-name').value.trim(),
-    email: document.getElementById('contact-email').value.trim(),
-    subject: document.getElementById('contact-subject').value.trim(),
-    message: document.getElementById('contact-message').value.trim(),
-    createdAt: serverTimestamp(),
-    status: 'unread',
-  };
+  const name = document.getElementById('contact-name').value.trim();
+  const email = document.getElementById('contact-email').value.trim();
+  const subject = document.getElementById('contact-subject').value.trim();
+  const message = document.getElementById('contact-message').value.trim();
 
   try {
-    await addDoc(collection(db, 'contacts'), data);
-    // Telegram 알림 (실패해도 폼 제출은 성공 처리)
-    sendTelegram(data).catch(err => console.warn('Telegram notify failed:', err));
+    await addDoc(collection(db, 'contacts'), {
+      name, email, subject, message,
+      createdAt: serverTimestamp(),
+      status: 'unread',
+    });
+    // Telegram 알림 — await하되 실패해도 폼 제출은 성공 처리
+    try { await sendTelegram(name, email, subject, message); }
+    catch (tgErr) { console.warn('Telegram notify failed:', tgErr); }
     showResult(t('success'), 'success');
     form.reset();
   } catch (err) {
