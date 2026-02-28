@@ -1399,12 +1399,12 @@ function renderLogbook() {
           ${entry.waterTemp != null ? `<div class="card__stat"><span class="card__stat-label">${t('logbook.temp')}</span><span class="card__stat-value">${entry.waterTemp}°C</span></div>` : ''}
         </div>
         ${entry.memo ? `<div class="log-card__memo">${entry.memo}</div>` : ''}
+        ${mediaHtml}
         <div class="log-card__actions">
           <button class="log-edit-btn" data-id="${entry.id}">${t('logbook.card.edit')}</button>
           <button class="log-delete-btn" data-id="${entry.id}">${t('logbook.card.delete')}</button>
         </div>
       </div>
-      ${mediaHtml}
     `;
 
     // Thumbnail click → open media viewer

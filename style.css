@@ -1800,17 +1800,9 @@
   .logbook-stats { grid-template-columns: 1fr; }
   .log-form__grid { grid-template-columns: 1fr; }
 
-  /* ── Log card media: side grid on mobile ── */
-  .log-card--has-media {
-    display: grid;
-    grid-template-columns: 1fr 100px;
-    gap: var(--sp-3);
-  }
+  /* ── Log card media on mobile: same 4-col layout ── */
   .log-card__media {
-    grid-template-columns: 1fr 1fr;
-    gap: 4px;
-    margin-top: 0;
-    align-self: start;
+    gap: var(--sp-2);
   }
   .log-media-preview__item { width: 64px; height: 64px; }
   .modal { max-width: 100%; margin: var(--sp-2); }
