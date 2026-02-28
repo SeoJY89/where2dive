@@ -1306,7 +1306,6 @@ function initLogModal() {
 
   closeBtn.addEventListener('click', close);
   cancelBtn.addEventListener('click', close);
-  overlay.addEventListener('click', e => { if (e.target === overlay) close(); });
 
   // Log pick-on-map button
   document.getElementById('log-pick-map-btn').addEventListener('click', () => {
@@ -1401,6 +1400,8 @@ function openLogFormModal(editId) {
   document.getElementById('log-memo-label').textContent = t('logbook.form.memo');
   document.getElementById('log-save').textContent = t('logbook.form.save');
   document.getElementById('log-cancel').textContent = t('logbook.form.cancel');
+  document.getElementById('log-skin-text').textContent = t('activity.skin');
+  document.getElementById('log-scuba-text').textContent = t('activity.scuba');
 
   if (editId) {
     const entry = getLogEntry(editId);
@@ -1468,7 +1469,6 @@ function initSpotModal() {
 
   closeBtn.addEventListener('click', close);
   cancelBtn.addEventListener('click', close);
-  overlay.addEventListener('click', e => { if (e.target === overlay) close(); });
 
   // Spot pick-on-map button
   document.getElementById('spot-pick-map-btn').addEventListener('click', () => {
@@ -1712,7 +1712,6 @@ function initReviewModal() {
 
   closeBtn.addEventListener('click', close);
   cancelBtn.addEventListener('click', close);
-  overlay.addEventListener('click', e => { if (e.target === overlay) close(); });
 
   // Star rating interaction
   starInput.addEventListener('click', e => {
