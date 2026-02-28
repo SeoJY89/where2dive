@@ -1667,7 +1667,7 @@
     color: var(--c-white);
     text-decoration: none;
   }
-  .page-header__logo svg { color: var(--c-aqua); }
+  .page-header__logo img { border-radius: 4px; }
   .page-header__nav {
     display: flex; gap: var(--sp-4);
   }
