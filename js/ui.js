@@ -1,6 +1,6 @@
 // DOM 조작, 카드 렌더링, 모달
 import { isFavorite, toggleFavorite, getFavCount } from './favorites.js';
-import { fetchWeather } from './weather.js';
+import { fetchWeatherFull, getWeatherIcon, calculateDiveScore, getDiveMessage, renderDiveStars, windDir } from './weather.js';
 import { t, td, translateMonth } from './i18n.js';
 import { loadReviews, getCachedReviews, getAverageRating, sortReviews } from './reviews.js';
 import { getCurrentUid } from './auth.js';
@@ -118,6 +118,7 @@ function createCard(spot) {
       btn.classList.toggle('active', nowFav);
       btn.innerHTML = nowFav ? '\u2764' : '\u2661';
       updateFavCount();
+      if (nowFav && typeof gtag === 'function') gtag('event', 'add_favorite', { spot_name: spot.name });
     } catch (err) {
       console.error('Favorite toggle failed:', err);
     }
@@ -315,6 +316,7 @@ export function openModal(spot) {
       btn.classList.toggle('active', nowFav);
       btn.innerHTML = nowFav ? '\u2764' : '\u2661';
       updateFavCount();
+      if (nowFav && typeof gtag === 'function') gtag('event', 'add_favorite', { spot_name: spot.name });
     } catch (err) {
       console.error('Favorite toggle failed:', err);
     }
@@ -359,9 +361,31 @@ async function loadWeather(spot) {
   if (!section || !loading) return;
 
   try {
-    const w = await fetchWeather(spot.lat, spot.lng);
+    const { current: w, daily } = await fetchWeatherFull(spot.lat, spot.lng);
     loading.remove();
 
+    // ── Current conditions (no data?) ──
+    const hasData = w.temperature != null || w.weatherCode != null;
+    if (!hasData) {
+      section.insertAdjacentHTML('beforeend',
+        `<div class="weather-error">${t('weather.noData')}</div>`
+      );
+      return;
+    }
+
+    // ── Dive Score Card ──
+    const scoreHtml = `
+      <div class="dive-score-card dive-score-card--s${w.diveScore}">
+        <div class="dive-score-card__icon">${getWeatherIcon(w.weatherCode)}</div>
+        <div class="dive-score-card__info">
+          <div class="dive-score-card__stars">${renderDiveStars(w.diveScore)}</div>
+          <div class="dive-score-card__label">${t('weather.diveScore')}</div>
+          <div class="dive-score-card__msg">${getDiveMessage(w.diveScore)}</div>
+        </div>
+      </div>`;
+    section.insertAdjacentHTML('beforeend', scoreHtml);
+
+    // ── Current weather grid ──
     const items = [];
     if (w.temperature != null) items.push({ label: t('weather.temperature'), value: `${w.temperature}°C` });
     if (w.weatherText) items.push({ label: t('weather.weather'), value: w.weatherText });
@@ -371,23 +395,42 @@ async function loadWeather(spot) {
     if (w.waveHeight != null) items.push({ label: t('weather.waveHeight'), value: `${w.waveHeight}m` });
     if (w.waveDir) items.push({ label: t('weather.waveDir'), value: w.waveDir });
     if (w.wavePeriod != null) items.push({ label: t('weather.wavePeriod'), value: `${w.wavePeriod}s` });
+    if (w.precipitation != null && w.precipitation > 0) items.push({ label: t('weather.precipitation'), value: `${w.precipitation}mm` });
 
-    if (items.length === 0) {
-      section.insertAdjacentHTML('beforeend',
-        `<div class="weather-error">${t('weather.noData')}</div>`
-      );
-      return;
+    if (items.length) {
+      const grid = document.createElement('div');
+      grid.className = 'modal__weather-grid';
+      grid.innerHTML = items.map(i => `
+        <div class="weather-item">
+          <div class="weather-item__label">${i.label}</div>
+          <div class="weather-item__value">${i.value}</div>
+        </div>
+      `).join('');
+      section.appendChild(grid);
     }
 
-    const grid = document.createElement('div');
-    grid.className = 'modal__weather-grid';
-    grid.innerHTML = items.map(i => `
-      <div class="weather-item">
-        <div class="weather-item__label">${i.label}</div>
-        <div class="weather-item__value">${i.value}</div>
-      </div>
-    `).join('');
-    section.appendChild(grid);
+    // ── 7-Day Forecast ──
+    if (daily && daily.length) {
+      const forecastHtml = `
+        <div class="weather-forecast">
+          <div class="weather-forecast__title">${t('weather.forecast.title')}</div>
+          <div class="weather-forecast__scroll">
+            ${daily.map(d => `
+              <div class="weather-forecast__day">
+                <div class="weather-forecast__day-label">${d.dayLabel}</div>
+                <div class="weather-forecast__day-icon">${getWeatherIcon(d.weatherCode)}</div>
+                <div class="weather-forecast__day-temp">
+                  <span class="weather-forecast__temp-hi">${d.tempMax != null ? Math.round(d.tempMax) + '°' : '-'}</span>
+                  <span class="weather-forecast__temp-lo">${d.tempMin != null ? Math.round(d.tempMin) + '°' : '-'}</span>
+                </div>
+                <div class="weather-forecast__day-wave">${d.waveHeightMax != null ? d.waveHeightMax + 'm' : '-'}</div>
+                <div class="weather-forecast__day-stars">${renderDiveStars(d.diveScore)}</div>
+              </div>
+            `).join('')}
+          </div>
+        </div>`;
+      section.insertAdjacentHTML('beforeend', forecastHtml);
+    }
   } catch {
     loading.innerHTML = `
       <div class="weather-error">
@@ -434,13 +477,13 @@ export function updateFavCount() {
 
 // ── Review Rendering ──
 
-function escapeHtml(str) {
+export function escapeHtml(str) {
   const div = document.createElement('div');
   div.textContent = str;
   return div.innerHTML;
 }
 
-function renderStars(rating, prefix = 'review-summary') {
+export function renderStars(rating, prefix = 'review-summary') {
   let html = '';
   for (let i = 1; i <= 5; i++) {
     html += `<span class="${prefix}__star ${i <= rating ? prefix + '__star--filled' : ''}">&#9733;</span>`;
@@ -448,7 +491,7 @@ function renderStars(rating, prefix = 'review-summary') {
   return html;
 }
 
-function formatReviewDate(ts) {
+export function formatReviewDate(ts) {
   if (!ts) return '';
   const seconds = ts.seconds || ts._seconds || (typeof ts === 'number' ? ts : 0);
   if (!seconds) return '';
@@ -509,9 +552,10 @@ function renderReviewList(spotId, sortBy) {
       </div>`;
     }).join('');
 
+    const authorClickable = review.userId ? ' review-card__author--clickable' : '';
     card.innerHTML = `
       <div class="review-card__header">
-        <span class="review-card__author">${escapeHtml(review.nickname || 'Anonymous')}</span>
+        <span class="review-card__author${authorClickable}" ${review.userId ? `data-user-id="${review.userId}"` : ''}>${escapeHtml(review.nickname || 'Anonymous')}</span>
         <span class="review-card__date">${formatReviewDate(review.createdAt)}</span>
       </div>
       <div class="review-card__stars">${renderStars(review.rating, 'review-card')}</div>
@@ -524,6 +568,17 @@ function renderReviewList(spotId, sortBy) {
         <button class="review-card__delete-btn" data-review-id="${review.id}">${t('review.delete')}</button>
       </div>` : ''}
     `;
+
+    // Author click → open profile
+    const authorEl = card.querySelector('.review-card__author--clickable');
+    if (authorEl) {
+      authorEl.addEventListener('click', () => {
+        const userId = authorEl.dataset.userId;
+        if (userId) {
+          document.dispatchEvent(new CustomEvent('open-profile', { detail: { userId } }));
+        }
+      });
+    }
 
     // Media thumbnail click → open viewer
     card.querySelectorAll('.review-card__thumb').forEach(thumb => {

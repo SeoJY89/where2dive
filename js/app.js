@@ -6,10 +6,18 @@ import { initFilters, filterSpots, setFilterListener, refreshFilterLabels, getAc
 import { addReview, updateReview, deleteReview, clearReviewCache, validateFile, isVideoFile } from './reviews.js';
 import { getFavorites, loadFavorites, clearFavorites } from './favorites.js';
 import { getLang, setLang, setLangChangeListener, t } from './i18n.js';
-import { isLoggedIn, login, signup, loginWithGoogle, logout, onAuthChange, waitForAuth, checkNickname, resetPassword, findEmailByNickname } from './auth.js';
+import { isLoggedIn, login, signup, loginWithGoogle, logout, onAuthChange, waitForAuth, checkNickname, resetPassword, findEmailByNickname, getCurrentUid } from './auth.js';
 import { getLogEntries, getLogEntry, addLogEntry, updateLogEntry, deleteLogEntry, getLogStats, loadLogbook, clearLogbook } from './logbook.js';
 import { getMySpots, getMySpot, addMySpot, updateMySpot, deleteMySpot, loadMySpots, clearMySpots } from './myspots.js';
 import { migrateLocalStorageToFirestore } from './migrate.js';
+import { loadProfile, getCachedProfile, clearProfileCache, saveProfile, uploadProfilePhoto, uploadCertPhoto, addCertification, removeCertification, loadPublicProfile, getUserReviewCount, getUserRecentReviews, CERT_ORGS } from './profile.js';
+import { escapeHtml, renderStars, formatReviewDate } from './ui.js';
+import { loadAchievements, clearAchievementsCache, checkAchievements, buildAchievementStats, countUserReviews, ACHIEVEMENT_DEFS, CATEGORIES, getUserAchievements, isUnlocked, getUnlockedCount, getTotalCount, getFeaturedBadges, saveFeaturedBadges } from './achievements.js';
+
+// ── Analytics helpers ──
+function trackEvent(event, params) {
+  if (typeof gtag === 'function') gtag('event', event, params);
+}
 
 // ── State ──
 let currentView = 'map'; // 'map' | 'list' | 'favorites' | 'logbook'
@@ -186,7 +194,7 @@ function getAuthErrorMessage(error) {
 // ── 사용자 데이터 로드 ──
 async function loadUserData() {
   await migrateLocalStorageToFirestore();
-  await Promise.all([loadFavorites(), loadLogbook(), loadMySpots()]);
+  await Promise.all([loadFavorites(), loadLogbook(), loadMySpots(), loadProfile(), loadAchievements()]);
 }
 
 // ── Boot app (only once) ──
@@ -201,6 +209,11 @@ function bootApp() {
   initSpotModal();
   initReviewModal();
   initMediaViewer();
+  initProfileModal();
+  initProfileEditModal();
+  initCertModal();
+  initAchievementsModal();
+  initAchievementDetailModal();
 
   // 초기 렌더 (첫 로딩 시 모든 마커 보이도록)
   updateFavCount();
@@ -215,6 +228,7 @@ function bootApp() {
     if (spot) {
       openModal(spot);
       flyToSpot(spot.lat, spot.lng);
+      trackEvent('view_spot', { spot_name: spot.name, spot_country: spot.country });
     }
   }
   setDetailClickHandler(handleDetail);
@@ -322,6 +336,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       clearLogbook();
       clearMySpots();
       clearReviewCache();
+      clearProfileCache();
+      clearAchievementsCache();
       showLanding();
     }
   });
@@ -908,6 +924,7 @@ function renderSearchResults(query) {
         closeSearchSheet();
         flyToSpot(s.lat, s.lng);
         openModal(s);
+        trackEvent('view_spot', { spot_name: s.name, spot_country: s.country });
       });
     }
 
@@ -1076,6 +1093,8 @@ function updateMobileLabels() {
   setText('mobile-drawer-title', 'nav.more');
   setText('mobile-lang-label', 'nav.language');
   setText('mobile-logout-text', 'nav.logout');
+  setText('mobile-profile-text', 'nav.profile');
+  setText('mobile-achievements-text', 'nav.achievements');
   setText('mobile-link-about', 'footer.about');
   setText('mobile-link-guide', 'footer.guide');
   setText('mobile-link-privacy', 'footer.privacy');
@@ -1641,6 +1660,9 @@ function initLogModal() {
       }
       close();
       if (currentView === 'logbook') renderLogbook();
+      // Check achievements after log save (non-blocking)
+      runAchievementCheck();
+      if (!editId) trackEvent('create_logbook', { activity_type: data.activityType });
     } catch (err) {
       console.error('Log save error:', err);
       alert(t('logbook.error.upload'));
@@ -2205,6 +2227,9 @@ function initReviewModal() {
       }
       close();
       refreshReviews(spotId);
+      // Check achievements after review save (non-blocking)
+      runAchievementCheck();
+      if (!editId) trackEvent('write_review', { spot_id: spotId, rating });
     } catch (err) {
       console.error('Review save error:', err);
       alert(t('review.error.save'));
@@ -2384,4 +2409,815 @@ function initInfoModal() {
   document.addEventListener('keydown', e => {
     if (!overlay.classList.contains('hidden') && e.key === 'Escape') close();
   });
+}
+
+// ═══ Profile Modal ═══
+
+function openProfileOverlay() {
+  const overlay = document.getElementById('profile-modal-overlay');
+  overlay.classList.remove('hidden');
+  overlay.setAttribute('aria-hidden', 'false');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeProfileOverlay() {
+  const overlay = document.getElementById('profile-modal-overlay');
+  overlay.classList.add('hidden');
+  overlay.setAttribute('aria-hidden', 'true');
+  document.body.style.overflow = '';
+}
+
+function openProfileEditOverlay() {
+  const overlay = document.getElementById('profile-edit-overlay');
+  overlay.classList.remove('hidden');
+  overlay.setAttribute('aria-hidden', 'false');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeProfileEditOverlay() {
+  const overlay = document.getElementById('profile-edit-overlay');
+  overlay.classList.add('hidden');
+  overlay.setAttribute('aria-hidden', 'true');
+  document.body.style.overflow = '';
+}
+
+function openCertOverlay() {
+  const overlay = document.getElementById('cert-modal-overlay');
+  overlay.classList.remove('hidden');
+  overlay.setAttribute('aria-hidden', 'false');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeCertOverlay() {
+  const overlay = document.getElementById('cert-modal-overlay');
+  overlay.classList.add('hidden');
+  overlay.setAttribute('aria-hidden', 'true');
+  document.body.style.overflow = '';
+}
+
+async function openProfileModal(userId) {
+  const uid = getCurrentUid();
+  const body = document.getElementById('profile-modal-body');
+
+  if (!userId || userId === uid) {
+    // Own profile
+    const profile = getCachedProfile();
+    renderOwnProfile(profile, body);
+  } else {
+    // Other user's profile
+    body.innerHTML = `<div class="profile-private-msg">${t('modal.weather.loading')}</div>`;
+    openProfileOverlay();
+    try {
+      const profile = await loadPublicProfile(userId);
+      if (!profile.isPublic) {
+        body.innerHTML = `<div class="profile-private-msg">${t('profile.private')}</div>`;
+        return;
+      }
+      await renderPublicProfile(profile, body);
+    } catch {
+      body.innerHTML = `<div class="profile-private-msg">${t('profile.error.save')}</div>`;
+    }
+    return;
+  }
+  openProfileOverlay();
+}
+
+function renderOwnProfile(profile, body) {
+  const nickname = profile?.nickname || 'User';
+  const photoURL = profile?.photoURL;
+  const bio = profile?.bio;
+  const country = profile?.country || '';
+  const certs = profile?.certifications || [];
+  const isPublic = profile?.isPublic || false;
+  const showCerts = profile?.showCerts !== false;
+  const showReviews = profile?.showReviews !== false;
+
+  // Stats from logbook
+  const stats = getLogStats();
+  const logs = getLogEntries().slice(0, 3);
+
+  let html = `
+    <div class="profile-header">
+      <div class="profile-avatar">
+        ${photoURL ? `<img src="${escapeHtml(photoURL)}" alt="" />` : `<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`}
+      </div>
+      <div class="profile-header__info">
+        <div class="profile-header__nickname">${escapeHtml(nickname)}</div>
+        ${country ? `<div class="profile-header__country">${escapeHtml(country)}</div>` : ''}
+        ${renderFeaturedBadgesHtml()}
+      </div>
+      <div class="profile-header__actions">
+        <button class="btn btn--secondary btn--sm" id="profile-edit-trigger">${t('profile.editBtn')}</button>
+      </div>
+    </div>
+
+    <div class="profile-section">
+      <div class="profile-section__title">${t('profile.bio')}</div>
+      ${bio ? `<div class="profile-bio">${escapeHtml(bio)}</div>` : `<div class="profile-section__empty">${t('profile.noBio')}</div>`}
+    </div>
+
+    <div class="profile-section">
+      <div class="profile-section__title">${t('profile.certs')}</div>
+      ${certs.length > 0 ? certs.map(c => `
+        <div class="profile-cert-card">
+          <div class="profile-cert-card__info">
+            <div class="profile-cert-card__org">${escapeHtml(c.org)}</div>
+            <div class="profile-cert-card__level">${escapeHtml(c.level)}</div>
+            ${c.date ? `<div class="profile-cert-card__meta">${escapeHtml(c.date)}${c.certNumber ? ' · #' + escapeHtml(c.certNumber) : ''}</div>` : ''}
+          </div>
+          <button class="profile-cert-card__delete" data-cert-id="${c.id}" title="Delete">&times;</button>
+        </div>
+      `).join('') : `<div class="profile-section__empty">${t('profile.noCerts')}</div>`}
+      <button class="btn btn--secondary btn--sm" id="profile-add-cert-btn" style="margin-top:var(--sp-2)">${t('profile.addCert')}</button>
+    </div>
+  `;
+
+  // Stats section
+  if (stats) {
+    html += `
+      <div class="profile-section">
+        <div class="profile-section__title">${t('profile.stats.title')}</div>
+        <div class="profile-stats__grid">
+          <div class="profile-stats__item">
+            <div class="profile-stats__value">${stats.totalDives}</div>
+            <div class="profile-stats__label">${t('profile.stats.totalDives')}</div>
+          </div>
+          <div class="profile-stats__item">
+            <div class="profile-stats__value">${stats.maxDepth}m</div>
+            <div class="profile-stats__label">${t('profile.stats.maxDepth')}</div>
+          </div>
+          <div class="profile-stats__item">
+            <div class="profile-stats__value">${stats.totalTime}min</div>
+            <div class="profile-stats__label">${t('profile.stats.totalTime')}</div>
+          </div>
+          <div class="profile-stats__item">
+            <div class="profile-stats__value">${stats.spotsCount}</div>
+            <div class="profile-stats__label">${t('profile.stats.spots')}</div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  // Recent logs
+  html += `
+    <div class="profile-section">
+      <div class="profile-section__title">${t('profile.recentLogs')}</div>
+      ${logs.length > 0 ? logs.map(l => `
+        <div class="profile-recent-item">
+          <span class="profile-recent-item__name">${escapeHtml(l.spotName || '-')}</span>
+          <span class="profile-recent-item__date">${escapeHtml(l.date || '')}</span>
+        </div>
+      `).join('') : `<div class="profile-section__empty">${t('profile.noLogs')}</div>`}
+    </div>
+  `;
+
+  // Recent reviews (async load)
+  html += `
+    <div class="profile-section">
+      <div class="profile-section__title">${t('profile.recentReviews')}</div>
+      <div id="profile-own-reviews"><div class="profile-section__empty">${t('modal.weather.loading')}</div></div>
+    </div>
+  `;
+
+  // Privacy summary
+  html += `
+    <div class="profile-section">
+      <div class="profile-section__title">${t('profile.privacy.title')}</div>
+      <div style="font-size:0.85rem;color:var(--c-gray-300);">
+        ${t('profile.privacy.public')}: ${isPublic ? 'ON' : 'OFF'} &nbsp;|&nbsp;
+        ${t('profile.privacy.showCerts')}: ${showCerts ? 'ON' : 'OFF'} &nbsp;|&nbsp;
+        ${t('profile.privacy.showReviews')}: ${showReviews ? 'ON' : 'OFF'}
+      </div>
+    </div>
+  `;
+
+  body.innerHTML = html;
+
+  // Bind edit button
+  body.querySelector('#profile-edit-trigger')?.addEventListener('click', () => {
+    closeProfileOverlay();
+    populateProfileEditForm();
+    openProfileEditOverlay();
+  });
+
+  // Bind add cert button
+  body.querySelector('#profile-add-cert-btn')?.addEventListener('click', () => {
+    closeProfileOverlay();
+    resetCertForm();
+    openCertOverlay();
+  });
+
+  // Bind cert delete buttons
+  body.querySelectorAll('.profile-cert-card__delete').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const certId = btn.dataset.certId;
+      if (!certId) return;
+      btn.disabled = true;
+      try {
+        await removeCertification(certId);
+        openProfileModal(); // re-render
+      } catch {
+        alert(t('profile.error.cert'));
+      }
+    });
+  });
+
+  // Load reviews async
+  loadOwnReviews();
+}
+
+async function loadOwnReviews() {
+  const uid = getCurrentUid();
+  const el = document.getElementById('profile-own-reviews');
+  if (!el || !uid) return;
+  try {
+    const reviews = await getUserRecentReviews(uid, 3);
+    if (reviews.length === 0) {
+      el.innerHTML = `<div class="profile-section__empty">${t('profile.noReviews')}</div>`;
+      return;
+    }
+    el.innerHTML = reviews.map(r => `
+      <div class="profile-recent-item">
+        <span class="profile-recent-item__name">${renderStars(r.rating, 'review-card')} ${escapeHtml(r.title || '')}</span>
+        <span class="profile-recent-item__date">${formatReviewDate(r.createdAt)}</span>
+      </div>
+    `).join('');
+  } catch {
+    el.innerHTML = `<div class="profile-section__empty">${t('profile.noReviews')}</div>`;
+  }
+}
+
+async function renderPublicProfile(profile, body) {
+  const nickname = profile.nickname || 'User';
+  const photoURL = profile.photoURL;
+  const bio = profile.bio;
+  const country = profile.country || '';
+  const certs = profile.certifications || [];
+  const showCerts = profile.showCerts !== false;
+  const showReviews = profile.showReviews !== false;
+
+  let html = `
+    <div class="profile-header">
+      <div class="profile-avatar">
+        ${photoURL ? `<img src="${escapeHtml(photoURL)}" alt="" />` : `<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`}
+      </div>
+      <div class="profile-header__info">
+        <div class="profile-header__nickname">${escapeHtml(nickname)}</div>
+        ${country ? `<div class="profile-header__country">${escapeHtml(country)}</div>` : ''}
+        ${(profile.featuredBadges || []).length > 0 ? `<div class="profile-featured-badges">${profile.featuredBadges.map(id => ACHIEVEMENT_DEFS[id] ? `<span class="profile-featured-badge" title="${t('achievements.' + id + '.name')}">${ACHIEVEMENT_DEFS[id].icon}</span>` : '').join('')}</div>` : ''}
+      </div>
+    </div>
+  `;
+
+  if (bio) {
+    html += `
+      <div class="profile-section">
+        <div class="profile-section__title">${t('profile.bio')}</div>
+        <div class="profile-bio">${escapeHtml(bio)}</div>
+      </div>
+    `;
+  }
+
+  if (showCerts && certs.length > 0) {
+    html += `
+      <div class="profile-section">
+        <div class="profile-section__title">${t('profile.certs')}</div>
+        ${certs.map(c => `
+          <div class="profile-cert-card">
+            <div class="profile-cert-card__info">
+              <div class="profile-cert-card__org">${escapeHtml(c.org)}</div>
+              <div class="profile-cert-card__level">${escapeHtml(c.level)}</div>
+              ${c.date ? `<div class="profile-cert-card__meta">${escapeHtml(c.date)}</div>` : ''}
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  }
+
+  if (showReviews) {
+    html += `
+      <div class="profile-section">
+        <div class="profile-section__title">${t('profile.recentReviews')}</div>
+        <div id="profile-public-reviews"><div class="profile-section__empty">${t('modal.weather.loading')}</div></div>
+      </div>
+    `;
+  }
+
+  body.innerHTML = html;
+
+  // Load reviews async
+  if (showReviews) {
+    try {
+      const [reviewCount, reviews] = await Promise.all([
+        getUserReviewCount(profile.id),
+        getUserRecentReviews(profile.id, 3),
+      ]);
+      const el = document.getElementById('profile-public-reviews');
+      if (!el) return;
+      if (reviews.length === 0) {
+        el.innerHTML = `<div class="profile-section__empty">${t('profile.noReviews')}</div>`;
+        return;
+      }
+      let reviewHtml = `<div style="font-size:0.8rem;color:var(--c-gray-300);margin-bottom:var(--sp-2);">${t('profile.reviewCount').replace('{n}', reviewCount)}</div>`;
+      reviewHtml += reviews.map(r => `
+        <div class="profile-recent-item">
+          <span class="profile-recent-item__name">${renderStars(r.rating, 'review-card')} ${escapeHtml(r.title || '')}</span>
+          <span class="profile-recent-item__date">${formatReviewDate(r.createdAt)}</span>
+        </div>
+      `).join('');
+      el.innerHTML = reviewHtml;
+    } catch {
+      const el = document.getElementById('profile-public-reviews');
+      if (el) el.innerHTML = `<div class="profile-section__empty">${t('profile.noReviews')}</div>`;
+    }
+  }
+}
+
+function initProfileModal() {
+  const overlay = document.getElementById('profile-modal-overlay');
+  const closeBtn = document.getElementById('profile-modal-close');
+  closeBtn.addEventListener('click', closeProfileOverlay);
+  overlay.addEventListener('click', e => { if (e.target === overlay) closeProfileOverlay(); });
+
+  // Listen for open-profile custom event (from review author clicks)
+  document.addEventListener('open-profile', e => {
+    const userId = e.detail?.userId;
+    if (userId) openProfileModal(userId);
+  });
+
+  // Nav handlers
+  document.getElementById('header-profile-btn')?.addEventListener('click', () => openProfileModal());
+  document.getElementById('mobile-profile-btn')?.addEventListener('click', () => {
+    closeMobileDrawer();
+    openProfileModal();
+  });
+}
+
+function populateProfileEditForm() {
+  const profile = getCachedProfile() || {};
+
+  // Title
+  document.getElementById('profile-edit-title').textContent = t('profile.edit.title');
+  document.getElementById('profile-edit-photo-label').textContent = t('profile.edit.photo');
+  document.getElementById('profile-edit-photo-btn').textContent = t('profile.edit.changePhoto');
+  document.getElementById('profile-edit-nickname-label').textContent = t('profile.edit.nickname');
+  document.getElementById('profile-edit-bio-label').textContent = t('profile.edit.bio');
+  document.getElementById('profile-edit-country-label').textContent = t('profile.edit.country');
+  document.getElementById('profile-privacy-label').textContent = t('profile.privacy.title');
+  document.getElementById('profile-privacy-public-label').textContent = t('profile.privacy.public');
+  document.getElementById('profile-privacy-certs-label').textContent = t('profile.privacy.showCerts');
+  document.getElementById('profile-privacy-reviews-label').textContent = t('profile.privacy.showReviews');
+  document.getElementById('profile-edit-save').textContent = t('profile.edit.save');
+  document.getElementById('profile-edit-cancel').textContent = t('profile.edit.cancel');
+
+  // Photo preview
+  const preview = document.getElementById('profile-edit-preview');
+  if (profile.photoURL) {
+    preview.innerHTML = `<img src="${escapeHtml(profile.photoURL)}" alt="" />`;
+  } else {
+    preview.innerHTML = `<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`;
+  }
+
+  // Nickname (read-only)
+  document.getElementById('profile-edit-nickname').value = profile.nickname || '';
+
+  // Bio
+  const bioInput = document.getElementById('profile-edit-bio');
+  bioInput.value = profile.bio || '';
+  bioInput.placeholder = t('profile.edit.bioPlaceholder');
+  document.getElementById('profile-bio-count').textContent = (profile.bio || '').length;
+
+  // Country select
+  const countrySel = document.getElementById('profile-edit-country');
+  countrySel.innerHTML = `<option value="">${t('profile.edit.countryPlaceholder')}</option>`;
+  COUNTRY_MAP.forEach(c => {
+    const opt = document.createElement('option');
+    opt.value = c.en;
+    opt.textContent = `${c.en} (${c.ko})`;
+    if (c.en === profile.country) opt.selected = true;
+    countrySel.appendChild(opt);
+  });
+
+  // Privacy toggles
+  document.getElementById('profile-privacy-public').checked = !!profile.isPublic;
+  document.getElementById('profile-privacy-certs').checked = profile.showCerts !== false;
+  document.getElementById('profile-privacy-reviews').checked = profile.showReviews !== false;
+
+  // Hide progress bar
+  document.getElementById('profile-upload-progress').classList.add('hidden');
+}
+
+function initProfileEditModal() {
+  const overlay = document.getElementById('profile-edit-overlay');
+  const closeBtn = document.getElementById('profile-edit-close');
+  const cancelBtn = document.getElementById('profile-edit-cancel');
+  const form = document.getElementById('profile-edit-form');
+  const photoBtn = document.getElementById('profile-edit-photo-btn');
+  const photoInput = document.getElementById('profile-photo-input');
+  const bioInput = document.getElementById('profile-edit-bio');
+
+  closeBtn.addEventListener('click', closeProfileEditOverlay);
+  cancelBtn.addEventListener('click', closeProfileEditOverlay);
+  overlay.addEventListener('click', e => { if (e.target === overlay) closeProfileEditOverlay(); });
+
+  // Bio char count
+  bioInput.addEventListener('input', () => {
+    document.getElementById('profile-bio-count').textContent = bioInput.value.length;
+  });
+
+  // Photo button
+  photoBtn.addEventListener('click', () => photoInput.click());
+
+  // Photo selected → upload immediately + show preview
+  photoInput.addEventListener('change', async () => {
+    const file = photoInput.files?.[0];
+    if (!file) return;
+    const progressEl = document.getElementById('profile-upload-progress');
+    const fillEl = document.getElementById('profile-upload-fill');
+    const textEl = document.getElementById('profile-upload-text');
+    progressEl.classList.remove('hidden');
+    try {
+      const result = await uploadProfilePhoto(file, p => {
+        fillEl.style.width = `${Math.round(p * 100)}%`;
+        textEl.textContent = `${Math.round(p * 100)}%`;
+      });
+      const preview = document.getElementById('profile-edit-preview');
+      preview.innerHTML = `<img src="${escapeHtml(result.url)}" alt="" />`;
+    } catch {
+      alert(t('profile.error.upload'));
+    } finally {
+      progressEl.classList.add('hidden');
+      photoInput.value = '';
+    }
+  });
+
+  // Form submit
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    const saveBtn = document.getElementById('profile-edit-save');
+    saveBtn.disabled = true;
+    try {
+      await saveProfile({
+        bio: bioInput.value.trim(),
+        country: document.getElementById('profile-edit-country').value,
+        isPublic: document.getElementById('profile-privacy-public').checked,
+        showCerts: document.getElementById('profile-privacy-certs').checked,
+        showReviews: document.getElementById('profile-privacy-reviews').checked,
+      });
+      closeProfileEditOverlay();
+      openProfileModal(); // refresh view
+    } catch {
+      alert(t('profile.error.save'));
+    } finally {
+      saveBtn.disabled = false;
+    }
+  });
+}
+
+function resetCertForm() {
+  document.getElementById('cert-modal-title').textContent = t('profile.cert.title');
+  document.getElementById('cert-org-label').textContent = t('profile.cert.org');
+  document.getElementById('cert-level-label').textContent = t('profile.cert.level');
+  document.getElementById('cert-date-label').textContent = t('profile.cert.date');
+  document.getElementById('cert-number-label').textContent = t('profile.cert.number');
+  document.getElementById('cert-photo-label').textContent = t('profile.cert.photo');
+  document.getElementById('cert-save').textContent = t('profile.cert.save');
+  document.getElementById('cert-cancel').textContent = t('profile.cert.cancel');
+
+  const orgSel = document.getElementById('cert-org');
+  orgSel.innerHTML = `<option value="">${t('profile.cert.orgPlaceholder')}</option>`;
+  Object.keys(CERT_ORGS).forEach(org => {
+    const opt = document.createElement('option');
+    opt.value = org;
+    opt.textContent = org;
+    orgSel.appendChild(opt);
+  });
+
+  const levelSel = document.getElementById('cert-level');
+  levelSel.innerHTML = `<option value="">${t('profile.cert.levelPlaceholder')}</option>`;
+  levelSel.disabled = true;
+
+  document.getElementById('cert-date').value = '';
+  document.getElementById('cert-number').value = '';
+  document.getElementById('cert-photo-input').value = '';
+  document.getElementById('cert-upload-progress').classList.add('hidden');
+}
+
+function initCertModal() {
+  const overlay = document.getElementById('cert-modal-overlay');
+  const closeBtn = document.getElementById('cert-modal-close');
+  const cancelBtn = document.getElementById('cert-cancel');
+  const form = document.getElementById('cert-form');
+  const orgSel = document.getElementById('cert-org');
+  const levelSel = document.getElementById('cert-level');
+
+  closeBtn.addEventListener('click', closeCertOverlay);
+  cancelBtn.addEventListener('click', closeCertOverlay);
+  overlay.addEventListener('click', e => { if (e.target === overlay) closeCertOverlay(); });
+
+  // Org → Level cascade
+  orgSel.addEventListener('change', () => {
+    const org = orgSel.value;
+    levelSel.innerHTML = `<option value="">${t('profile.cert.levelPlaceholder')}</option>`;
+    if (org && CERT_ORGS[org]) {
+      CERT_ORGS[org].forEach(level => {
+        const opt = document.createElement('option');
+        opt.value = level;
+        opt.textContent = level;
+        levelSel.appendChild(opt);
+      });
+      levelSel.disabled = false;
+    } else {
+      levelSel.disabled = true;
+    }
+  });
+
+  // Form submit
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    const org = orgSel.value;
+    const level = levelSel.value;
+    if (!org || !level) return;
+
+    const saveBtn = document.getElementById('cert-save');
+    saveBtn.disabled = true;
+
+    try {
+      let photoURL = '';
+      let photoPath = '';
+      const photoFile = document.getElementById('cert-photo-input').files?.[0];
+      if (photoFile) {
+        const progressEl = document.getElementById('cert-upload-progress');
+        const fillEl = document.getElementById('cert-upload-fill');
+        const textEl = document.getElementById('cert-upload-text');
+        progressEl.classList.remove('hidden');
+        const result = await uploadCertPhoto(photoFile, p => {
+          fillEl.style.width = `${Math.round(p * 100)}%`;
+          textEl.textContent = `${Math.round(p * 100)}%`;
+        });
+        photoURL = result.url;
+        photoPath = result.path;
+        progressEl.classList.add('hidden');
+      }
+
+      await addCertification({
+        org,
+        level,
+        date: document.getElementById('cert-date').value,
+        certNumber: document.getElementById('cert-number').value.trim(),
+        photoURL,
+        photoPath,
+      });
+
+      closeCertOverlay();
+      openProfileModal(); // refresh
+    } catch {
+      alert(t('profile.error.cert'));
+    } finally {
+      saveBtn.disabled = false;
+    }
+  });
+}
+
+// ═══ Achievements ═══
+
+function renderFeaturedBadgesHtml() {
+  const badges = getFeaturedBadges();
+  if (!badges || badges.length === 0) return '';
+  return `<div class="profile-featured-badges">${badges.map(id => {
+    const def = ACHIEVEMENT_DEFS[id];
+    if (!def) return '';
+    return `<span class="profile-featured-badge" title="${t('achievements.' + id + '.name')}">${def.icon}</span>`;
+  }).join('')}</div>`;
+}
+
+function openAchievementsOverlay() {
+  const overlay = document.getElementById('achievements-modal-overlay');
+  overlay.classList.remove('hidden');
+  overlay.setAttribute('aria-hidden', 'false');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeAchievementsOverlay() {
+  const overlay = document.getElementById('achievements-modal-overlay');
+  overlay.classList.add('hidden');
+  overlay.setAttribute('aria-hidden', 'true');
+  document.body.style.overflow = '';
+}
+
+function openAchievementDetailOverlay() {
+  const overlay = document.getElementById('achievement-detail-overlay');
+  overlay.classList.remove('hidden');
+  overlay.setAttribute('aria-hidden', 'false');
+}
+
+function closeAchievementDetailOverlay() {
+  const overlay = document.getElementById('achievement-detail-overlay');
+  overlay.classList.add('hidden');
+  overlay.setAttribute('aria-hidden', 'true');
+}
+
+function renderAchievementsPage() {
+  const body = document.getElementById('achievements-modal-body');
+  const unlocked = getUnlockedCount();
+  const total = getTotalCount();
+  const achievements = getUserAchievements();
+
+  let html = `
+    <h2 class="modal__section-title">${t('achievements.title')}</h2>
+    <div class="achievements-counter">${t('achievements.counter').replace('{n}', unlocked).replace('{total}', total)}</div>
+  `;
+
+  // Render each category
+  for (const cat of CATEGORIES) {
+    const defs = Object.entries(ACHIEVEMENT_DEFS).filter(([, d]) => d.category === cat);
+    if (defs.length === 0) continue;
+
+    html += `
+      <div class="achievements-category">
+        <div class="achievements-category__title">${t('achievements.category.' + cat)}</div>
+        <div class="achievements-grid">
+    `;
+
+    for (const [id, def] of defs) {
+      const ach = achievements[id];
+      const unlck = !!ach?.unlockedAt;
+      const progress = ach?.progress || 0;
+      const target = def.condition.value;
+      const pctNum = typeof target === 'number' && target > 0 ? Math.min(100, Math.round((progress / target) * 100)) : 0;
+
+      html += `
+        <div class="achievement-card ${unlck ? 'achievement-card--unlocked' : 'achievement-card--locked'}" data-achievement-id="${id}">
+          ${unlck ? '<div class="achievement-card__check">\u2713</div>' : ''}
+          <div class="achievement-card__icon">${def.icon}</div>
+          <div class="achievement-card__name">${t('achievements.' + id + '.name')}</div>
+          ${!unlck && typeof target === 'number' ? `
+            <div class="achievement-card__progress">
+              <div class="achievement-card__progress-fill" style="width:${pctNum}%"></div>
+            </div>
+          ` : ''}
+        </div>
+      `;
+    }
+
+    html += '</div></div>';
+  }
+
+  // Featured badges selection
+  const currentFeatured = getFeaturedBadges();
+  const unlockedIds = Object.entries(achievements).filter(([, a]) => a.unlockedAt).map(([id]) => id);
+
+  if (unlockedIds.length > 0) {
+    html += `
+      <div class="achievements-featured-section">
+        <div class="achievements-category__title">${t('achievements.featured')}</div>
+        <div class="achievements-featured-hint">${t('achievements.featuredHint')}</div>
+        <div class="achievements-grid" id="featured-badge-grid">
+    `;
+
+    for (const id of unlockedIds) {
+      const def = ACHIEVEMENT_DEFS[id];
+      if (!def) continue;
+      const selected = currentFeatured.includes(id);
+      html += `
+        <div class="achievement-card achievement-card--unlocked achievement-card--selectable ${selected ? 'achievement-card--selected' : ''}" data-featured-id="${id}">
+          <div class="achievement-card__icon">${def.icon}</div>
+          <div class="achievement-card__name">${t('achievements.' + id + '.name')}</div>
+        </div>
+      `;
+    }
+
+    html += `</div>
+      <button class="btn btn--primary btn--sm" id="save-featured-btn" style="margin-top:var(--sp-3)">${t('achievements.featuredSave')}</button>
+    </div>`;
+  }
+
+  body.innerHTML = html;
+
+  // Bind badge card clicks → open detail
+  body.querySelectorAll('.achievement-card[data-achievement-id]').forEach(card => {
+    card.addEventListener('click', () => {
+      const id = card.dataset.achievementId;
+      showAchievementDetail(id);
+    });
+  });
+
+  // Bind featured selection
+  const featuredGrid = document.getElementById('featured-badge-grid');
+  if (featuredGrid) {
+    let selectedIds = [...currentFeatured];
+
+    featuredGrid.querySelectorAll('[data-featured-id]').forEach(card => {
+      card.addEventListener('click', () => {
+        const id = card.dataset.featuredId;
+        if (selectedIds.includes(id)) {
+          selectedIds = selectedIds.filter(x => x !== id);
+          card.classList.remove('achievement-card--selected');
+        } else if (selectedIds.length < 3) {
+          selectedIds.push(id);
+          card.classList.add('achievement-card--selected');
+        }
+      });
+    });
+
+    document.getElementById('save-featured-btn')?.addEventListener('click', async () => {
+      try {
+        await saveFeaturedBadges(selectedIds);
+      } catch { /* ignore */ }
+    });
+  }
+}
+
+function showAchievementDetail(id) {
+  const def = ACHIEVEMENT_DEFS[id];
+  if (!def) return;
+  const ach = getUserAchievements()[id];
+  const unlck = !!ach?.unlockedAt;
+
+  document.getElementById('achievement-detail-icon').textContent = def.icon;
+  document.getElementById('achievement-detail-name').textContent = t('achievements.' + id + '.name');
+  document.getElementById('achievement-detail-desc').textContent = t('achievements.' + id + '.desc');
+
+  if (unlck && ach.unlockedAt?.seconds) {
+    const d = new Date(ach.unlockedAt.seconds * 1000);
+    document.getElementById('achievement-detail-date').textContent =
+      `${t('achievements.unlockedAt')}: ${d.toLocaleDateString()}`;
+  } else if (unlck) {
+    document.getElementById('achievement-detail-date').textContent = t('achievements.unlocked');
+  } else {
+    const progress = ach?.progress || 0;
+    const target = def.condition.value;
+    if (typeof target === 'number') {
+      document.getElementById('achievement-detail-date').textContent =
+        `${t('achievements.progress')}: ${progress}/${target}`;
+    } else {
+      document.getElementById('achievement-detail-date').textContent = t('achievements.locked');
+    }
+  }
+
+  document.getElementById('achievement-detail-ok').textContent = t('achievements.confirm');
+  openAchievementDetailOverlay();
+}
+
+function showAchievementToast(id) {
+  const def = ACHIEVEMENT_DEFS[id];
+  if (!def) return;
+
+  const toast = document.getElementById('achievement-toast');
+  document.getElementById('achievement-toast-icon').textContent = def.icon;
+  document.getElementById('achievement-toast-title').textContent = t('achievements.newAchievement');
+  document.getElementById('achievement-toast-desc').textContent =
+    `${def.icon} ${t('achievements.' + id + '.name')} - ${t('achievements.' + id + '.desc')}`;
+
+  toast.classList.remove('hidden');
+  requestAnimationFrame(() => {
+    toast.classList.add('visible');
+  });
+
+  setTimeout(() => {
+    toast.classList.remove('visible');
+    setTimeout(() => toast.classList.add('hidden'), 400);
+  }, 4000);
+}
+
+async function runAchievementCheck() {
+  try {
+    const entries = getLogEntries();
+    const { reviewCount, photoCount } = await countUserReviews();
+    const stats = buildAchievementStats(entries, reviewCount, photoCount);
+    const newlyUnlocked = await checkAchievements(stats);
+    // Show toasts for newly unlocked achievements (stagger)
+    for (let i = 0; i < newlyUnlocked.length; i++) {
+      setTimeout(() => showAchievementToast(newlyUnlocked[i]), i * 4500);
+    }
+  } catch (err) {
+    console.error('Achievement check error:', err);
+  }
+}
+
+function initAchievementsModal() {
+  const overlay = document.getElementById('achievements-modal-overlay');
+  const closeBtn = document.getElementById('achievements-modal-close');
+  closeBtn.addEventListener('click', closeAchievementsOverlay);
+  overlay.addEventListener('click', e => { if (e.target === overlay) closeAchievementsOverlay(); });
+
+  // Nav handlers
+  document.getElementById('header-achievements-btn')?.addEventListener('click', () => {
+    renderAchievementsPage();
+    openAchievementsOverlay();
+  });
+  document.getElementById('mobile-achievements-btn')?.addEventListener('click', () => {
+    closeMobileDrawer();
+    renderAchievementsPage();
+    openAchievementsOverlay();
+  });
+}
+
+function initAchievementDetailModal() {
+  const overlay = document.getElementById('achievement-detail-overlay');
+  const okBtn = document.getElementById('achievement-detail-ok');
+  okBtn.addEventListener('click', closeAchievementDetailOverlay);
+  overlay.addEventListener('click', e => { if (e.target === overlay) closeAchievementDetailOverlay(); });
 }

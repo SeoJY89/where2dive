@@ -1113,6 +1113,80 @@
     border: none;
   }
 
+  /* ── Dive Score Card ── */
+  .dive-score-card {
+    display: flex; align-items: center; gap: var(--sp-4);
+    padding: var(--sp-4); border-radius: var(--r-md);
+    margin-bottom: var(--sp-4);
+    background: rgba(255,255,255,.08);
+  }
+  .dive-score-card__icon { font-size: 2.4rem; line-height: 1; }
+  .dive-score-card__info { flex: 1; }
+  .dive-score-card__stars { margin-bottom: 2px; }
+  .dive-star { font-size: 1.1rem; color: rgba(255,255,255,.25); }
+  .dive-star--filled { color: #fbbf24; }
+  .dive-score-card__label {
+    font-size: 0.7rem; text-transform: uppercase;
+    letter-spacing: 0.04em; color: var(--c-gray-300);
+    margin-bottom: 2px;
+  }
+  .dive-score-card__msg {
+    font-size: 0.85rem; font-weight: 600;
+  }
+  .dive-score-card--s5 .dive-score-card__msg { color: #34d399; }
+  .dive-score-card--s4 .dive-score-card__msg { color: #6ee7b7; }
+  .dive-score-card--s3 .dive-score-card__msg { color: #fbbf24; }
+  .dive-score-card--s2 .dive-score-card__msg { color: #fb923c; }
+  .dive-score-card--s1 .dive-score-card__msg { color: #f87171; }
+
+  /* ── 7-Day Forecast ── */
+  .weather-forecast { margin-top: var(--sp-4); }
+  .weather-forecast__title {
+    font-size: 0.75rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.05em;
+    color: var(--c-aqua); margin-bottom: var(--sp-3);
+  }
+  .weather-forecast__scroll {
+    display: flex; gap: var(--sp-2);
+    overflow-x: auto; padding-bottom: var(--sp-2);
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+  }
+  .weather-forecast__scroll::-webkit-scrollbar { height: 4px; }
+  .weather-forecast__scroll::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,.2); border-radius: 2px;
+  }
+  .weather-forecast__day {
+    flex: 0 0 auto; width: 72px;
+    text-align: center; padding: var(--sp-3) var(--sp-2);
+    border-radius: var(--r-sm);
+    background: rgba(255,255,255,.06);
+    display: flex; flex-direction: column;
+    align-items: center; gap: 4px;
+  }
+  .weather-forecast__day:first-child {
+    background: rgba(255,255,255,.12);
+  }
+  .weather-forecast__day-label {
+    font-size: 0.7rem; font-weight: 600;
+    color: var(--c-gray-200);
+  }
+  .weather-forecast__day-icon { font-size: 1.4rem; line-height: 1; }
+  .weather-forecast__day-temp {
+    display: flex; gap: 4px; font-size: 0.8rem; font-weight: 600;
+  }
+  .weather-forecast__temp-hi { color: var(--c-white); }
+  .weather-forecast__temp-lo { color: var(--c-gray-400); }
+  .weather-forecast__day-wave {
+    font-size: 0.65rem; color: var(--c-gray-300);
+  }
+  .weather-forecast__day-stars {
+    display: flex; gap: 1px;
+  }
+  .weather-forecast__day-stars .dive-star {
+    font-size: 0.6rem;
+  }
+
   /* Spinner */
   .spinner {
     width: 28px; height: 28px;
@@ -2735,4 +2809,434 @@
   .media-viewer__nav { width: 36px; height: 36px; font-size: 1.2rem; }
   .media-viewer__close { width: 36px; height: 36px; font-size: 1.4rem; top: var(--sp-2); right: var(--sp-2); }
   .review-summary__avg { font-size: 1.4rem; }
+}
+
+/* ═══ Profile ═══ */
+
+.header__profile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: var(--c-ocean);
+  color: var(--c-white);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.header__profile:hover { background: var(--c-teal); }
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+  margin-bottom: var(--sp-6);
+}
+
+.profile-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: var(--c-foam);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+  color: var(--c-gray-300);
+}
+.profile-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.profile-avatar--edit {
+  width: 80px;
+  height: 80px;
+}
+
+.profile-header__info {
+  flex: 1;
+  min-width: 0;
+}
+.profile-header__nickname {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--c-white);
+  margin: 0 0 var(--sp-1) 0;
+}
+.profile-header__country {
+  font-size: 0.85rem;
+  color: var(--c-gray-300);
+}
+.profile-header__actions {
+  display: flex;
+  gap: var(--sp-2);
+}
+
+.profile-section {
+  margin-bottom: var(--sp-6);
+}
+.profile-section__title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--c-teal);
+  margin-bottom: var(--sp-3);
+}
+.profile-section__empty {
+  font-size: 0.85rem;
+  color: var(--c-gray-300);
+}
+
+.profile-bio {
+  font-size: 0.9rem;
+  color: var(--c-gray-200);
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+.profile-cert-card {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  background: var(--c-navy);
+  border-radius: var(--r-md);
+  padding: var(--sp-3) var(--sp-4);
+  margin-bottom: var(--sp-2);
+}
+.profile-cert-card__info {
+  flex: 1;
+  min-width: 0;
+}
+.profile-cert-card__org {
+  font-size: 0.8rem;
+  color: var(--c-teal);
+  font-weight: 600;
+}
+.profile-cert-card__level {
+  font-size: 0.9rem;
+  color: var(--c-white);
+}
+.profile-cert-card__meta {
+  font-size: 0.75rem;
+  color: var(--c-gray-300);
+}
+.profile-cert-card__delete {
+  background: none;
+  border: none;
+  color: var(--c-gray-300);
+  cursor: pointer;
+  font-size: 1.1rem;
+  padding: var(--sp-1);
+}
+.profile-cert-card__delete:hover { color: var(--c-coral); }
+
+.profile-stats__grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--sp-3);
+}
+.profile-stats__item {
+  background: var(--c-navy);
+  border-radius: var(--r-md);
+  padding: var(--sp-3);
+  text-align: center;
+}
+.profile-stats__value {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--c-teal);
+}
+.profile-stats__label {
+  font-size: 0.75rem;
+  color: var(--c-gray-300);
+  margin-top: var(--sp-1);
+}
+
+.profile-recent-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--sp-2) 0;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  font-size: 0.85rem;
+}
+.profile-recent-item__name {
+  color: var(--c-white);
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.profile-recent-item__date {
+  color: var(--c-gray-300);
+  font-size: 0.75rem;
+  flex-shrink: 0;
+  margin-left: var(--sp-2);
+}
+
+.profile-privacy-toggles {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+.profile-privacy-toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: 0.85rem;
+  color: var(--c-gray-200);
+  cursor: pointer;
+}
+.profile-privacy-toggle input[type="checkbox"] {
+  accent-color: var(--c-teal);
+}
+
+.profile-edit-photo-wrap {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+}
+
+.profile-private-msg {
+  text-align: center;
+  padding: var(--sp-8) var(--sp-4);
+  color: var(--c-gray-300);
+  font-size: 0.9rem;
+}
+
+.review-card__author--clickable {
+  color: var(--c-teal);
+  cursor: pointer;
+}
+.review-card__author--clickable:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+  .profile-header { flex-direction: column; text-align: center; }
+  .profile-stats__grid { grid-template-columns: repeat(2, 1fr); }
+  .header__profile { display: none; }
+}
+
+/* ═══ Achievements ═══ */
+
+.header__achievements {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: var(--c-ocean);
+  color: var(--c-white);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.header__achievements:hover { background: var(--c-teal); }
+
+.achievements-counter {
+  font-size: 0.85rem;
+  color: var(--c-gray-300);
+  margin-bottom: var(--sp-4);
+}
+
+.achievements-category {
+  margin-bottom: var(--sp-6);
+}
+.achievements-category__title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--c-teal);
+  margin-bottom: var(--sp-3);
+}
+
+.achievements-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap: var(--sp-3);
+}
+
+.achievement-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--sp-3) var(--sp-2);
+  border-radius: var(--r-md);
+  background: var(--c-navy);
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+  position: relative;
+}
+.achievement-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.achievement-card__icon {
+  font-size: 2rem;
+  line-height: 1;
+  margin-bottom: var(--sp-1);
+}
+
+.achievement-card__name {
+  font-size: 0.7rem;
+  color: var(--c-white);
+  text-align: center;
+  line-height: 1.2;
+  word-break: keep-all;
+}
+
+.achievement-card--locked {
+  opacity: 0.4;
+  filter: grayscale(1);
+}
+.achievement-card--locked .achievement-card__icon::after {
+  content: '\uD83D\uDD12';
+  position: absolute;
+  bottom: var(--sp-1);
+  right: var(--sp-1);
+  font-size: 0.7rem;
+}
+
+.achievement-card--unlocked {
+  border: 1px solid var(--c-teal);
+}
+.achievement-card--unlocked .achievement-card__check {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--c-teal);
+  color: var(--c-white);
+  font-size: 0.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.achievement-card__progress {
+  width: 100%;
+  height: 3px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 2px;
+  margin-top: var(--sp-1);
+  overflow: hidden;
+}
+.achievement-card__progress-fill {
+  height: 100%;
+  background: var(--c-teal);
+  border-radius: 2px;
+  transition: width 0.3s;
+}
+
+/* Achievement detail modal */
+.achievement-detail-modal {
+  background: var(--c-deep);
+  border-radius: var(--r-lg);
+  padding: var(--sp-8) var(--sp-6);
+  max-width: 320px;
+  width: 90%;
+  margin: auto;
+  text-align: center;
+  position: relative;
+}
+.achievement-detail__icon {
+  font-size: 4rem;
+  margin-bottom: var(--sp-3);
+}
+.achievement-detail__name {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--c-white);
+  margin-bottom: var(--sp-2);
+}
+.achievement-detail__desc {
+  font-size: 0.9rem;
+  color: var(--c-gray-300);
+  margin-bottom: var(--sp-3);
+}
+.achievement-detail__date {
+  font-size: 0.8rem;
+  color: var(--c-gray-300);
+  margin-bottom: var(--sp-4);
+}
+
+/* Achievement toast */
+.achievement-toast {
+  position: fixed;
+  top: var(--sp-4);
+  left: 50%;
+  transform: translateX(-50%) translateY(-120%);
+  background: var(--c-deep);
+  border: 1px solid var(--c-teal);
+  border-radius: var(--r-md);
+  padding: var(--sp-3) var(--sp-4);
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  z-index: 10000;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  max-width: 360px;
+  width: 90%;
+}
+.achievement-toast.visible {
+  transform: translateX(-50%) translateY(0);
+}
+.achievement-toast__icon {
+  font-size: 2rem;
+  flex-shrink: 0;
+}
+.achievement-toast__title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--c-teal);
+}
+.achievement-toast__desc {
+  font-size: 0.85rem;
+  color: var(--c-white);
+}
+
+/* Featured badges in profile header */
+.profile-featured-badges {
+  display: flex;
+  gap: var(--sp-2);
+  margin-top: var(--sp-1);
+}
+.profile-featured-badge {
+  font-size: 1.4rem;
+  cursor: default;
+}
+
+/* Featured badges selection */
+.achievements-featured-section {
+  margin-top: var(--sp-6);
+  padding-top: var(--sp-4);
+  border-top: 1px solid rgba(255,255,255,0.08);
+}
+.achievements-featured-hint {
+  font-size: 0.8rem;
+  color: var(--c-gray-300);
+  margin-bottom: var(--sp-3);
+}
+
+.achievement-card--selectable {
+  cursor: pointer;
+  user-select: none;
+}
+.achievement-card--selected {
+  border: 2px solid var(--c-coral);
+  box-shadow: 0 0 8px rgba(255,127,80,0.3);
+}
+
+@media (max-width: 768px) {
+  .achievements-grid { grid-template-columns: repeat(auto-fill, minmax(72px, 1fr)); }
+  .header__achievements { display: none; }
 }
