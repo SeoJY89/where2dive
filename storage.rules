@@ -7,6 +7,12 @@ service firebase.storage {
         && request.resource.size < 50 * 1024 * 1024;
       allow delete: if request.auth != null;
     }
+    match /logbook/{userId}/{entryId}/{fileName} {
+      allow read: if request.auth != null && request.auth.uid == userId;
+      allow write: if request.auth != null && request.auth.uid == userId
+        && request.resource.size < 50 * 1024 * 1024;
+      allow delete: if request.auth != null && request.auth.uid == userId;
+    }
     match /{allPaths=**} {
       allow read, write: if false;
     }

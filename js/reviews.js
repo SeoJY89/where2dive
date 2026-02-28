@@ -60,25 +60,33 @@ export function isVideoFile(file) {
   return false;
 }
 
-function uploadMedia(reviewId, file, onProgress) {
+export function uploadFile(storagePath, file, onProgress) {
   return new Promise((resolve, reject) => {
-    const ext = file.name ? file.name.split('.').pop() : 'jpg';
-    const filename = `${Date.now()}_${Math.random().toString(36).slice(2, 8)}.${ext}`;
-    const storageRef = ref(storage, `reviews/${reviewId}/${filename}`);
+    const storageRef = ref(storage, storagePath);
     const task = uploadBytesResumable(storageRef, file);
     task.on('state_changed',
       (snap) => { if (onProgress) onProgress(snap.bytesTransferred / snap.totalBytes); },
       reject,
       async () => {
         const url = await getDownloadURL(task.snapshot.ref);
-        resolve({ url, path: `reviews/${reviewId}/${filename}` });
+        resolve({ url, path: storagePath });
       }
     );
   });
 }
 
-function deleteMedia(storagePath) {
+export function deleteFile(storagePath) {
   return deleteObject(ref(storage, storagePath));
+}
+
+function uploadMedia(reviewId, file, onProgress) {
+  const ext = file.name ? file.name.split('.').pop() : 'jpg';
+  const filename = `${Date.now()}_${Math.random().toString(36).slice(2, 8)}.${ext}`;
+  return uploadFile(`reviews/${reviewId}/${filename}`, file, onProgress);
+}
+
+function deleteMedia(storagePath) {
+  return deleteFile(storagePath);
 }
 
 // ── CRUD ──

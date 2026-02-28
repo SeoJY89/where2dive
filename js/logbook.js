@@ -2,6 +2,7 @@
 import { db } from './firebase.js';
 import { getCurrentUid } from './auth.js';
 import { collection, doc, addDoc, updateDoc, deleteDoc, getDocs } from 'firebase/firestore';
+import { uploadFile, deleteFile, resizeImage } from './reviews.js';
 
 let entries = [];
 
@@ -32,9 +33,10 @@ export function getLogEntry(id) {
   return entries.find(e => e.id === id) || null;
 }
 
-export async function addLogEntry(entry) {
+export async function addLogEntry(entry, files, onProgress) {
   const col = userLogCol();
   if (!col) return null;
+  const uid = getCurrentUid();
   const data = {
     date: entry.date || new Date().toISOString().slice(0, 10),
     spotName: entry.spotName || '',
@@ -53,18 +55,70 @@ export async function addLogEntry(entry) {
     buddy: entry.buddy || '',
     weather: entry.weather || '',
     memo: entry.memo || '',
+    media: [],
   };
-  const ref = await addDoc(col, data);
-  const newEntry = { id: ref.id, ...data };
+  const docRef = await addDoc(col, data);
+
+  if (files && files.length > 0) {
+    const mediaResults = [];
+    for (let i = 0; i < files.length; i++) {
+      let file = files[i];
+      if (file.type && file.type.startsWith('image/')) {
+        file = await resizeImage(file);
+      }
+      const ext = files[i].name ? files[i].name.split('.').pop() : 'jpg';
+      const filename = `${Date.now()}_${Math.random().toString(36).slice(2, 8)}.${ext}`;
+      const path = `logbook/${uid}/${docRef.id}/${filename}`;
+      const result = await uploadFile(path, file, (p) => {
+        if (onProgress) onProgress((i + p) / files.length);
+      });
+      mediaResults.push(result);
+    }
+    await updateDoc(doc(col, docRef.id), { media: mediaResults });
+    data.media = mediaResults;
+  }
+
+  const newEntry = { id: docRef.id, ...data };
   entries.push(newEntry);
   return newEntry;
 }
 
-export async function updateLogEntry(id, data) {
+export async function updateLogEntry(id, data, newFiles, removedPaths, onProgress) {
   const col = userLogCol();
   if (!col) return null;
+  const uid = getCurrentUid();
   const idx = entries.findIndex(e => e.id === id);
   if (idx === -1) return null;
+
+  // Delete removed media
+  if (removedPaths && removedPaths.length > 0) {
+    for (const p of removedPaths) {
+      try { await deleteFile(p); } catch { /* ignore missing */ }
+    }
+  }
+
+  // Upload new files
+  const newMedia = [];
+  if (newFiles && newFiles.length > 0) {
+    for (let i = 0; i < newFiles.length; i++) {
+      let file = newFiles[i];
+      if (file.type && file.type.startsWith('image/')) {
+        file = await resizeImage(file);
+      }
+      const ext = newFiles[i].name ? newFiles[i].name.split('.').pop() : 'jpg';
+      const filename = `${Date.now()}_${Math.random().toString(36).slice(2, 8)}.${ext}`;
+      const path = `logbook/${uid}/${id}/${filename}`;
+      const result = await uploadFile(path, file, (p) => {
+        if (onProgress) onProgress((i + p) / newFiles.length);
+      });
+      newMedia.push(result);
+    }
+  }
+
+  // Merge existing media (minus removed) + new media
+  const existingMedia = (entries[idx].media || []).filter(m => !removedPaths?.includes(m.path));
+  data.media = [...existingMedia, ...newMedia];
+
   await updateDoc(doc(col, id), data);
   entries[idx] = { ...entries[idx], ...data, id };
   return entries[idx];
@@ -73,6 +127,15 @@ export async function updateLogEntry(id, data) {
 export async function deleteLogEntry(id) {
   const col = userLogCol();
   if (!col) return;
+
+  // Delete media files
+  const entry = entries.find(e => e.id === id);
+  if (entry?.media) {
+    for (const m of entry.media) {
+      try { await deleteFile(m.path); } catch { /* ignore */ }
+    }
+  }
+
   await deleteDoc(doc(col, id));
   entries = entries.filter(e => e.id !== id);
 }
