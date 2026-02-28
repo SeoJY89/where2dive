@@ -395,6 +395,32 @@
           <input type="password" id="login-password-confirm" class="landing__input" placeholder="비밀번호 확인" />
           <p class="landing__field-error hidden" id="password-confirm-error"></p>
         </div>
+        <!-- Signup-only: Terms Agreement -->
+        <div class="landing__terms landing__signup-field hidden" id="terms-field">
+          <label class="landing__terms-item landing__terms-item--all">
+            <input type="checkbox" id="terms-all" />
+            <span class="landing__terms-check"></span>
+            <span class="landing__terms-label" id="terms-all-label">전체 동의</span>
+          </label>
+          <div class="landing__terms-divider"></div>
+          <label class="landing__terms-item">
+            <input type="checkbox" id="terms-service" data-required />
+            <span class="landing__terms-check"></span>
+            <span class="landing__terms-label"><span class="landing__terms-tag landing__terms-tag--req" id="terms-req-1">[필수]</span> <span id="terms-service-label">서비스 이용약관 동의</span></span>
+            <a href="/terms.html" target="_blank" class="landing__terms-link" id="terms-service-link">보기</a>
+          </label>
+          <label class="landing__terms-item">
+            <input type="checkbox" id="terms-privacy" data-required />
+            <span class="landing__terms-check"></span>
+            <span class="landing__terms-label"><span class="landing__terms-tag landing__terms-tag--req" id="terms-req-2">[필수]</span> <span id="terms-privacy-label">개인정보 처리방침 동의</span></span>
+            <a href="/privacy.html" target="_blank" class="landing__terms-link" id="terms-privacy-link">보기</a>
+          </label>
+          <label class="landing__terms-item">
+            <input type="checkbox" id="terms-marketing" />
+            <span class="landing__terms-check"></span>
+            <span class="landing__terms-label"><span class="landing__terms-tag landing__terms-tag--opt" id="terms-opt-1">[선택]</span> <span id="terms-marketing-label">마케팅 정보 수신 동의</span></span>
+          </label>
+        </div>
         <button type="submit" class="landing__submit" id="login-submit" data-i18n="landing.login">로그인</button>
         <p class="landing__error hidden" id="login-error" data-i18n="landing.error">이메일 또는 비밀번호가 올바르지 않습니다.</p>
       </form>

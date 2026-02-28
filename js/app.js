@@ -67,6 +67,26 @@ function updateLandingLabels() {
   if (checkBtn) checkBtn.textContent = t('landing.nickname.check');
   const pwConfirmInput = document.getElementById('login-password-confirm');
   if (pwConfirmInput) pwConfirmInput.placeholder = t('landing.passwordConfirm.placeholder');
+
+  // Terms labels
+  const termsAllLabel = document.getElementById('terms-all-label');
+  if (termsAllLabel) termsAllLabel.textContent = t('terms.agreeAll');
+  const termsReq1 = document.getElementById('terms-req-1');
+  if (termsReq1) termsReq1.textContent = t('terms.required');
+  const termsReq2 = document.getElementById('terms-req-2');
+  if (termsReq2) termsReq2.textContent = t('terms.required');
+  const termsOpt1 = document.getElementById('terms-opt-1');
+  if (termsOpt1) termsOpt1.textContent = t('terms.optional');
+  const termsServiceLabel = document.getElementById('terms-service-label');
+  if (termsServiceLabel) termsServiceLabel.textContent = t('terms.service');
+  const termsPrivacyLabel = document.getElementById('terms-privacy-label');
+  if (termsPrivacyLabel) termsPrivacyLabel.textContent = t('terms.privacy');
+  const termsMarketingLabel = document.getElementById('terms-marketing-label');
+  if (termsMarketingLabel) termsMarketingLabel.textContent = t('terms.marketing');
+  const termsServiceLink = document.getElementById('terms-service-link');
+  if (termsServiceLink) termsServiceLink.textContent = t('terms.view');
+  const termsPrivacyLink = document.getElementById('terms-privacy-link');
+  if (termsPrivacyLink) termsPrivacyLink.textContent = t('terms.view');
 }
 
 // ── Firebase Auth 에러 → i18n 메시지 변환 ──
@@ -226,7 +246,8 @@ document.addEventListener('DOMContentLoaded', async () => {
           return;
         }
 
-        await signup(email, pw, nickname);
+        const marketingConsent = document.getElementById('terms-marketing').checked;
+        await signup(email, pw, nickname, { marketingConsent });
       } else {
         await login(email, pw);
       }
@@ -319,6 +340,12 @@ function initLandingTabs() {
     nicknameChecked = false;
     nicknameCheckedValue = '';
 
+    // Reset terms checkboxes
+    ['terms-all', 'terms-service', 'terms-privacy', 'terms-marketing'].forEach(id => {
+      const cb = document.getElementById(id);
+      if (cb) cb.checked = false;
+    });
+
     // Update submit button state
     updateSubmitState();
   }
@@ -391,7 +418,11 @@ function updateSubmitState() {
   const pwOk = PASSWORD_RE.test(pw);
   const pwMatchOk = pw === pwConfirm && pwConfirm.length > 0;
 
-  submitBtn.disabled = !(emailOk && nicknameOk && nicknameCheckOk && pwOk && pwMatchOk);
+  // Required terms check
+  const termsOk = document.getElementById('terms-service').checked
+    && document.getElementById('terms-privacy').checked;
+
+  submitBtn.disabled = !(emailOk && nicknameOk && nicknameCheckOk && pwOk && pwMatchOk && termsOk);
 }
 
 function initSignupValidation() {
@@ -466,6 +497,31 @@ function initSignupValidation() {
       checkBtn.disabled = false;
       updateSubmitState();
     }
+  });
+
+  // Terms checkboxes
+  initTermsCheckboxes();
+}
+
+function initTermsCheckboxes() {
+  const allCb = document.getElementById('terms-all');
+  const serviceCb = document.getElementById('terms-service');
+  const privacyCb = document.getElementById('terms-privacy');
+  const marketingCb = document.getElementById('terms-marketing');
+  const items = [serviceCb, privacyCb, marketingCb];
+
+  // "전체 동의" toggles all
+  allCb.addEventListener('change', () => {
+    items.forEach(cb => { cb.checked = allCb.checked; });
+    updateSubmitState();
+  });
+
+  // Individual checkboxes sync "전체 동의"
+  items.forEach(cb => {
+    cb.addEventListener('change', () => {
+      allCb.checked = items.every(c => c.checked);
+      updateSubmitState();
+    });
   });
 }
 

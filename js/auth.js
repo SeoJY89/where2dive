@@ -71,10 +71,11 @@ export async function checkNickname(nickname) {
   return snap.empty; // true = 사용 가능
 }
 
-/** 이메일/비밀번호 회원가입 (닉네임 포함) */
-export async function signup(email, pw, nickname) {
+/** 이메일/비밀번호 회원가입 (닉네임 + 약관동의 포함) */
+export async function signup(email, pw, nickname, { marketingConsent = false } = {}) {
   const cred = await createUserWithEmailAndPassword(auth, email, pw);
   const uid = cred.user.uid;
+  const now = new Date().toISOString();
 
   // Firebase Auth 프로필에 닉네임 저장
   await updateProfile(cred.user, { displayName: nickname });
@@ -83,7 +84,11 @@ export async function signup(email, pw, nickname) {
   await setDoc(doc(db, 'users', uid), {
     nickname,
     email,
-    createdAt: new Date().toISOString(),
+    marketingConsent,
+    termsAgreedAt: now,
+    privacyAgreedAt: now,
+    marketingAgreedAt: marketingConsent ? now : null,
+    createdAt: now,
   });
 
   // 닉네임 검색용 별도 컬렉션

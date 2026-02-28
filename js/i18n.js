@@ -180,6 +180,15 @@ const ko = {
   'signup.error.password.weak': '비밀번호는 8자 이상, 영문+숫자를 포함해야 합니다.',
   'signup.error.password.mismatch': '비밀번호가 일치하지 않습니다.',
 
+  // terms agreement
+  'terms.agreeAll': '전체 동의',
+  'terms.required': '[필수]',
+  'terms.optional': '[선택]',
+  'terms.service': '서비스 이용약관 동의',
+  'terms.privacy': '개인정보 처리방침 동의',
+  'terms.marketing': '마케팅 정보 수신 동의',
+  'terms.view': '보기',
+
   // auth errors
   'auth.error.generic': '인증에 실패했습니다. 다시 시도해주세요.',
   'auth.error.user-not-found': '등록되지 않은 이메일입니다.',
@@ -411,6 +420,15 @@ const en = {
   'signup.error.nickname.checkRequired': 'Please check nickname availability.',
   'signup.error.password.weak': 'Password must be 8+ chars with letters and numbers.',
   'signup.error.password.mismatch': 'Passwords do not match.',
+
+  // terms agreement
+  'terms.agreeAll': 'Agree to all',
+  'terms.required': '[Required]',
+  'terms.optional': '[Optional]',
+  'terms.service': 'Terms of Service',
+  'terms.privacy': 'Privacy Policy',
+  'terms.marketing': 'Marketing communications',
+  'terms.view': 'View',
 
   // auth errors
   'auth.error.generic': 'Authentication failed. Please try again.',
