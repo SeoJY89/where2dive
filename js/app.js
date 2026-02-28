@@ -170,13 +170,16 @@ function bootApp() {
   // 초기 map 뷰: cards-panel 숨김
   document.getElementById('cards-panel').classList.add('map-hidden');
 
-  // 네비게이션
+  // 네비게이션 (desktop)
   document.querySelectorAll('.nav-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       const view = btn.dataset.view;
       switchView(view);
     });
   });
+
+  // 모바일 하단 탭 네비게이션
+  initMobileTabBar();
 
   // 리스트 토글
   document.getElementById('list-toggle').addEventListener('click', toggleList);
@@ -211,6 +214,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   applyLangToggleState();
   updateStaticLabels();
   updateLandingLabels();
+  updateMobileLabels();
 
   // Landing tabs
   initLandingTabs();
@@ -326,6 +330,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     applyLangToggleState();
     updateStaticLabels();
     updateLandingLabels();
+    updateMobileLabels();
     refreshFilterLabels();
     if (booted) refresh(false);
   });
@@ -661,9 +666,83 @@ function initRecoveryForms() {
   });
 }
 
+// ── Mobile Tab Bar + More Drawer ──
+
+function initMobileTabBar() {
+  // Tab navigation
+  document.querySelectorAll('.mobile-tab[data-view]').forEach(tab => {
+    tab.addEventListener('click', () => {
+      const view = tab.dataset.view;
+      switchView(view);
+    });
+  });
+
+  // More button → open drawer
+  document.getElementById('mob-tab-more').addEventListener('click', () => {
+    openMobileDrawer();
+  });
+
+  // Close drawer
+  document.getElementById('mobile-drawer-close').addEventListener('click', closeMobileDrawer);
+  document.getElementById('mobile-drawer-overlay').addEventListener('click', closeMobileDrawer);
+
+  // Drawer logout
+  document.getElementById('mobile-logout-btn').addEventListener('click', async () => {
+    closeMobileDrawer();
+    await logout();
+  });
+
+  // Drawer language toggle
+  document.querySelectorAll('#mobile-lang-toggle .lang-toggle__btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      setLang(btn.dataset.lang);
+    });
+  });
+}
+
+function openMobileDrawer() {
+  const overlay = document.getElementById('mobile-drawer-overlay');
+  const drawer = document.getElementById('mobile-drawer');
+  overlay.classList.remove('hidden');
+  drawer.classList.remove('hidden');
+  // Trigger reflow for animation
+  requestAnimationFrame(() => {
+    overlay.classList.add('visible');
+    drawer.classList.add('visible');
+  });
+}
+
+function closeMobileDrawer() {
+  const overlay = document.getElementById('mobile-drawer-overlay');
+  const drawer = document.getElementById('mobile-drawer');
+  overlay.classList.remove('visible');
+  drawer.classList.remove('visible');
+  setTimeout(() => {
+    overlay.classList.add('hidden');
+    drawer.classList.add('hidden');
+  }, 300);
+}
+
+function updateMobileLabels() {
+  const setText = (id, key) => { const el = document.getElementById(id); if (el) el.textContent = t(key); };
+  setText('mob-tab-map-text', 'nav.map');
+  setText('mob-tab-list-text', 'nav.list');
+  setText('mob-tab-fav-text', 'nav.favorites');
+  setText('mob-tab-log-text', 'nav.logbook');
+  setText('mob-tab-more-text', 'nav.more');
+  setText('mobile-drawer-title', 'nav.more');
+  setText('mobile-lang-label', 'nav.language');
+  setText('mobile-logout-text', 'nav.logout');
+  setText('mobile-link-about', 'footer.about');
+  setText('mobile-link-guide', 'footer.guide');
+  setText('mobile-link-privacy', 'footer.privacy');
+  setText('mobile-link-terms', 'footer.terms');
+  setText('mobile-link-contact', 'footer.contact');
+}
+
 function applyLangToggleState() {
   const lang = getLang();
-  // Update all lang toggle buttons (header + landing)
+  // Update all lang toggle buttons (header + landing + drawer)
   document.querySelectorAll('.lang-toggle__btn').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.lang === lang);
   });
@@ -758,11 +837,16 @@ function toggleList() {
 function switchView(view) {
   currentView = view;
 
-  // 네비 활성화
+  // 네비 활성화 (desktop)
   document.querySelectorAll('.nav-btn').forEach(btn => {
     const isActive = btn.dataset.view === view;
     btn.classList.toggle('active', isActive);
     btn.setAttribute('aria-pressed', isActive);
+  });
+
+  // 모바일 탭 활성화 동기화
+  document.querySelectorAll('.mobile-tab[data-view]').forEach(tab => {
+    tab.classList.toggle('active', tab.dataset.view === view);
   });
 
   const mapPanel = document.getElementById('map-panel');

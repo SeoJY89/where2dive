@@ -218,6 +218,8 @@ const ko = {
   // nav (addition)
   'nav.logout': '로그아웃',
   'nav.logbook': '로그북',
+  'nav.more': '더보기',
+  'nav.language': '언어',
 
   // logbook
   'logbook.stats.totalDives': '총 다이브',
@@ -474,6 +476,8 @@ const en = {
   // nav (addition)
   'nav.logout': 'Logout',
   'nav.logbook': 'Logbook',
+  'nav.more': 'More',
+  'nav.language': 'Language',
 
   // logbook
   'logbook.stats.totalDives': 'Total Dives',
