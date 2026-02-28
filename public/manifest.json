@@ -7,7 +7,7 @@
   "display": "standalone",
   "orientation": "portrait",
   "theme_color": "#0d1b2a",
-  "background_color": "#0d1b2a",
+  "background_color": "#FFFFFF",
   "lang": "ko",
   "categories": ["travel", "lifestyle"],
   "icons": [
