@@ -2245,6 +2245,14 @@
   border-color: var(--c-ocean);
   outline: none;
 }
+.search-sheet__filter-row {
+  display: flex;
+  gap: var(--sp-3);
+}
+.search-sheet__filter-group--half {
+  flex: 1;
+  min-width: 0;
+}
 .search-sheet__reset {
   align-self: flex-start;
   padding: var(--sp-2) var(--sp-4);

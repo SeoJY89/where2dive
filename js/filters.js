@@ -8,6 +8,10 @@ const state = {
   region: '',
   activityType: '',  // '' | 'skin' | 'scuba' | 'myspot'
   country: '',       // Korean country name (e.g. '한국')
+  difficulty: '',    // '' | 'beginner' | 'intermediate' | 'advanced'
+  season: '',        // '' | '1' ~ '12' (month number)
+  tempMin: '',       // '' | '15' | '20' | '25' | '28'
+  visibilityMin: '', // '' | '5' | '10' | '15' | '20' | '30'
 };
 
 let onChange = () => {};
@@ -30,6 +34,10 @@ export function resetFilters() {
   state.region = '';
   state.activityType = '';
   state.country = '';
+  state.difficulty = '';
+  state.season = '';
+  state.tempMin = '';
+  state.visibilityMin = '';
   syncDOM();
   onChange();
 }
@@ -38,6 +46,16 @@ export function setCountry(koName) {
   state.country = koName;
   syncDOM();
   onChange();
+}
+
+/** Parse visibility string like "10~30m" → {min, max} */
+function parseVisibility(vis) {
+  if (!vis) return null;
+  const m = vis.match(/(\d+)~(\d+)/);
+  if (m) return { min: +m[1], max: +m[2] };
+  const single = vis.match(/(\d+)/);
+  if (single) return { min: +single[1], max: +single[1] };
+  return null;
 }
 
 function syncDOM() {
@@ -63,6 +81,16 @@ function syncDOM() {
     countryClear.classList.add('hidden');
   }
   closeCountryList();
+
+  // New filter selects
+  const diffSel = document.getElementById('difficulty-select');
+  if (diffSel) diffSel.value = state.difficulty;
+  const seasonSel = document.getElementById('season-select');
+  if (seasonSel) seasonSel.value = state.season;
+  const tempSel = document.getElementById('temp-select');
+  if (tempSel) tempSel.value = state.tempMin;
+  const visSel = document.getElementById('visibility-select');
+  if (visSel) visSel.value = state.visibilityMin;
 }
 
 export function filterSpots(favOnly = false, favSet = null) {
@@ -91,6 +119,26 @@ export function filterSpots(favOnly = false, favSet = null) {
     // Country filter
     if (state.country && s.country !== state.country) return false;
 
+    // Difficulty filter
+    if (state.difficulty && s.difficulty !== state.difficulty) return false;
+
+    // Season filter (month number → Korean month string)
+    if (state.season) {
+      const monthStr = state.season + '월';
+      if (!s.bestSeason || !s.bestSeason.includes(monthStr)) return false;
+    }
+
+    // Temperature filter (check if spot's max temp >= selected minimum)
+    if (state.tempMin) {
+      if (!s.waterTemp || s.waterTemp.max < +state.tempMin) return false;
+    }
+
+    // Visibility filter (parse visibility string and check max >= selected minimum)
+    if (state.visibilityMin) {
+      const vis = parseVisibility(s.visibility);
+      if (!vis || vis.max < +state.visibilityMin) return false;
+    }
+
     return true;
   });
 }
@@ -111,6 +159,16 @@ export function getActivityCounts(favOnly = false, favSet = null) {
     }
     if (state.region && s.region !== state.region) continue;
     if (state.country && s.country !== state.country) continue;
+    if (state.difficulty && s.difficulty !== state.difficulty) continue;
+    if (state.season) {
+      const monthStr = state.season + '월';
+      if (!s.bestSeason || !s.bestSeason.includes(monthStr)) continue;
+    }
+    if (state.tempMin && (!s.waterTemp || s.waterTemp.max < +state.tempMin)) continue;
+    if (state.visibilityMin) {
+      const vis = parseVisibility(s.visibility);
+      if (!vis || vis.max < +state.visibilityMin) continue;
+    }
     total++;
     if (s.activityTypes.includes('skin')) skin++;
     if (s.activityTypes.includes('scuba')) scuba++;
@@ -216,6 +274,31 @@ export function refreshFilterLabels() {
     btn.innerHTML = label + countHTML;
   });
 
+  // New filter selects
+  const diffSel = document.getElementById('difficulty-select');
+  if (diffSel) {
+    diffSel.options[0].textContent = t('filter.difficulty.all');
+    for (let i = 1; i < diffSel.options.length; i++) {
+      const val = diffSel.options[i].value;
+      diffSel.options[i].textContent = t('difficulty.' + val);
+    }
+  }
+  const seasonSel = document.getElementById('season-select');
+  if (seasonSel) {
+    seasonSel.options[0].textContent = t('filter.season.all');
+    for (let i = 1; i <= 12; i++) {
+      if (seasonSel.options[i]) seasonSel.options[i].textContent = t('filter.month.' + i);
+    }
+  }
+  const tempSel = document.getElementById('temp-select');
+  if (tempSel) {
+    tempSel.options[0].textContent = t('filter.temp.all');
+  }
+  const visSel = document.getElementById('visibility-select');
+  if (visSel) {
+    visSel.options[0].textContent = t('filter.visibility.all');
+  }
+
   // Reset button
   document.getElementById('filter-reset').textContent = t('filter.reset');
 
@@ -259,6 +342,16 @@ export function initFilters() {
     state.region = e.target.value;
     onChange();
   });
+
+  // New filter selects
+  const diffSel = document.getElementById('difficulty-select');
+  if (diffSel) diffSel.addEventListener('change', e => { state.difficulty = e.target.value; onChange(); });
+  const seasonSel = document.getElementById('season-select');
+  if (seasonSel) seasonSel.addEventListener('change', e => { state.season = e.target.value; onChange(); });
+  const tempSel = document.getElementById('temp-select');
+  if (tempSel) tempSel.addEventListener('change', e => { state.tempMin = e.target.value; onChange(); });
+  const visSel = document.getElementById('visibility-select');
+  if (visSel) visSel.addEventListener('change', e => { state.visibilityMin = e.target.value; onChange(); });
 
   document.getElementById('filter-reset').addEventListener('click', resetFilters);
   const emptyReset = document.getElementById('empty-reset');

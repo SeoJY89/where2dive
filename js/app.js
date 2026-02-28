@@ -925,6 +925,10 @@ function initSearchSheet() {
   const sheetCountryInput = document.getElementById('sheet-country-input');
   const sheetCountryClear = document.getElementById('sheet-country-clear');
   const sheetCountryList = document.getElementById('sheet-country-list');
+  const sheetDifficultySel = document.getElementById('sheet-difficulty-select');
+  const sheetSeasonSel = document.getElementById('sheet-season-select');
+  const sheetTempSel = document.getElementById('sheet-temp-select');
+  const sheetVisSel = document.getElementById('sheet-visibility-select');
 
   // Close handlers
   closeBtn.addEventListener('click', closeSearchSheet);
@@ -957,6 +961,24 @@ function initSearchSheet() {
   sheetRegionSel.addEventListener('change', () => {
     mainRegionSel.value = sheetRegionSel.value;
     mainRegionSel.dispatchEvent(new Event('change'));
+  });
+
+  // New filter selects → sync to main filters
+  sheetDifficultySel.addEventListener('change', () => {
+    document.getElementById('difficulty-select').value = sheetDifficultySel.value;
+    document.getElementById('difficulty-select').dispatchEvent(new Event('change'));
+  });
+  sheetSeasonSel.addEventListener('change', () => {
+    document.getElementById('season-select').value = sheetSeasonSel.value;
+    document.getElementById('season-select').dispatchEvent(new Event('change'));
+  });
+  sheetTempSel.addEventListener('change', () => {
+    document.getElementById('temp-select').value = sheetTempSel.value;
+    document.getElementById('temp-select').dispatchEvent(new Event('change'));
+  });
+  sheetVisSel.addEventListener('change', () => {
+    document.getElementById('visibility-select').value = sheetVisSel.value;
+    document.getElementById('visibility-select').dispatchEvent(new Event('change'));
   });
 
   // Sheet country autocomplete
@@ -1035,6 +1057,10 @@ function initSearchSheet() {
     sheetCountryClear.classList.add('hidden');
     sheetCountryList.classList.add('hidden');
     sheetRegionSel.value = '';
+    sheetDifficultySel.value = '';
+    sheetSeasonSel.value = '';
+    sheetTempSel.value = '';
+    sheetVisSel.value = '';
     document.getElementById('search-sheet-results').innerHTML = '';
     resetFilters();
   });
@@ -1073,6 +1099,32 @@ function updateMobileLabels() {
       }
     });
   }
+  // New filter labels in search sheet
+  setText('search-sheet-difficulty-label', 'search.difficulty');
+  setText('search-sheet-season-label', 'search.season');
+  setText('search-sheet-temp-label', 'search.temp');
+  setText('search-sheet-visibility-label', 'search.visibility');
+
+  // Sync new sheet filter option labels
+  const sheetDiffSel = document.getElementById('sheet-difficulty-select');
+  if (sheetDiffSel) {
+    sheetDiffSel.options[0].textContent = t('filter.difficulty.all');
+    for (let i = 1; i < sheetDiffSel.options.length; i++) {
+      sheetDiffSel.options[i].textContent = t('difficulty.' + sheetDiffSel.options[i].value);
+    }
+  }
+  const sheetSeasonSel = document.getElementById('sheet-season-select');
+  if (sheetSeasonSel) {
+    sheetSeasonSel.options[0].textContent = t('filter.season.all');
+    for (let i = 1; i <= 12; i++) {
+      if (sheetSeasonSel.options[i]) sheetSeasonSel.options[i].textContent = t('filter.month.' + i);
+    }
+  }
+  const sheetTempSel = document.getElementById('sheet-temp-select');
+  if (sheetTempSel) sheetTempSel.options[0].textContent = t('filter.temp.all');
+  const sheetVisSel = document.getElementById('sheet-visibility-select');
+  if (sheetVisSel) sheetVisSel.options[0].textContent = t('filter.visibility.all');
+
   const sheetReset = document.getElementById('search-sheet-reset');
   if (sheetReset) sheetReset.textContent = t('filter.reset');
 }

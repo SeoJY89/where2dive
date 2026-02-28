@@ -64,6 +64,17 @@ const ko = {
   'filter.button': '필터',
   'filter.search.button': '검색',
   'filter.temp.label': '수온',
+  'filter.difficulty': '난이도',
+  'filter.difficulty.all': '전체',
+  'filter.season': '추천 시즌',
+  'filter.season.all': '전체',
+  'filter.temp.all': '전체',
+  'filter.visibility': '시야',
+  'filter.visibility.all': '전체',
+  'filter.month.1': '1월', 'filter.month.2': '2월', 'filter.month.3': '3월',
+  'filter.month.4': '4월', 'filter.month.5': '5월', 'filter.month.6': '6월',
+  'filter.month.7': '7월', 'filter.month.8': '8월', 'filter.month.9': '9월',
+  'filter.month.10': '10월', 'filter.month.11': '11월', 'filter.month.12': '12월',
 
   // card
   'card.depth': '수심',
@@ -332,6 +343,10 @@ const ko = {
   'search.region': '지역',
   'search.result.country': '국가',
   'search.result.spot': '다이빙 스팟',
+  'search.difficulty': '난이도',
+  'search.season': '추천 시즌',
+  'search.temp': '수온',
+  'search.visibility': '시야',
   'search.noResults': '검색 결과가 없습니다',
 
   // cookie
@@ -401,6 +416,17 @@ const en = {
   'filter.button': 'Filter',
   'filter.search.button': 'Search',
   'filter.temp.label': 'Temp',
+  'filter.difficulty': 'Difficulty',
+  'filter.difficulty.all': 'All',
+  'filter.season': 'Best Season',
+  'filter.season.all': 'All',
+  'filter.temp.all': 'All',
+  'filter.visibility': 'Visibility',
+  'filter.visibility.all': 'All',
+  'filter.month.1': 'Jan', 'filter.month.2': 'Feb', 'filter.month.3': 'Mar',
+  'filter.month.4': 'Apr', 'filter.month.5': 'May', 'filter.month.6': 'Jun',
+  'filter.month.7': 'Jul', 'filter.month.8': 'Aug', 'filter.month.9': 'Sep',
+  'filter.month.10': 'Oct', 'filter.month.11': 'Nov', 'filter.month.12': 'Dec',
 
   // card
   'card.depth': 'Depth',
@@ -669,6 +695,10 @@ const en = {
   'search.region': 'Region',
   'search.result.country': 'Country',
   'search.result.spot': 'Dive Spot',
+  'search.difficulty': 'Difficulty',
+  'search.season': 'Best Season',
+  'search.temp': 'Water Temp',
+  'search.visibility': 'Visibility',
   'search.noResults': 'No results found',
 
   // cookie

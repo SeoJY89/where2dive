@@ -552,6 +552,54 @@
           <option value="">모든 지역</option>
         </select>
       </div>
+      <div class="filter-group">
+        <label for="difficulty-select" class="sr-only">난이도</label>
+        <select id="difficulty-select" class="filter-select">
+          <option value="">전체</option>
+          <option value="beginner">초급</option>
+          <option value="intermediate">중급</option>
+          <option value="advanced">상급</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label for="season-select" class="sr-only">추천 시즌</label>
+        <select id="season-select" class="filter-select">
+          <option value="">전체</option>
+          <option value="1">1월</option>
+          <option value="2">2월</option>
+          <option value="3">3월</option>
+          <option value="4">4월</option>
+          <option value="5">5월</option>
+          <option value="6">6월</option>
+          <option value="7">7월</option>
+          <option value="8">8월</option>
+          <option value="9">9월</option>
+          <option value="10">10월</option>
+          <option value="11">11월</option>
+          <option value="12">12월</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label for="temp-select" class="sr-only">수온</label>
+        <select id="temp-select" class="filter-select">
+          <option value="">전체</option>
+          <option value="15">15°C+</option>
+          <option value="20">20°C+</option>
+          <option value="25">25°C+</option>
+          <option value="28">28°C+</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label for="visibility-select" class="sr-only">시야</label>
+        <select id="visibility-select" class="filter-select">
+          <option value="">전체</option>
+          <option value="5">5m+</option>
+          <option value="10">10m+</option>
+          <option value="15">15m+</option>
+          <option value="20">20m+</option>
+          <option value="30">30m+</option>
+        </select>
+      </div>
       <button class="filter-reset" id="filter-reset">초기화</button>
       <label class="myspot-toggle" id="myspot-toggle">
         <input type="checkbox" checked />
@@ -1044,6 +1092,56 @@
         <select id="sheet-region-select" class="search-sheet__filter-select">
           <option value="">모든 지역</option>
         </select>
+      </div>
+      <div class="search-sheet__filter-group">
+        <label class="search-sheet__label" id="search-sheet-difficulty-label">난이도</label>
+        <select id="sheet-difficulty-select" class="search-sheet__filter-select">
+          <option value="">전체</option>
+          <option value="beginner">초급</option>
+          <option value="intermediate">중급</option>
+          <option value="advanced">상급</option>
+        </select>
+      </div>
+      <div class="search-sheet__filter-group">
+        <label class="search-sheet__label" id="search-sheet-season-label">추천 시즌</label>
+        <select id="sheet-season-select" class="search-sheet__filter-select">
+          <option value="">전체</option>
+          <option value="1">1월</option>
+          <option value="2">2월</option>
+          <option value="3">3월</option>
+          <option value="4">4월</option>
+          <option value="5">5월</option>
+          <option value="6">6월</option>
+          <option value="7">7월</option>
+          <option value="8">8월</option>
+          <option value="9">9월</option>
+          <option value="10">10월</option>
+          <option value="11">11월</option>
+          <option value="12">12월</option>
+        </select>
+      </div>
+      <div class="search-sheet__filter-row">
+        <div class="search-sheet__filter-group search-sheet__filter-group--half">
+          <label class="search-sheet__label" id="search-sheet-temp-label">수온</label>
+          <select id="sheet-temp-select" class="search-sheet__filter-select">
+            <option value="">전체</option>
+            <option value="15">15°C+</option>
+            <option value="20">20°C+</option>
+            <option value="25">25°C+</option>
+            <option value="28">28°C+</option>
+          </select>
+        </div>
+        <div class="search-sheet__filter-group search-sheet__filter-group--half">
+          <label class="search-sheet__label" id="search-sheet-visibility-label">시야</label>
+          <select id="sheet-visibility-select" class="search-sheet__filter-select">
+            <option value="">전체</option>
+            <option value="5">5m+</option>
+            <option value="10">10m+</option>
+            <option value="15">15m+</option>
+            <option value="20">20m+</option>
+            <option value="30">30m+</option>
+          </select>
+        </div>
       </div>
       <button class="search-sheet__reset" id="search-sheet-reset">초기화</button>
     </div>
