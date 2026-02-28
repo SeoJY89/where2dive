@@ -1345,22 +1345,51 @@ function renderLogbook() {
   // Update button text
   addBtn.textContent = t('logbook.addNew');
 
-  // Stats
+  // Stats dashboard
   const stats = getLogStats();
-  statsEl.innerHTML = `
-    <div class="logbook-stats__card">
-      <div class="logbook-stats__label">${t('logbook.stats.totalDives')}</div>
-      <div class="logbook-stats__value">${stats.totalDives}</div>
-    </div>
-    <div class="logbook-stats__card">
-      <div class="logbook-stats__label">${t('logbook.stats.maxDepth')}</div>
-      <div class="logbook-stats__value">${stats.maxDepth > 0 ? stats.maxDepth + 'm' : '-'}</div>
-    </div>
-    <div class="logbook-stats__card">
-      <div class="logbook-stats__label">${t('logbook.stats.totalTime')}</div>
-      <div class="logbook-stats__value">${stats.totalTime > 0 ? stats.totalTime + 'min' : '-'}</div>
-    </div>
-  `;
+  if (!stats) {
+    statsEl.innerHTML = '';
+  } else {
+    const fmtTime = min => min >= 60 ? `${Math.floor(min / 60)}h ${min % 60}m` : `${min}min`;
+    const maxBar = Math.max(...stats.months12.map(m => m.count), 1);
+    const monthBars = stats.months12.map(m =>
+      `<div class="stat-chart__col">
+        <div class="stat-chart__bar" style="height:${Math.round(m.count / maxBar * 100)}%">${m.count || ''}</div>
+        <div class="stat-chart__label">${m.label}</div>
+      </div>`
+    ).join('');
+
+    const topSpotsHtml = stats.topSpots.length > 0
+      ? stats.topSpots.map(([name, cnt]) => `<li>${name} <span class="stat-detail__count">${cnt}${t('logbook.stats.dives')}</span></li>`).join('')
+      : '';
+
+    const yearlyHtml = stats.yearly.map(([y, cnt]) => `<li>${y} <span class="stat-detail__count">${cnt}${t('logbook.stats.dives')}</span></li>`).join('');
+
+    statsEl.innerHTML = `
+      <div class="logbook-stats__grid">
+        <div class="logbook-stats__card"><div class="logbook-stats__icon">🤿</div><div class="logbook-stats__value">${stats.totalDives}</div><div class="logbook-stats__label">${t('logbook.stats.totalDives')}</div></div>
+        <div class="logbook-stats__card"><div class="logbook-stats__icon">⏱️</div><div class="logbook-stats__value">${stats.totalTime > 0 ? fmtTime(stats.totalTime) : '-'}</div><div class="logbook-stats__label">${t('logbook.stats.totalTime')}</div></div>
+        <div class="logbook-stats__card"><div class="logbook-stats__icon">🌊</div><div class="logbook-stats__value">${stats.maxDepth > 0 ? stats.maxDepth + 'm' : '-'}</div><div class="logbook-stats__label">${t('logbook.stats.maxDepth')}</div></div>
+        <div class="logbook-stats__card"><div class="logbook-stats__icon">📍</div><div class="logbook-stats__value">${stats.spotsCount}</div><div class="logbook-stats__label">${t('logbook.stats.spots')}</div></div>
+      </div>
+      <div class="stat-details">
+        <div class="stat-details__section">
+          <div class="stat-detail__row"><span>${t('logbook.stats.avgDepth')}</span><span>${stats.avgDepth > 0 ? stats.avgDepth + 'm' : '-'}</span></div>
+          <div class="stat-detail__row"><span>${t('logbook.stats.avgTime')}</span><span>${stats.avgTime > 0 ? stats.avgTime + 'min' : '-'}</span></div>
+          <div class="stat-detail__row"><span>${t('logbook.stats.skinDives')}</span><span>${stats.skinDives}</span></div>
+          <div class="stat-detail__row"><span>${t('logbook.stats.scubaDives')}</span><span>${stats.scubaDives}</span></div>
+          <div class="stat-detail__row"><span>${t('logbook.stats.firstDive')}</span><span>${stats.firstDate || '-'}</span></div>
+          <div class="stat-detail__row"><span>${t('logbook.stats.lastDive')}</span><span>${stats.lastDate || '-'}</span></div>
+        </div>
+        ${topSpotsHtml ? `<div class="stat-details__section"><h4>${t('logbook.stats.topSpots')}</h4><ol class="stat-detail__list">${topSpotsHtml}</ol></div>` : ''}
+        <div class="stat-details__section">
+          <h4>${t('logbook.stats.monthly')}</h4>
+          <div class="stat-chart">${monthBars}</div>
+        </div>
+        ${yearlyHtml ? `<div class="stat-details__section"><h4>${t('logbook.stats.yearly')}</h4><ul class="stat-detail__list">${yearlyHtml}</ul></div>` : ''}
+      </div>
+    `;
+  }
 
   // Entries
   const entries = getLogEntries();

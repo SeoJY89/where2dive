@@ -141,12 +141,49 @@ export async function deleteLogEntry(id) {
 }
 
 export function getLogStats() {
-  if (entries.length === 0) return { totalDives: 0, maxDepth: 0, totalTime: 0 };
-  let maxDepth = 0;
-  let totalTime = 0;
+  if (entries.length === 0) return null;
+  let maxDepth = 0, totalTime = 0, totalDepth = 0, depthCount = 0, timeCount = 0;
+  let skinDives = 0, scubaDives = 0;
+  const spots = new Map(); // spotName → count
+  const monthly = {};      // "YYYY-MM" → count
+  const yearly = {};       // "YYYY" → count
+  let firstDate = null, lastDate = null;
+
   for (const e of entries) {
-    if (e.maxDepth != null && e.maxDepth > maxDepth) maxDepth = e.maxDepth;
-    if (e.diveTime != null) totalTime += e.diveTime;
+    if (e.maxDepth != null) { totalDepth += e.maxDepth; depthCount++; if (e.maxDepth > maxDepth) maxDepth = e.maxDepth; }
+    if (e.diveTime != null) { totalTime += e.diveTime; timeCount++; }
+    if (e.activityType === 'skin') skinDives++;
+    else if (e.activityType === 'scuba') scubaDives++;
+    if (e.spotName) spots.set(e.spotName, (spots.get(e.spotName) || 0) + 1);
+    if (e.date) {
+      if (!firstDate || e.date < firstDate) firstDate = e.date;
+      if (!lastDate || e.date > lastDate) lastDate = e.date;
+      const ym = e.date.slice(0, 7);
+      monthly[ym] = (monthly[ym] || 0) + 1;
+      const y = e.date.slice(0, 4);
+      yearly[y] = (yearly[y] || 0) + 1;
+    }
   }
-  return { totalDives: entries.length, maxDepth, totalTime };
+
+  const topSpots = [...spots.entries()].sort((a, b) => b[1] - a[1]).slice(0, 3);
+
+  // Build last 12 months array
+  const now = new Date();
+  const months12 = [];
+  for (let i = 11; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+    months12.push({ key, label: `${d.getMonth() + 1}월`, count: monthly[key] || 0 });
+  }
+
+  return {
+    totalDives: entries.length, maxDepth, totalTime,
+    avgDepth: depthCount > 0 ? Math.round(totalDepth / depthCount * 10) / 10 : 0,
+    avgTime: timeCount > 0 ? Math.round(totalTime / timeCount) : 0,
+    skinDives, scubaDives,
+    spotsCount: spots.size, topSpots,
+    firstDate, lastDate,
+    months12,
+    yearly: Object.entries(yearly).sort((a, b) => b[0].localeCompare(a[0])),
+  };
 }

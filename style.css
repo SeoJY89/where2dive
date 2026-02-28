@@ -1085,30 +1085,78 @@
   @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
   @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-  /* ── Logbook Stats Bar ── */
-  .logbook-stats {
+  /* ── Logbook Stats Dashboard ── */
+  .logbook-stats { margin-bottom: var(--sp-4); }
+  .logbook-stats__grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: var(--sp-3);
     margin-bottom: var(--sp-4);
   }
   .logbook-stats__card {
     background: linear-gradient(135deg, var(--c-deep), var(--c-navy));
     border-radius: var(--r-md);
-    padding: var(--sp-4);
+    padding: var(--sp-3) var(--sp-2);
     text-align: center;
     color: var(--c-white);
   }
+  .logbook-stats__icon { font-size: 1.2rem; margin-bottom: 2px; }
+  .logbook-stats__value { font-size: 1.2rem; font-weight: 700; }
   .logbook-stats__label {
-    font-size: 0.7rem;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: var(--c-aqua);
-    margin-bottom: 4px;
+    font-size: 0.65rem; text-transform: uppercase;
+    letter-spacing: 0.05em; color: var(--c-aqua); margin-top: 2px;
   }
-  .logbook-stats__value {
-    font-size: 1.3rem;
-    font-weight: 700;
+  /* Detail rows */
+  .stat-details { display: flex; flex-direction: column; gap: var(--sp-4); margin-bottom: var(--sp-4); }
+  .stat-details__section {
+    background: var(--c-white); border-radius: var(--r-md);
+    padding: var(--sp-3) var(--sp-4);
+    box-shadow: 0 1px 3px rgba(0,0,0,.06);
+  }
+  .stat-details__section h4 {
+    font-size: 0.85rem; font-weight: 700; color: var(--c-deep);
+    margin-bottom: var(--sp-3);
+  }
+  .stat-detail__row {
+    display: flex; justify-content: space-between;
+    padding: var(--sp-2) 0;
+    border-bottom: 1px solid var(--c-gray-100);
+    font-size: 0.85rem;
+  }
+  .stat-detail__row:last-child { border-bottom: none; }
+  .stat-detail__row span:first-child { color: var(--c-gray-500); }
+  .stat-detail__row span:last-child { font-weight: 600; color: var(--c-deep); }
+  .stat-detail__list {
+    list-style: none; padding: 0; margin: 0;
+  }
+  .stat-detail__list li {
+    display: flex; justify-content: space-between;
+    padding: var(--sp-2) 0;
+    border-bottom: 1px solid var(--c-gray-100);
+    font-size: 0.85rem;
+  }
+  .stat-detail__list li:last-child { border-bottom: none; }
+  .stat-detail__count { font-weight: 600; color: var(--c-ocean); }
+  /* Monthly chart */
+  .stat-chart {
+    display: flex; align-items: flex-end; gap: 2px;
+    height: 100px; padding-top: var(--sp-2);
+  }
+  .stat-chart__col {
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; justify-content: flex-end; height: 100%;
+  }
+  .stat-chart__bar {
+    width: 100%; min-height: 2px;
+    background: linear-gradient(180deg, var(--c-ocean), var(--c-teal));
+    border-radius: 3px 3px 0 0;
+    font-size: 0.6rem; color: var(--c-white);
+    text-align: center; padding-top: 2px;
+    transition: height 0.3s ease;
+  }
+  .stat-chart__label {
+    font-size: 0.6rem; color: var(--c-gray-400);
+    margin-top: 4px; white-space: nowrap;
   }
 
   /* ── Logbook Add Button ── */
@@ -1812,7 +1860,7 @@
   html, body { overflow-x: hidden; }
 
   /* ── Forms ── */
-  .logbook-stats { grid-template-columns: 1fr; }
+  .logbook-stats__grid { grid-template-columns: repeat(2, 1fr); }
   .log-form__grid { grid-template-columns: 1fr; }
 
   /* ── Log card media on mobile: same 4-col layout ── */
