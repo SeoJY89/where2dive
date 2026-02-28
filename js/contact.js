@@ -85,6 +85,17 @@ function showResult(message, type) {
   el.className = `contact-result contact-result--${type}`;
 }
 
+async function sendTelegram(formData) {
+  const BOT = '8771139243:AAHTcN6bVTxuPBxTnPMsVRTl4_JjBpUDU8E';
+  const CHAT = '6786343916';
+  const text = `📬 새 문의가 도착했습니다!\n\n👤 이름: ${formData.name}\n📧 이메일: ${formData.email}\n📌 제목: ${formData.subject}\n\n💬 내용:\n${formData.message}\n\n🕐 시간: ${new Date().toLocaleString('ko-KR')}`;
+  await fetch(`https://api.telegram.org/bot${BOT}/sendMessage`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ chat_id: CHAT, text }),
+  });
+}
+
 const form = document.getElementById('contact-form');
 const submitBtn = document.getElementById('contact-submit');
 
@@ -104,6 +115,8 @@ form.addEventListener('submit', async (e) => {
 
   try {
     await addDoc(collection(db, 'contacts'), data);
+    // Telegram 알림 (실패해도 폼 제출은 성공 처리)
+    sendTelegram(data).catch(err => console.warn('Telegram notify failed:', err));
     showResult(t('success'), 'success');
     form.reset();
   } catch (err) {
